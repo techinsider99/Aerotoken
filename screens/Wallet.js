@@ -4,6 +4,14 @@ import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, S
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
 import Currency from '../components/Currency';
+import Aerotoken from '../assets/images/Logo.png';
+import Bitcoin from '../assets/images/Bitcoin.png';
+import Ethereum from '../assets/images/Ethereum.png';
+import Ripple from '../assets/images/Ripple.png';
+import Litecoin from '../assets/images/Litecoin.png';
+import Dogecoin from '../assets/images/Dogecoin.png';
+import USDT from '../assets/images/USDT.png';
+import TRX from '../assets/images/TRX.png';
 
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 40 : StatusBar.currentHeight;
 
@@ -42,7 +50,7 @@ export default class Dashboard extends Component {
             },
             mainContainer: {
                 paddingTop: hp('5%'),
-            }
+            },
 		});
 
 		const { statusBar, section, header, icon, title, mainContainer } = styles;
@@ -59,17 +67,15 @@ export default class Dashboard extends Component {
 						<Text style = {title}>Wallet</Text>
 					</View>
                     <View >
-                        <ScrollView contentContainerStyle = {{paddingBottom: 115, marginTop: 50}}>
-                            <Currency />
-                            <Currency />
-                            <Currency />
-                            <Currency />
-                            <Currency />
-                            <Currency />
-                            <Currency />
-                            <Currency />
-                            <Currency />
-                            <Currency />
+                        <ScrollView contentContainerStyle = {{paddingBottom: 120, marginTop: 50}}>
+                            <Currency avatar = {Aerotoken} currencyName = "Aerotoken" currencyValue = {7.5662} price = "$8000" difference = "+3.12%" />
+                            <Currency avatar = {Bitcoin} currencyName = "Bitcoin" currencyValue = {0.3265} price = "$3234" difference = "-3.12"/>
+                            <Currency avatar = {Ethereum} currencyName = "Ethereum" currencyValue = {0.3262} price = "$682" difference = "+10.12" />
+                            <Currency avatar = {Ripple} currencyName = "Ripple" currencyValue = {5.3286} price = "$2742" difference = "-3.39"/>
+                            <Currency avatar = {Litecoin} currencyName = "LiteCoin" currencyValue = {3.5662} price = "$1064" difference = "+13.12"/>
+                            <Currency avatar = {Dogecoin} currencyName = "Doge" currencyValue = {1.762} price = "$3234" difference = "-3.12"/>
+                            <Currency avatar = {USDT} currencyName = "USDT" currencyValue = {1.762} price = "$3234" difference = "-3.12"/>
+                            <Currency avatar = {TRX} currencyName = "TetherCoin(TRX)" currencyValue = {1.762} price = "$3234" difference = "-3.12"/>
                         </ScrollView>
                     </View>
 				</View>

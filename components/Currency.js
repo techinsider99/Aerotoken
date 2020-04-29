@@ -36,19 +36,20 @@ export default class Currency extends Component {
             },
         });
         const { mainContainer, logo, details1, details2 } = styles;
+        const { avatar, currencyName, currencyValue, price, difference } = this.props;
         return (
             <>
                 <View style = {mainContainer}>
                     <View>
-                        <Image source = {require('../assets/images/Logo.png')} style = {logo}/>
+                        <Image source = {avatar} style = {logo}/>
                     </View>
                     <View style = {details1}>
-                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, marginBottom: 8}}>Aerotoken</Text>
-                        <Text style = {{fontFamily: 'Armegoe', color: "#6F6E71", fontSize: 16}}>7.5662</Text>
+                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, marginBottom: 8}}>{currencyName}</Text>
+                        <Text style = {{fontFamily: 'Armegoe', color: "#6F6E71", fontSize: 16}}>{currencyValue}</Text>
                     </View>
                     <View style = {details2}>
-                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, marginBottom: 8}}>$8000</Text>
-                        <Text style = {{fontFamily: 'Armegoe', color: "#FFBA00", fontSize: 16}}>+3.12%</Text>
+                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, marginBottom: 8}}>{price}</Text>
+                        <Text style = {{fontFamily: 'Armegoe', color: "#FFBA00", fontSize: 16}}>{difference}</Text>
                     </View>
                 </View>
             </>
