@@ -53,14 +53,14 @@ export default class ExchangeAET extends Component {
                 flexDirection: 'row',
                 marginTop: hp('10%'),
                 alignSelf: 'center',
-                marginBottom: hp('15%'),
+                marginBottom: hp('16%'),
             },
             innerContainer1: {
                 flex: 1,
                 flexDirection: 'row',
-                marginTop: hp('10%'),
+                marginTop: hp('9.5%'),
                 alignSelf: 'center',
-                marginBottom: hp('10%'),
+                marginBottom: hp('9%'),
             },
             inputBox: {
                 backgroundColor: '#32374f',

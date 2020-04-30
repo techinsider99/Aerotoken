@@ -186,7 +186,7 @@ export default class CurrencyDetail extends Component {
 								</View>
 							</View>
 						</View>
-						<View style = {{flexDirection: 'row', marginHorizontal: wp('10%')}}>
+						<View style = {{flexDirection: 'row', marginHorizontal: wp('10%'), marginBottom: hp('2%')}}>
 							<View style = {{flex: 8}}>
 								<Text style = {mainText}>Transaction History</Text>
 							</View>

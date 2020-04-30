@@ -13,7 +13,7 @@ export default class ConfirmPin extends Component {
 		this.state = {
 			pin: '',
 			secured: true,
-            iconType: 'eye',
+            iconType: 'eye-slash',
             error: '',
 		};
 	}
@@ -22,14 +22,14 @@ export default class ConfirmPin extends Component {
 
 	handleSecuredEntry = () => {
 		let icon = this.state.iconType;
-		if (icon === 'eye') {
-			this.setState({ 
-				iconType: 'eye-slash',
+		if (icon === 'eye-slash') {
+			this.setState({
+				iconType: 'eye',
 				secured: false,
 			});
 		} else {
 			this.setState({
-				iconType: 'eye',
+				iconType: 'eye-slash',
 				secured: true,
 			});
 		}
