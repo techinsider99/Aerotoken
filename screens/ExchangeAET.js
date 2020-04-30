@@ -150,7 +150,7 @@ export default class ExchangeAET extends Component {
 				<View style = {section}>
 					<View style = {header}>
                         <Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('12%')} iconStyle = {icon} onPress = {() => navigation.goBack()} underlayColor = "transparent" />
-                        <Text style = {title}>Exchange Crypto</Text>
+                        <Text style = {title}>Exchange AET</Text>
 					</View>
 					<View>
                         <View style = {innerContainer}>
