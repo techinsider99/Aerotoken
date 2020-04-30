@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
 import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform} from 'react-native';
@@ -56,7 +57,6 @@ export default class CreateWallet extends Component {
                 transform: [
                 	{ scale: 0.5 },
                 ],
-                marginTop: hp('0%'),
 			},
 			textContainer: {
 				alignContent: 'center',

@@ -77,10 +77,10 @@ export default class Exchange extends Component {
 						<Text style = {title}>Exchange Crypto</Text>
 					</View>
 					<View style = {buttonContainer}>
-						<TouchableOpacity style = {button}>
-							<Text style = {buttonText} onPress = {() => navigation.navigate('ExchangeCoins')}>Exchange AET with coins</Text>
+						<TouchableOpacity style = {button} onPress = {() => navigation.navigate('ExchangeCoins')} activeOpacity = {0.8}>
+							<Text style = {buttonText}>Exchange AET with coins</Text>
 						</TouchableOpacity>
-						<TouchableOpacity style = {button} onPress = {() => navigation.navigate('ExchangeAET')}>
+						<TouchableOpacity style = {button} onPress = {() => navigation.navigate('ExchangeAET')} activeOpacity = {0.8}>
 							<Text style = {buttonText}>Exchange AET with others</Text>
 						</TouchableOpacity>
 					</View>

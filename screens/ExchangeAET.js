@@ -43,30 +43,24 @@ export default class ExchangeAET extends Component {
 				alignItems: 'center',
 				justifyContent: 'center',
 			},
-			button: {
-                backgroundColor: '#FFBA00',
-                alignSelf: 'center',
-                paddingTop: 13,
-                paddingBottom: 13,
-                width: wp('75%'),
-                borderRadius: 15,
-				position: 'relative',
-				bottom: hp('20%'),
-            },
-            buttonText: {
-                color: 'white',
-                fontFamily: 'Armegoe',
-                fontSize: 20,
-                textAlign: 'center',
-            },
             mainContainer: {
                 flex: 1,
                 alignItems: 'center',
+                flexDirection: 'column',
             },
             innerContainer: {
                 flex: 1,
                 flexDirection: 'row',
                 marginTop: hp('10%'),
+                alignSelf: 'center',
+                marginBottom: hp('15%'),
+            },
+            innerContainer1: {
+                flex: 1,
+                flexDirection: 'row',
+                marginTop: hp('10%'),
+                alignSelf: 'center',
+                marginBottom: hp('10%'),
             },
             inputBox: {
                 backgroundColor: '#32374f',
@@ -90,14 +84,14 @@ export default class ExchangeAET extends Component {
             downIcon: {
                 alignSelf: 'center',
                 position: 'relative',
-                top: hp('2%',),
+                top: hp('3.5%',),
                 right: wp('8'),
             },
             exchangeButton: {
                 backgroundColor: '#32374f',
                 padding: 20,
                 borderRadius: 50,
-                marginTop: hp('-25%'),
+                alignSelf: 'center',
             },
             exchangeIcon: {
                 transform: [
@@ -105,9 +99,47 @@ export default class ExchangeAET extends Component {
                     { rotate: '90deg' },
                 ],
             },
+            infoContainer: {
+                backgroundColor: '#32374f',
+                position: 'relative',
+                paddingVertical: 20,
+                paddingHorizontal: 15,
+                marginHorizontal: wp('5%'),
+                marginVertical: 2,
+                borderRadius: 10,
+            },
+            balanceHeading: {
+                fontFamily: 'Armegoe',
+                color: '#8E8C8C',
+                fontSize: 18,
+            },
+            logo: {
+                width: 35,
+                height: 42,
+                marginHorizontal: 10,
+            },
+            button: {
+				position: 'relative',
+                backgroundColor: '#FFBA00',
+                alignSelf: 'center',
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingVertical: 13,
+                width: wp('75%'),
+                borderRadius: 15,
+                marginHorizontal: wp('5%'),
+                flexDirection: 'row',
+                marginTop: hp('20%'),
+            },
+            buttonText: {
+                color: 'white',
+                fontFamily: 'Armegoe',
+                fontSize: 18,
+                textAlign: 'center',
+            },
 		});
 
-		const { statusBar, section, header, icon, title, button, buttonText, mainContainer, innerContainer, inputBox, picker, downIcon, exchangeButton, exchangeIcon } = styles;
+		const { statusBar, section, header, icon, title, innerContainer, innerContainer1, inputBox, picker, downIcon, exchangeButton, exchangeIcon, button, buttonText } = styles;
 		const { navigation } = this.props;
 
         return (
@@ -120,7 +152,7 @@ export default class ExchangeAET extends Component {
                         <Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('12%')} iconStyle = {icon} onPress = {() => navigation.goBack()} underlayColor = "transparent" />
                         <Text style = {title}>Exchange Crypto</Text>
 					</View>
-					<View style = {mainContainer}>
+					<View>
                         <View style = {innerContainer}>
                             <TextInput onChangeText = {this.handleInput1} style = {inputBox}/>
                             <Picker selectedValue = "AET" style = {picker}>
@@ -132,7 +164,7 @@ export default class ExchangeAET extends Component {
                         <View style = {exchangeButton}>
                             <Icon type = "font-awesome" name = "exchange" color = "white" iconStyle = {exchangeIcon}/>
                         </View>
-                        <View style = {innerContainer}>
+                        <View style = {innerContainer1}>
                             <TextInput onChangeText = {this.handleInput1} style = {inputBox}/>
                             <Picker mode = "dialog" style = {picker} selectedValue = "AET">
                                 <Picker.Item label = "USD"/>
@@ -148,9 +180,11 @@ export default class ExchangeAET extends Component {
                             <Icon type = "feather" name = "chevron-down" color = "white" iconStyle = {downIcon}/>
                         </View>
                 	</View>
-                    <TouchableOpacity style = {button}>
-						<Text style = {buttonText}>Exchange</Text>
-					</TouchableOpacity>
+                    <View>
+                        <TouchableOpacity style = {button} activeOpacity = {0.9} onPress = {this.handlePhraseSubmit}>
+                            <Text style = {buttonText}>Exchange</Text>
+                        </TouchableOpacity>
+                    </View>
 				</View>
             </>
         );

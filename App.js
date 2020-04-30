@@ -14,6 +14,8 @@ import ExchangeAET from './screens/ExchangeAET';
 import ExchangeCoins from './screens/ExchangeCoins';
 import CurrencyDetail from './components/CurrencyDetail';
 import Currency from './components/Currency';
+import Send from './components/Send';
+import Receive from './components/Receive';
 
 const { Screen, Navigator } = createStackNavigator();
 
@@ -33,6 +35,8 @@ const App = () => {
 					<Screen name = "ExchangeCoins" component = {ExchangeCoins}/>
 					<Screen name = "Currency" component = {Currency}/>
 					<Screen name = "CurrencyDetail" component = {CurrencyDetail} />
+					<Screen name = "Send" component = {Send} />
+					<Screen name = "Receive" component = {Receive} />
 				</Navigator>
 			</NavigationContainer>
 		</>

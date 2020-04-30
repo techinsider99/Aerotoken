@@ -1,15 +1,30 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, ScrollView } from 'react-native';
-import { Picker } from 'native-base';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
 
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 
 export default class CurrencyDetail extends Component {
-    render() {
 
+	handleSend = (currencyName, abr, avatar) => {
+		this.props.navigation.navigate('Send', {
+			currencyName: currencyName,
+			abr: abr,
+			avatar: avatar,
+		});
+	}
+
+	handleReceive = (currencyName, abr) => {
+		this.props.navigation.navigate('Receive', {
+			currencyName: currencyName,
+			abr: abr,
+		});
+	}
+
+	render() {
 		const styles = StyleSheet.create({
 			statusBar: {
                 width: '100%',
@@ -115,10 +130,9 @@ export default class CurrencyDetail extends Component {
                 ],
             },
 		});
-
 		const { statusBar, section, header, icon, title, button, buttonText, balanceContainer, historyContainer, mainText, priceText, grayText, logo, buttonContainer, yellowText, refreshIcon, greenText } = styles;
 		const { navigation } = this.props;
-		const { currencyName, price, currencyValue, avatar } = this.props.route.params;
+		const { currencyName, price, currencyValue, avatar, abr } = this.props.route.params;
         return (
             <>
                 <View style = {statusBar}>
@@ -152,11 +166,11 @@ export default class CurrencyDetail extends Component {
 							</View>
 						</View>
 						<View style = {buttonContainer}>
-							<TouchableOpacity style = {button} activeOpacity = {0.9}>
+							<TouchableOpacity style = {button} activeOpacity = {0.9} onPress = {() => this.handleSend(currencyName, abr, avatar)}>
 								<Icon type = "feather" name = "arrow-up-right" color = "white" />
 								<Text style = {buttonText}>Send</Text>
 							</TouchableOpacity>
-							<TouchableOpacity style = {button} activeOpacity = {0.9}>
+							<TouchableOpacity style = {button} activeOpacity = {0.9} onPress = {() => this.handleReceive(currencyName, abr)} >
 								<Icon type = "feather" name = "arrow-down-left" color = "white" />
 								<Text style = {buttonText}>Receive</Text>
 							</TouchableOpacity>

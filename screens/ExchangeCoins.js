@@ -84,7 +84,7 @@ export default class ExchangeCoins extends Component {
             downIcon: {
                 alignSelf: 'center',
                 position: 'relative',
-                top: hp('2%',),
+                top: hp('3.5%',),
                 right: wp('8'),
             },
             exchangeButton: {
@@ -117,7 +117,7 @@ export default class ExchangeCoins extends Component {
                 width: 35,
                 height: 42,
                 marginHorizontal: 10,
-            }
+            },
 		});
 
 		const { statusBar, section, header, icon, title, innerContainer, innerContainer1, inputBox, picker, downIcon, exchangeButton, exchangeIcon, infoContainer, balanceHeading, logo } = styles;

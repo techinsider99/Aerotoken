@@ -37,10 +37,10 @@ export default class Currency extends Component {
             },
         });
         const { mainContainer, logo, details1, details2 } = styles;
-        const { avatar, currencyName, currencyValue, price, difference } = this.props;
+        const { avatar, currencyName, currencyValue, price, difference, abr } = this.props;
         return (
             <>
-                <TouchableOpacity style = {mainContainer} activeOpacity = {0.8} onPress = {() => this.props.navigateTo('CurrencyDetail', currencyName, price, currencyValue, avatar)}>
+                <TouchableOpacity style = {mainContainer} activeOpacity = {0.8} onPress = {() => this.props.navigateTo('CurrencyDetail', currencyName, price, currencyValue, avatar, abr)}>
                     <View>
                         <Image source = {avatar} style = {logo}/>
                     </View>
