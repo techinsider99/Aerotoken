@@ -167,7 +167,7 @@ export default class CurrencyDetail extends Component {
 								<View style = {{flex: 5}}>
 									<Text style = {grayText}>33U3KSZ4Ev32MAMydcajChp</Text>
 								</View>
-								<View style = {{flex: 1, justifyContent: 'flex-end', flexDirection: 'column', alignContent: 'flex-end', alignContent: 'flex-end'}}>
+								<View style = {{flex: 1, justifyContent: 'flex-end', flexDirection: 'column', alignContent: 'flex-end'}}>
 									<Text style = {yellowText}>COPY</Text>
 								</View>
 							</View>
