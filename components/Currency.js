@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { NavigationActions } from 'react-navigation';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 export default class Currency extends Component {
@@ -39,7 +40,7 @@ export default class Currency extends Component {
         const { avatar, currencyName, currencyValue, price, difference } = this.props;
         return (
             <>
-                <View style = {mainContainer}>
+                <TouchableOpacity style = {mainContainer} activeOpacity = {0.8} onPress = {() => this.props.navigateTo('CurrencyDetail', currencyName, price, currencyValue, avatar)}>
                     <View>
                         <Image source = {avatar} style = {logo}/>
                     </View>
@@ -51,7 +52,7 @@ export default class Currency extends Component {
                         <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, marginBottom: 8}}>{price}</Text>
                         <Text style = {{fontFamily: 'Armegoe', color: "#FFBA00", fontSize: 16}}>{difference}</Text>
                     </View>
-                </View>
+                </TouchableOpacity>
             </>
         );
     }

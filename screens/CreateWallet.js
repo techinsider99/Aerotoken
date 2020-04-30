@@ -128,7 +128,7 @@ export default class CreateWallet extends Component {
 							Please copy the 12-word Backup Phrase and save in a secure place so that it can be used to restore your wallet at anytime
 						</Text>
 						<View style = {copyTextContainer}>
-							<Icon type = "ionicon" name = "md-copy" color = "#FFBA00" underlayColor = "transparent" onPress = {this.handlePress}/>
+							<Icon type = "feather" name = "copy" color = "#FFBA00" underlayColor = "transparent" onPress = {this.handlePress}/>
 							<Text style = {textButton} onPress = {this.handlePress}>
 								Copy To Clipboard
 							</Text>

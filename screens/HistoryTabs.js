@@ -145,7 +145,7 @@ export default class HistoryTabs extends Component {
 				
               	<Tab.Navigator initialRouteName = "Deposit" tabBar = {props => <TabBar {...props}/>}>
 					<Tab.Screen name = "Deposit" component = {DepositHistory} />
-					<Tab.Screen name = "WithDrawal" component = {WithdrawalHistory} />
+					<Tab.Screen name = "Withdrawal" component = {WithdrawalHistory} />
 				</Tab.Navigator>
             </>
         );

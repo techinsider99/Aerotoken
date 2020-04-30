@@ -12,6 +12,8 @@ import Dashboard from './screens/Dashboard';
 import Login from './screens/Login';
 import ExchangeAET from './screens/ExchangeAET';
 import ExchangeCoins from './screens/ExchangeCoins';
+import CurrencyDetail from './components/CurrencyDetail';
+import Currency from './components/Currency';
 
 const { Screen, Navigator } = createStackNavigator();
 
@@ -29,6 +31,8 @@ const App = () => {
 					<Screen name = "Dashboard" component = {Dashboard}/>
 					<Screen name = "ExchangeAET" component = {ExchangeAET}/>
 					<Screen name = "ExchangeCoins" component = {ExchangeCoins}/>
+					<Screen name = "Currency" component = {Currency}/>
+					<Screen name = "CurrencyDetail" component = {CurrencyDetail} />
 				</Navigator>
 			</NavigationContainer>
 		</>

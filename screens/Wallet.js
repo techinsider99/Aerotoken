@@ -16,6 +16,16 @@ import TRX from '../assets/images/TRX.png';
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 40 : StatusBar.currentHeight;
 
 export default class Dashboard extends Component {
+
+	navigateScreen = (route, currencyName, price, currencyValue, avatar) => {
+		this.props.navigation.navigate(route, {
+			currencyName: currencyName,
+			price: price,
+			currencyValue: currencyValue,
+			avatar: avatar,
+		});
+	}
+
     render() {
 		const styles = StyleSheet.create({
 			statusBar: {
@@ -68,14 +78,14 @@ export default class Dashboard extends Component {
 					</View>
                     <View >
                         <ScrollView contentContainerStyle = {{paddingBottom: 120, marginTop: 50}}>
-                            <Currency avatar = {Aerotoken} currencyName = "Aerotoken" currencyValue = {7.5662} price = "$8000" difference = "+3.12%" />
-                            <Currency avatar = {Bitcoin} currencyName = "Bitcoin" currencyValue = {0.3265} price = "$3234" difference = "-3.12"/>
-                            <Currency avatar = {Ethereum} currencyName = "Ethereum" currencyValue = {0.3262} price = "$682" difference = "+10.12" />
-                            <Currency avatar = {Ripple} currencyName = "Ripple" currencyValue = {5.3286} price = "$2742" difference = "-3.39"/>
-                            <Currency avatar = {Litecoin} currencyName = "LiteCoin" currencyValue = {3.5662} price = "$1064" difference = "+13.12"/>
-                            <Currency avatar = {Dogecoin} currencyName = "Doge" currencyValue = {1.762} price = "$3234" difference = "-3.12"/>
-                            <Currency avatar = {USDT} currencyName = "USDT" currencyValue = {1.762} price = "$3234" difference = "-3.12"/>
-                            <Currency avatar = {TRX} currencyName = "TetherCoin(TRX)" currencyValue = {1.762} price = "$3234" difference = "-3.12"/>
+                            <Currency navigateTo = {this.navigateScreen} avatar = {Aerotoken} currencyName = "Aerotoken" currencyValue = {7.5662} price = "$8000" difference = "+3.12%" />
+                            <Currency navigateTo = {this.navigateScreen} avatar = {Bitcoin} currencyName = "Bitcoin" currencyValue = {0.3265} price = "$3234" difference = "-3.12"/>
+                            <Currency navigateTo = {this.navigateScreen} avatar = {Ethereum} currencyName = "Ethereum" currencyValue = {0.3262} price = "$682" difference = "+10.12" />
+                            <Currency navigateTo = {this.navigateScreen} avatar = {Ripple} currencyName = "Ripple" currencyValue = {5.3286} price = "$2742" difference = "-3.39"/>
+                            <Currency navigateTo = {this.navigateScreen} avatar = {Litecoin} currencyName = "LiteCoin" currencyValue = {3.5662} price = "$1064" difference = "+13.12"/>
+                            <Currency navigateTo = {this.navigateScreen} avatar = {Dogecoin} currencyName = "Doge" currencyValue = {1.762} price = "$3234" difference = "-3.12"/>
+                            <Currency navigateTo = {this.navigateScreen} avatar = {USDT} currencyName = "USDT" currencyValue = {1.762} price = "$3234" difference = "-3.12"/>
+                            <Currency navigateTo = {this.navigateScreen} avatar = {TRX} currencyName = "TetherCoin(TRX)" currencyValue = {1.762} price = "$3234" difference = "-3.12"/>
                         </ScrollView>
                     </View>
 				</View>
