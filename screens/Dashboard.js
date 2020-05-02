@@ -3,14 +3,11 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { DrawerActions } from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
-import Wallet from './Wallet';
 import Tabs from './Tabs';
 
 const { Navigator, Screen } = createDrawerNavigator();
-const Tab =  createBottomTabNavigator();
 
 export default class Dashboard extends Component {
     render() {

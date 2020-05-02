@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, KeyboardAvoidingView } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon, Input } from 'react-native-elements';
-
+import QRCode from 'react-qr-code';
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 
 export default class Receive extends Component {
@@ -104,7 +104,7 @@ export default class Receive extends Component {
 
 		const { statusBar, section, header, icon, title, button, buttonText, mainText, yellowText, logo, container } = styles;
 		const { navigation } = this.props;
-		const { currencyName, abr} = this.props.route.params;
+		const { currencyName, abr, address} = this.props.route.params;
         return (
             <>
                 <View style = {statusBar}>
@@ -117,12 +117,17 @@ export default class Receive extends Component {
 						</TouchableOpacity>
 						<Text style = {title}>Receive {currencyName}({abr})</Text>
 					</View>
-					<View>
-                        <Image source = {require('../assets/images/ScanScreen.png')} style = {logo}/>
-                    </View>
+					<View style={{alignSelf:'center', marginVertical:70}}>
+						<QRCode 
+						value={address} 
+						size={180}
+						bgColor="#000"
+						fgColor="#fff"
+						/>
+					</View>
                     <View style = {container} >
                         <Text style = {mainText}>Your {abr} address</Text>
-                        <Text style = {yellowText}>33U3KSZ4Ev32MAMydcajChpQ</Text>
+                        <Text style = {yellowText}>{address}</Text>
                     </View>
                     <KeyboardAvoidingView enabled = {false}>
                         <TouchableOpacity style = {button} activeOpacity = {0.9} onPress = {this.handlePhraseSubmit}>

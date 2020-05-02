@@ -5,6 +5,7 @@ import { NavigationActions } from 'react-navigation';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 export default class Currency extends Component {
+
     render() {
         const styles = StyleSheet.create({
             mainContainer: {
@@ -49,7 +50,7 @@ export default class Currency extends Component {
                         <Text style = {{fontFamily: 'Armegoe', color: "#6F6E71", fontSize: 16}}>{currencyValue}</Text>
                     </View>
                     <View style = {details2}>
-                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, marginBottom: 8}}>{price}</Text>
+                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, marginBottom: 8}}>$ {currencyValue*price}</Text>
                         <Text style = {{fontFamily: 'Armegoe', color: "#FFBA00", fontSize: 16}}>{difference}</Text>
                     </View>
                 </TouchableOpacity>

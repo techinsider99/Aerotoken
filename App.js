@@ -17,13 +17,14 @@ import CurrencyDetail from './components/CurrencyDetail';
 import Currency from './components/Currency';
 import Send from './components/Send';
 import Receive from './components/Receive';
-import SplashScreen from 'react-native-splash-screen'
+import SplashScreen from 'react-native-splash-screen';
 
 const { Screen, Navigator } = createStackNavigator();
 
 class App extends Component {
 
 	componentDidMount() {
+		console.disableYellowBox = true;
 		SplashScreen.hide();
 		changeNavigationBarColor('#060E17');
 	}

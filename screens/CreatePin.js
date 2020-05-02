@@ -3,9 +3,8 @@ import React, { Component } from 'react';
 import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform} from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon, Input } from 'react-native-elements';
-
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
-
+import AsyncStorage from '@react-native-community/async-storage';
 export default class CreatePin extends Component {
 
 	constructor() {
@@ -15,7 +14,8 @@ export default class CreatePin extends Component {
 			secured: true,
 			iconType: 'eye-slash',
 			error: '',
-		};
+			isConfirm :false
+		}
 	}
 
 	handlePin = pin => this.setState({ pin: pin })
@@ -34,12 +34,16 @@ export default class CreatePin extends Component {
 			});
 		}
 	}
-
-	handlePinSubmit = () => {
+	handlePinSubmit = async () => {
 		let pin  = this.state.pin;
 		if (pin) {
-			this.setState({ error: '' }, () => this.props.navigation.navigate('ConfirmPin'));
-		} else {
+			try {
+				await AsyncStorage.setItem('@pin', pin)
+				this.setState({ error: '' }, () => this.props.navigation.navigate('ConfirmPin',{pin : this.state.pin}));
+			 } catch (error) {
+			   this.setState({error : 'Cannot Create Wallet'});
+			 }
+			} else {
 			this.setState({ error: 'Enter a pin to continue' });
 		}
 	}

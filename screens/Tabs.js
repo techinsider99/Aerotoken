@@ -7,8 +7,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import { Icon } from 'react-native-elements';
 import Wallet from './Wallet';
 import Exchange from './Exchange';
-import AddFund from './AddFund';
-import History from './History';
+import Profile from './Profile';
 import HistoryTabs from './HistoryTabs';
 
 const Tab =  createBottomTabNavigator();
@@ -97,7 +96,13 @@ export default class Tabs extends Component {
 
 								<Icon type = "material" name = "history" size = {37} iconStyle = {{marginTop: hp('-0.1%'), marginBottom: hp('-0.2')}} color = { isFocused ?  '#FFBA00' : '#8E8C8C'}/>
 
-								: null
+								: label === 'Profile' ?
+
+								<Icon type = "feather" name = "user" size = {30} iconStyle = {{marginTop: hp('0.4%'), marginBottom: hp('0.2')}} color = { isFocused ?  '#FFBA00' : '#8E8C8C'}/>
+
+								:
+
+								null
 
 							}
 							<Text style={tabLabel}>
@@ -115,6 +120,7 @@ export default class Tabs extends Component {
 					<Tab.Screen name = "Wallet" component = {Wallet}/>
 					<Tab.Screen name = "Exchange" component = {Exchange} />
 					<Tab.Screen name = "History" component = {HistoryTabs} />
+					<Tab.Screen name = "Profile" component = {Profile} />
 				</Tab.Navigator>
             </>
         );
