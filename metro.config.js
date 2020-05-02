@@ -12,6 +12,9 @@ module.exports = {
         experimentalImportSupport: false,
         inlineRequires: false,
       },
+      resolver: {
+        extraNodeModules: require('node-libs-browser')
+      }      
     }),
   },
 };

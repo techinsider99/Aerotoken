@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React, { Component } from 'react'
 import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform} from 'react-native';
 import { Container, Tabs, Tab } from 'native-base';
@@ -22,7 +21,7 @@ export default class History extends Component {
 			section: {
                 backgroundColor: '#060E17',
                 minHeight: '100%',
-                flex: 1,
+				flex: 1,
 			},
 			header: {
 				flexDirection: 'row',
@@ -33,7 +32,7 @@ export default class History extends Component {
                 transform: [
                     { rotate: '-90deg' },
                     { rotateX: '180deg' },
-                ],
+				],
 			},
 			title: {
 				color: 'white',

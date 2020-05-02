@@ -6,10 +6,47 @@ import { NavigationActions, StackActions } from 'react-navigation';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
-
+import AsyncStorage from '@react-native-community/async-storage';
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
-
+import QRCode from 'react-qr-code';
 export default class CreateWallet extends Component {
+
+	constructor(props){
+		super(props);
+		this.state = {
+			mnemonic :''
+		}
+	}
+
+	async UNSAFE_componentWillMount(){
+		fetch('https://api-aet.herokuapp.com/create')
+		.then((response) => response.json())
+		.then((responseJson) => {	
+		this.setState({mnemonic : responseJson.ethMnemonic});	
+		const ethwalletJson = {
+			'ethAddress' : responseJson.ethAddress,
+			'ethPrivateKey' : responseJson.ethPrivateKey,
+			'ethMnemonic' : responseJson.ethMnemonic,
+		}
+		const btcwalletJson = {
+			'btcAddress' : responseJson.btcAddress,
+			'btcPrivateKey' : responseJson.btcPrivateKey,
+			'btcPublicKey' :responseJson.btcPublicKey,
+			'btcWIF' : responseJson.btcwif
+		}
+		const ethwallet = JSON.stringify(ethwalletJson);
+		const btcwallet = JSON.stringify(btcwalletJson);
+		try{
+			AsyncStorage.setItem('ethWallet', ethwallet);
+			AsyncStorage.setItem('btcWallet', btcwallet);
+		}
+		catch{
+			alert("Cannot Create")
+		}})
+		.catch(err=>{
+			alert(err);	
+		})
+	}
 
 	handlePress = () => {
 		const options = {
@@ -109,6 +146,7 @@ export default class CreateWallet extends Component {
 
 		const { statusBar, header, section, icon, title, logo, textContainer, mainText, subText, textButton, copyTextContainer, button, buttonText } = styles;
 		const { navigation } = this.props;
+		const {mnemonic} = this.state;
         return (
             <>
                 <View style = {statusBar}>
@@ -119,10 +157,17 @@ export default class CreateWallet extends Component {
                         <Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('12%')} iconStyle = {icon} onPress = {() => navigation.goBack()} underlayColor = "transparent" />
                         <Text style = {title}>Create New Wallet</Text>
                     </View>
-					<Image source = {require('../assets/images/ScanScreen.png')} style = {logo}/>
+					<View style={{alignSelf:'center',marginBottom:70}}>
+						<QRCode 
+						value={mnemonic} 
+						size={180}
+						bgColor="#000"
+						fgColor="#fff"
+						/>
+					</View>
 					<View style = {textContainer}>
 						<Text style = {mainText}>
-							Demo application aero token inflationary aviation industry exchange shop radical revolutionary token
+								{mnemonic}
 						</Text>
 						<Text style = {subText}>
 							Please copy the 12-word Backup Phrase and save in a secure place so that it can be used to restore your wallet at anytime

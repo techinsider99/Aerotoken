@@ -3,9 +3,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform} from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Icon, Input } from 'react-native-elements';
-
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
-
 export default class ConfirmPin extends Component {
 
 	constructor() {
@@ -36,11 +34,12 @@ export default class ConfirmPin extends Component {
     }
 
     handlePinSubmit = () => {
-		let pin  = this.state.pin;
-		if (pin) {
+		let confirmPin  = this.state.pin;
+		const {pin} = this.props.route.params;
+		if (pin == confirmPin) {
 			this.setState({ error: '' }, () => this.props.navigation.navigate('CreateWallet'));
 		} else {
-			this.setState({ error: 'Enter a pin to continue' });
+			this.setState({ error: 'Enter the same pin you entered before to continue' });
 		}
 	}
 

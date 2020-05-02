@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform} from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon, Input } from 'react-native-elements';
-
+import AsyncStorage from '@react-native-community/async-storage';
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 
 export default class Login extends Component {
@@ -35,9 +35,10 @@ export default class Login extends Component {
 		}
 	}
 
-	handlePinSubmit = () => {
+	handlePinSubmit = async () => {
 		let pin  = this.state.pin;
-		if (pin) {
+		let password = await AsyncStorage.getItem('@pin');
+		if (pin == password) {
 			this.setState({
                 error: '',
             }, () => this.props.navigation.replace('Dashboard'));
@@ -88,7 +89,7 @@ export default class Login extends Component {
                 width: wp('75%'),
                 borderRadius: 35,
                 position: 'relative',
-                marginTop: hp('17%'),
+                marginTop: hp('7%'),
                 marginBottom: 15,
             },
             buttonText: {

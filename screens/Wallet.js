@@ -5,17 +5,143 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import { Icon } from 'react-native-elements';
 import Currency from '../components/Currency';
 import Aerotoken from '../assets/images/Logo.png';
-import Bitcoin from '../assets/images/Bitcoin.png';
 import Ethereum from '../assets/images/Ethereum.png';
-import Ripple from '../assets/images/Ripple.png';
-import Litecoin from '../assets/images/Litecoin.png';
-import Dogecoin from '../assets/images/Dogecoin.png';
+import Bitcoin from '../assets/images/Bitcoin.png';
 import USDT from '../assets/images/USDT.png';
-import TRX from '../assets/images/TRX.png';
-
+import AsyncStorage from '@react-native-community/async-storage';
+import {ethers} from 'ethers';
+const provider = ethers.getDefaultProvider();
+const aet = "0x8c9E4CF756b9d01D791b95bc2D0913EF2Bf03784";
+const usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7";
+const aetAbi = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balances","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_tokens","type":"uint256"}],"name":"onePercent","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"allowed","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"tokenOwner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"tokenOwner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"tokens","type":"uint256"},{"name":"_Address","type":"address"}],"name":"burn","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_name","type":"string"},{"name":"_symbol","type":"string"},{"name":"_decimals","type":"uint8"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"tokens","type":"uint256"},{"indexed":false,"name":"minter","type":"address"},{"indexed":false,"name":"to","type":"address"}],"name":"TokensMinted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"tokens","type":"uint256"},{"indexed":false,"name":"burner","type":"address"},{"indexed":false,"name":"_from","type":"address"}],"name":"TokensBurned","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"tokens","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"tokenOwner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"tokens","type":"uint256"}],"name":"Approval","type":"event"}];
+const usdtAbi = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_upgradedAddress","type":"address"}],"name":"deprecate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"deprecated","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_evilUser","type":"address"}],"name":"addBlackList","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"upgradedAddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balances","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"maximumFee","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"unpause","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_maker","type":"address"}],"name":"getBlackListStatus","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"allowed","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"paused","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"pause","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"newBasisPoints","type":"uint256"},{"name":"newMaxFee","type":"uint256"}],"name":"setParams","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"amount","type":"uint256"}],"name":"issue","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"amount","type":"uint256"}],"name":"redeem","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"basisPointsRate","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"isBlackListed","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_clearedUser","type":"address"}],"name":"removeBlackList","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"MAX_UINT","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_blackListedUser","type":"address"}],"name":"destroyBlackFunds","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_initialSupply","type":"uint256"},{"name":"_name","type":"string"},{"name":"_symbol","type":"string"},{"name":"_decimals","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"amount","type":"uint256"}],"name":"Issue","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"amount","type":"uint256"}],"name":"Redeem","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"newAddress","type":"address"}],"name":"Deprecate","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"feeBasisPoints","type":"uint256"},{"indexed":false,"name":"maxFee","type":"uint256"}],"name":"Params","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_blackListedUser","type":"address"},{"indexed":false,"name":"_balance","type":"uint256"}],"name":"DestroyedBlackFunds","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_user","type":"address"}],"name":"AddedBlackList","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_user","type":"address"}],"name":"RemovedBlackList","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[],"name":"Pause","type":"event"},{"anonymous":false,"inputs":[],"name":"Unpause","type":"event"}];
+const aetContract = new ethers.Contract(aet, aetAbi, provider);
+const usdtContract = new ethers.Contract(usdt, usdtAbi, provider);
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 40 : StatusBar.currentHeight;
-
 export default class Dashboard extends Component {
+
+	constructor(props){
+		super(props);
+		this.state={
+			ethBalance : '',
+			btcBalance : '',
+			aetBalance : '',
+			usdtBalance : '',
+			aetPrice : '',
+			aetChange : '',
+			btcPrice : '',
+			btcChange : '',
+			ethPrice : '',
+			ethChange : '',
+			usdtPrice : '',
+			usdtChange : ''
+		}
+		this.componentWillMount = this.componentWillMount.bind(this);
+		this.fetchAetPrice = this.fetchAetPrice.bind(this);
+		this.fetchEthPrice = this.fetchEthPrice.bind(this);
+		this.fetchBtcPrice = this.fetchBtcPrice.bind(this);
+		this.fetchUsdtPrice = this.fetchUsdtPrice.bind(this);
+		this.fetchEthBalance = this.fetchEthBalance.bind(this);
+		this.fetchBitcoinBalance = this.fetchBitcoinBalance.bind(this);
+		this.fetchAetBalance = this.fetchAetBalance.bind(this);
+		this.fetchUsdtBalance = this.fetchUsdtBalance.bind(this);
+	}
+
+	async componentWillMount(){
+		this.fetchAetPrice();
+		this.fetchUsdtPrice();
+		this.fetchBtcPrice();
+		this.fetchEthPrice();
+		try {
+			const eth = await AsyncStorage.getItem('ethWallet')
+			let ether = JSON.parse(eth);
+			const btc = await AsyncStorage.getItem('btcWallet')
+			let bitcoin = JSON.parse(btc);
+			this.fetchEthBalance(ether.ethAddress);
+			this.fetchBitcoinBalance(bitcoin.btcAddress);
+			this.fetchAetBalance(ether.ethAddress);
+			this.fetchUsdtBalance(ether.ethAddress);
+		 } catch (error) {
+		   alert(error);
+		}	
+	}
+
+	fetchAetPrice(){
+		fetch('https://api.coingecko.com/api/v3/coins/aerotoken')
+		.then((response) => response.json())
+		.then(responseJson => {
+			this.setState({aetPrice:responseJson.market_data.current_price.usd});
+			this.setState({aetChange:responseJson.market_data.price_change_percentage_1h_in_currency.usd});
+		}
+		)
+	}
+
+	fetchEthPrice(){
+		fetch('https://api.coingecko.com/api/v3/coins/ethereum')
+		.then((response) => response.json())
+		.then(responseJson => {
+			this.setState({ethPrice:responseJson.market_data.current_price.usd});
+			this.setState({ethChange:responseJson.market_data.price_change_percentage_1h_in_currency.usd});
+		}
+		)
+	}
+
+	fetchBtcPrice(){
+		fetch('https://api.coingecko.com/api/v3/coins/bitcoin')
+		.then((response) => response.json())
+		.then(responseJson => {
+			this.setState({btcPrice:responseJson.market_data.current_price.usd});
+			this.setState({btcChange:responseJson.market_data.price_change_percentage_1h_in_currency.usd});
+		}
+		)
+	}
+
+	fetchUsdtPrice(){
+		fetch('https://api.coingecko.com/api/v3/coins/tether')
+		.then((response) => response.json())
+		.then(responseJson => {
+			console.log(responseJson);
+			this.setState({usdtPrice:responseJson.market_data.current_price.usd});
+			this.setState({usdtChange:responseJson.market_data.price_change_percentage_1h_in_currency.usd});
+		}
+		)
+	}
+
+	fetchEthBalance(a){
+		let address = a;
+        provider.getBalance(address).then((balance) => {
+        let etherString = parseFloat(ethers.utils.formatEther(balance)).toFixed(4);
+        this.setState({ethBalance : etherString});
+        });
+	}
+
+	fetchAetBalance(a){
+		let address = a;
+		aetContract.balanceOf(address)
+		.then(balance => {
+			let aetString = parseFloat(ethers.utils.formatEther(balance)).toFixed(4);
+			this.setState({aetBalance:aetString});
+		})
+	}
+
+	fetchBitcoinBalance(a){
+		fetch(`https://api.blockcypher.com/v1/btc/main/addrs/${a}/balance`)
+		.then((response) => response.json())
+		.then(responseJson => {
+			const balanceTemp = (responseJson.balance)*0.00000001;
+			const finalBal = parseFloat(balanceTemp).toFixed(4) ;
+			this.setState({btcBalance : finalBal });
+		})
+	}
+
+	fetchUsdtBalance(a){
+		let address = a;
+		usdtContract.balanceOf(address)
+		.then(balance => {
+			let usdtString = parseFloat(ethers.utils.formatEther(balance)*1000000000000).toFixed(4);
+			this.setState({usdtBalance:usdtString});
+		})
+	}
 
 	navigateScreen = (route, currencyName, price, currencyValue, avatar, abr) => {
 		this.props.navigation.navigate(route, {
@@ -79,14 +205,10 @@ export default class Dashboard extends Component {
 					</View>
                     <View >
                         <ScrollView contentContainerStyle = {{paddingBottom: 120, marginTop: 50}}>
-                            <Currency key = {0} navigateTo = {this.navigateScreen} avatar = {Aerotoken} currencyName = "Aerotoken" abr = "AET" currencyValue = {7.5662} price = "$8000" difference = "+3.12%" />
-                            <Currency key = {1} navigateTo = {this.navigateScreen} avatar = {Bitcoin} currencyName = "Bitcoin" abr = "BTC" currencyValue = {0.3265} price = "$3234" difference = "-3.12"/>
-                            <Currency key = {2} navigateTo = {this.navigateScreen} avatar = {Ethereum} currencyName = "Ethereum" abr = "ETH" currencyValue = {0.3262} price = "$682" difference = "+10.12" />
-                            <Currency key = {3} navigateTo = {this.navigateScreen} avatar = {Ripple} currencyName = "Ripple" abr = "XRP"currencyValue = {5.3286} price = "$2742" difference = "-3.39"/>
-                            <Currency key = {4} navigateTo = {this.navigateScreen} avatar = {Litecoin} currencyName = "LiteCoin" abr = "LTC" currencyValue = {3.5662} price = "$1064" difference = "+13.12"/>
-                            <Currency key = {5} navigateTo = {this.navigateScreen} avatar = {Dogecoin} currencyName = "Doge" abr = "DOGE" currencyValue = {1.762} price = "$3234" difference = "-3.12"/>
-                            <Currency key = {6} navigateTo = {this.navigateScreen} avatar = {USDT} currencyName = "Tethercoin" abr = "USDT" currencyValue = {1.762} price = "$3234" difference = "-3.12"/>
-                            <Currency key = {7} navigateTo = {this.navigateScreen} avatar = {TRX} currencyName = "Tron" abr = "TRX" currencyValue = {1.762} price = "$3234" difference = "-3.12"/>
+                            <Currency key = {0} navigateTo = {this.navigateScreen} avatar = {Aerotoken} currencyName = "Aerotoken" abr = "AET" currencyValue = {this.state.aetBalance} price = {this.state.aetPrice}  difference = {this.state.aetChange} />
+                            <Currency key = {1} navigateTo = {this.navigateScreen} avatar = {Ethereum} currencyName = "Ethereum" abr = "ETH" currencyValue = {this.state.ethBalance} price = {this.state.ethPrice}   difference = {this.state.ethChange}/>
+							<Currency key = {1} navigateTo = {this.navigateScreen} avatar = {Bitcoin} currencyName = "Bitcoin" abr = "BTC" currencyValue = {this.state.btcBalance} price = {this.state.btcPrice}   difference = {this.state.btcChange} />
+                            <Currency key = {2} navigateTo = {this.navigateScreen} avatar = {USDT} currencyName = "Tether USD" abr = "USDT" currencyValue = {this.state.usdtBalance} price = {this.state.usdtPrice} difference = {this.state.usdtChange} />
                         </ScrollView>
                     </View>
 				</View>
