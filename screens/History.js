@@ -22,7 +22,7 @@ export default class History extends Component {
 			section: {
                 backgroundColor: '#060E17',
                 minHeight: '100%',
-                flex: 1,
+				flex: 1,
 			},
 			header: {
 				flexDirection: 'row',
@@ -33,7 +33,7 @@ export default class History extends Component {
                 transform: [
                     { rotate: '-90deg' },
                     { rotateX: '180deg' },
-                ],
+				],
 			},
 			title: {
 				color: 'white',

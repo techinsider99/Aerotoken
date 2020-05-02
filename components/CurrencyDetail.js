@@ -178,10 +178,10 @@ export default class CurrencyDetail extends Component {
 						<View style = {balanceContainer}>
 							<Text style = {mainText}>Your AET address</Text>
 							<View style = {{flexDirection: 'row', marginTop: hp('1.5%'), flexWrap: 'wrap'}}>
-								<View style = {{flex: 5}}>
+								<View style = {{flex: 1}}>
 									<Text style = {grayText}>33U3KSZ4Ev32MAMydcajChp</Text>
 								</View>
-								<View style = {{flex: 1, justifyContent: 'flex-end', flexDirection: 'column', alignContent: 'flex-end'}}>
+								<View style = {{ustifyContent: 'flex-end', flexDirection: 'column', alignContent: 'flex-end'}}>
 									<Text style = {yellowText}>COPY</Text>
 								</View>
 							</View>
