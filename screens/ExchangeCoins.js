@@ -238,14 +238,13 @@ export default class ExchangeCoins extends Component {
                 flexDirection: 'row',
                 marginTop: hp('10%'),
                 alignSelf: 'center',
-                marginBottom: hp('9%'),
+                marginBottom: hp('3%'),
             },
             innerContainer1: {
                 flex: 1,
                 flexDirection: 'row',
                 marginTop: hp('2.5%'),
                 alignSelf: 'center',
-                marginBottom: hp('25%'),
             },
             inputBox: {
                 backgroundColor: '#32374f',
@@ -278,6 +277,17 @@ export default class ExchangeCoins extends Component {
                 borderRadius: 50,
                 alignSelf: 'center',
             },
+            button: {
+                backgroundColor: '#FFBA00',
+                alignSelf: 'center',
+                paddingTop: 13,
+                paddingBottom: 13,
+                width: wp('75%'),
+                borderRadius: 35,
+                position: 'relative',
+                marginTop: hp('7%'),
+                marginBottom: 15,
+            },
             exchangeIcon: {
                 transform: [
                     { scale: 1.4 },
@@ -298,6 +308,12 @@ export default class ExchangeCoins extends Component {
                 color: '#8E8C8C',
                 fontSize: 18,
             },
+            buttonText: {
+                color: 'white',
+                fontFamily: 'Armegoe',
+                fontSize: 20,
+                textAlign: 'center',
+            },
             logo: {
                 width: 35,
                 height: 42,
@@ -305,7 +321,7 @@ export default class ExchangeCoins extends Component {
             },
 		});
 
-		const { statusBar, section, header, icon, title, innerContainer, innerContainer1, inputBox, picker, downIcon, exchangeButton, exchangeIcon, infoContainer, balanceHeading, logo } = styles;
+		const { statusBar, section, header, icon, title, innerContainer, innerContainer1, inputBox, picker, downIcon, exchangeButton, exchangeIcon, infoContainer, balanceHeading, logo, button, buttonText } = styles;
 		const { navigation } = this.props;
         return (
             <>
@@ -337,10 +353,10 @@ export default class ExchangeCoins extends Component {
                             </Picker>
                             <Icon type = "feather" name = "chevron-down" color = "white" iconStyle = {downIcon}/>
                         </View>
-                	</View>
-                    <TouchableOpacity  activeOpacity = {0.9} onPress = {this.handleProcess}>
-                            <Text >Login</Text>
+                     <TouchableOpacity  style={button} activeOpacity = {0.9} onPress = {this.handleProcess}>
+                            <Text style={buttonText}>Exchange</Text>
                         </TouchableOpacity>
+                	</View>
                     <View style = {infoContainer}>
                         <Text style = {balanceHeading}>Your {this.state.currentExchange} balance will be</Text>
                         <View>

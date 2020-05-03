@@ -97,9 +97,11 @@ export default class Tabs extends Component {
 
 								<Icon type = "material" name = "history" size = {37} iconStyle = {{marginTop: hp('-0.1%'), marginBottom: hp('-0.2')}} color = { isFocused ?  '#FFBA00' : '#8E8C8C'}/>
 
-								:
+								: label === 'Staking' ?
 
-								null
+								<Icon type = "feather" name = "bar-chart" size = {37} iconStyle = {{marginTop: hp('-0.1%'), marginBottom: hp('-0.2')}} color = { isFocused ?  '#FFBA00' : '#8E8C8C'}/>
+
+								: null
 
 							}
 							<Text style={tabLabel}>

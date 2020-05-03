@@ -18,6 +18,7 @@ export default class CreateWallet extends Component {
 		this.state = {
 			mnemonic :'',
 			loading: false,
+			copied : false
 		};
 	}
 
@@ -64,6 +65,7 @@ export default class CreateWallet extends Component {
 		};
 		ReactNativeHapticFeedback.trigger('impactLight', options);
 		const { mnemonic } = this.state;
+		this.setState({copied : true});
 		Clipboard.setString(mnemonic);
 	}
 
@@ -132,6 +134,12 @@ export default class CreateWallet extends Component {
 				fontSize: 17,
 				marginLeft: 10,
 			},
+			greentextButton: {
+				color: 'green',
+				alignSelf: 'center',
+				fontSize: 17,
+				marginLeft: 10,
+			},
 			copyTextContainer: {
 				flex: 1,
 				flexDirection: 'row',
@@ -156,7 +164,7 @@ export default class CreateWallet extends Component {
             },
 		});
 
-		const { statusBar, header, section, icon, title, loadingSection, textContainer, mainText, subText, textButton, copyTextContainer, button, buttonText } = styles;
+		const { statusBar, header, section, icon, title, loadingSection, textContainer, mainText, subText, textButton, copyTextContainer, button, buttonText,greentextButton } = styles;
 		const { navigation } = this.props;
 		const { mnemonic, loading: isLoading } = this.state;
 		console.log(mnemonic)
@@ -170,6 +178,9 @@ export default class CreateWallet extends Component {
 
 					<View style = {loadingSection}>
 						<ActivityIndicator size = {55} color = "#FFBA00" />
+						<Text style = {subText}>
+							Creating Your Keys
+						</Text>
 					</View>
 
 					:
@@ -194,12 +205,20 @@ export default class CreateWallet extends Component {
 							<Text style = {subText}>
 								Please copy the 12-word Backup Phrase and save in a secure place so that it can be used to restore your wallet at anytime
 							</Text>
+							{this.state.copied ? 
+							<View style = {copyTextContainer}>
+								<Icon type = "feather" name = "clipboard" color = "green" underlayColor = "transparent" onPress = {this.handlePress}/>
+								<Text style = {greentextButton} onPress = {this.handlePress}>
+									Copied
+								</Text>
+							</View>
+							:
 							<View style = {copyTextContainer}>
 								<Icon type = "feather" name = "copy" color = "#FFBA00" underlayColor = "transparent" onPress = {this.handlePress}/>
 								<Text style = {textButton} onPress = {this.handlePress}>
 									Copy To Clipboard
 								</Text>
-							</View>
+							</View>}
 							<TouchableOpacity style = {button} activeOpacity = {0.9} onPress = {this.resetAction}>
 								<Text style = {buttonText}>Start Aerotoken</Text>
 							</TouchableOpacity>

@@ -10,7 +10,7 @@ import Bitcoin from '../assets/images/Bitcoin.png';
 import USDT from '../assets/images/USDT.png';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ethers} from 'ethers';
-const provider = ethers.getDefaultProvider();
+const provider = ethers.getDefaultProvider('homestead');
 const aet = "0x8c9E4CF756b9d01D791b95bc2D0913EF2Bf03784";
 const usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7";
 const aetAbi = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balances","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_tokens","type":"uint256"}],"name":"onePercent","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"allowed","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"tokenOwner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"tokenOwner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"tokens","type":"uint256"},{"name":"_Address","type":"address"}],"name":"burn","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_name","type":"string"},{"name":"_symbol","type":"string"},{"name":"_decimals","type":"uint8"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"tokens","type":"uint256"},{"indexed":false,"name":"minter","type":"address"},{"indexed":false,"name":"to","type":"address"}],"name":"TokensMinted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"tokens","type":"uint256"},{"indexed":false,"name":"burner","type":"address"},{"indexed":false,"name":"_from","type":"address"}],"name":"TokensBurned","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"tokens","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"tokenOwner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"tokens","type":"uint256"}],"name":"Approval","type":"event"}];
@@ -81,7 +81,7 @@ export default class Dashboard extends Component {
             .then(responseJson => {
                 this.setState({
                     aetPrice: responseJson.market_data.current_price.usd,
-                    aetChange: responseJson.market_data.price_change_percentage_1h_in_currency.usd,
+                    aetChange: responseJson.market_data.price_change_percentage_24h_in_currency.usd,
                     aetLoading: false
                 });
             }
@@ -99,7 +99,7 @@ export default class Dashboard extends Component {
             .then(responseJson => {
                 this.setState({ 
                     ethPrice:responseJson.market_data.current_price.usd,
-                    ethChange:responseJson.market_data.price_change_percentage_1h_in_currency.usd,
+                    ethChange:responseJson.market_data.price_change_percentage_24h_in_currency.usd,
                     ethLoading: false
                 });
             }
@@ -117,7 +117,7 @@ export default class Dashboard extends Component {
             .then(responseJson => {
                 this.setState({
                     btcPrice:responseJson.market_data.current_price.usd,
-                    btcChange:responseJson.market_data.price_change_percentage_1h_in_currency.usd,
+                    btcChange:responseJson.market_data.price_change_percentage_24h_in_currency.usd,
                     btcLoading: false
                 });
             }
@@ -136,7 +136,7 @@ export default class Dashboard extends Component {
                 console.log(responseJson);
                 this.setState({
                     usdtPrice:responseJson.market_data.current_price.usd,
-                    usdtChange:responseJson.market_data.price_change_percentage_1h_in_currency.usd,
+                    usdtChange:responseJson.market_data.price_change_percentage_24h_in_currency.usd,
                     usdtLoading: false
                 });
             }
@@ -152,7 +152,7 @@ export default class Dashboard extends Component {
         this.setState({ ethBalanceLoading: true }, () => {
             provider.getBalance(address)
             .then((balance) => {
-                let etherString = parseFloat(ethers.utils.formatEther(balance)).toFixed(4);
+                let etherString = parseFloat(ethers.utils.formatEther(balance)).toFixed(8);
                 this.setState({
                     ethBalance : etherString,
                     ethBalanceLoading: false
@@ -166,7 +166,7 @@ export default class Dashboard extends Component {
         this.setState({ aetbalanceLoading: true }, () => {
             aetContract.balanceOf(address)
             .then(balance => {
-                let aetString = parseFloat(ethers.utils.formatEther(balance)).toFixed(4);
+                let aetString = parseFloat(ethers.utils.formatEther(balance)).toFixed(8);
                 this.setState({
                     aetBalance: aetString,
                     aetbalanceLoading: false
@@ -181,7 +181,7 @@ export default class Dashboard extends Component {
             .then((response) => response.json())
             .then(responseJson => {
                 const balanceTemp = (responseJson.balance)*0.00000001;
-                const finalBal = parseFloat(balanceTemp).toFixed(4) ;
+                const finalBal = parseFloat(balanceTemp).toFixed(8) ;
                 this.setState({
                     btcBalance : finalBal,
                     btcBalanceLoading: false 
@@ -198,7 +198,7 @@ export default class Dashboard extends Component {
         this.setState({ usdtBalanceLoading: true }, () => {
             usdtContract.balanceOf(address)
             .then(balance => {
-                let usdtString = parseFloat(ethers.utils.formatEther(balance)*1000000000000).toFixed(4);
+                let usdtString = parseFloat(ethers.utils.formatEther(balance)*1000000000000).toFixed(8);
                 this.setState({
                     usdtBalance:usdtString,
                     usdtBalanceLoading: false,
@@ -252,14 +252,17 @@ export default class Dashboard extends Component {
             mainContainer: {
                 paddingTop: hp('5%'),
             },
+            refreshIcon: {
+                transform: [
+                    { rotate: '90deg' },
+                    { rotateY: '180deg' },
+                ],
+            },
 		});
 
-		const { statusBar, section, header, icon, title, mainContainer } = styles;
+		const { statusBar, section, header, icon, title, mainContainer,refreshIcon } = styles;
         const { navigation } = this.props;
         const { aetLoading, btcLoading, ethLoading, usdtLoading, btcBalanceLoading, aetbalanceLoading, ethBalanceLoading, usdtBalanceLoading } = this.state;
-        console.log(this.state.btcBalance, this.state.btcPrice)
-        console.log('Aet Balance:', this.state.aetBalance)
-        console.log('Usdt Balance:', this.state.usdtBalance)
         return (
             <>
 				<View style = {statusBar}>
@@ -269,6 +272,7 @@ export default class Dashboard extends Component {
 					<View style = {header}>
 						<Icon type = "feather" name = "bar-chart" color = "#fff" size = {wp('9.5%')} iconStyle = {icon} onPress = {() => navigation.openDrawer()} underlayColor = "transparent" />
 						<Text style = {title}>Wallet</Text>
+                        <Icon type = "font-awesome-5" name = "sync" color = "#8E8C8C" iconStyle = {icon} onPressIn={() => this.componentWillMount()}/>
 					</View>
                     {
                         
@@ -314,6 +318,8 @@ export default class Dashboard extends Component {
                         </View>
                     }
 				</View>
+                <View>
+                </View>
             </>
         );
     }

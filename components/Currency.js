@@ -51,7 +51,7 @@ export default class Currency extends Component {
                     </View>
                     <View style = {details2}>
                         <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, marginBottom: 8}}>$ {currencyValue*price}</Text>
-                        <Text style = {{fontFamily: 'Armegoe', color: "#FFBA00", fontSize: 16}}>{difference}</Text>
+                        {difference < 0 ? <Text style = {{fontFamily: 'Armegoe', color: "red", fontSize: 16}}>{difference}</Text> :  <Text style = {{fontFamily: 'Armegoe', color: "green", fontSize: 16}}> + {difference}</Text> } 
                     </View>
                 </TouchableOpacity>
             </>

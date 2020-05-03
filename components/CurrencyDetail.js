@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
-import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, ScrollView } from 'react-native';
+import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, ScrollView, ActivityIndicator, Linking } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { Icon } from 'react-native-elements';
@@ -16,12 +16,15 @@ export default class CurrencyDetail extends Component {
 		super(props);
 		this.state={
 			depositWallet : '',
-			tx : []
+			tx : [],
+			copied : false,
+			txLoading : true
 		}
 		this.fetchBtcTx=this.fetchBtcTx.bind(this);
 		this.fetchEthTx = this.fetchEthTx.bind(this);
 		this.fetchAetTx = this.fetchAetTx.bind(this);
 		this.fetchUsdtTx = this.fetchUsdtTx.bind(this);
+		this.refreshTx = this.refreshTx.bind(this);
 	}
 
 	async UNSAFE_componentWillMount(){
@@ -53,7 +56,24 @@ export default class CurrencyDetail extends Component {
 		}
 	}
 
+	refreshTx(){
+		const { abr } = this.props.route.params;
+		if(abr === "BTC"){
+			this.fetchBtcTx(this.state.depositWallet);
+		}
+		else if(abr == "ETH"){
+			this.fetchEthTx(this.state.depositWallet);
+		}
+		else if(abr == "AET"){
+			this.fetchAetTx(this.state.depositWallet);
+		}
+		else{
+			this.fetchUsdtTx(this.state.depositWallet);	
+		}
+	}
+
 	fetchBtcTx(a){
+		this.setState({txLoading : true});
 		const body={
 			address : a
 		}
@@ -69,50 +89,57 @@ export default class CurrencyDetail extends Component {
 				for(let i=0;i<json.txrefs.length;i++){
 					tx.push(
 						<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
-							<View style = {{flexDirection: 'row'}}>
-								<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
-									<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{new Date(json.txrefs[i].confirmed).toLocaleDateString() + " " + new Date(json.txrefs[i].confirmed).toLocaleTimeString()}</Text>
+							<TouchableOpacity onPress={()=>{Linking.openURL(`https://www.blockchain.com/btc/tx/${json.txrefs[i].tx_hash}`)}}>
+								<View style = {{flexDirection: 'row'}}>
+									<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
+										<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{new Date(json.txrefs[i].confirmed).toLocaleDateString() + " " + new Date(json.txrefs[i].confirmed).toLocaleTimeString()}</Text>
+									</View>
+									<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
+									{json.txrefs[i].spent ? <Text style = {{fontFamily: 'Armegoe',color: '#FFBA00',fontSize: 18}}>- {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> : <Text style = {{fontFamily:'Armegoe',color: '#2CC593',fontSize: 18}}>+ {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> }
+									</View>
 								</View>
-								<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-								{json.txrefs[i].spent ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>- {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> }
-								</View>
-							</View>
+							</TouchableOpacity>
 						</View>
 					);
 				}
-				this.setState({tx});
+				this.setState({tx , txLoading : false});
             })
 	}
 
 	fetchEthTx(a){
-		let address = a;
+		this.setState({txLoading : true});
+		const address = a;
 		let etherscanProvider = new ethers.providers.EtherscanProvider();
 		etherscanProvider.getHistory(address).then((history) => {
 			let tx = this.state.tx;
 			tx = []
 			for(let i=history.length-1; i>-1;i--){
+				console.log(history[i].to);
 				if(ethers.utils.formatEther(history[i].value) > 0){
 				let date = new Date(history[i].timestamp*1000).toLocaleDateString() + " " + new Date(history[i].timestamp*1000).toLocaleTimeString();
-				let value = parseFloat(ethers.utils.formatEther(history[i].value)).toFixed(4);
+				let value = parseFloat(ethers.utils.formatEther(history[i].value)).toFixed(8);
 				tx.push(
 				<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
+				<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${history[i].hash}`)}}>
 					<View style = {{flexDirection: 'row'}}>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{date}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-							{history[i].to == address ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {value} ETH</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>- {value} ETH</Text>}
+							{history[i].to !== address ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {value} ETH</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>- {value} ETH</Text>}
 						</View>
 					</View>
+					</TouchableOpacity>
 				</View>	
 				)
 				}
 			}
-			this.setState({tx});
-			})		
+			this.setState({tx , txLoading : false});
+		})		
 	}
 
 	fetchAetTx(a){
+		this.setState({txLoading : true});
 		let address = a
 		const body = {
 			address : address
@@ -129,9 +156,10 @@ export default class CurrencyDetail extends Component {
 			for(let i=json.txrefs.length-1; i>-1;i--){
 			if(json.txrefs[i].tokenSymbol == "AET"){
 			let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString() + " " + new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
-			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)).toFixed(2);
+			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)).toFixed(8);
 			tx.push(
 			<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
+				<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>
 					<View style = {{flexDirection: 'row'}}>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{date}</Text>
@@ -140,14 +168,16 @@ export default class CurrencyDetail extends Component {
 							{json.txrefs[i].to == address ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {value} AET</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>- {value} AET</Text>}
 						</View>
 					</View>
+				</TouchableOpacity>
 			</View>	)
 			}
 		}
-		this.setState({tx});
+		this.setState({tx , txLoading : false});
 		})
 	}
 
 	fetchUsdtTx(a){
+		this.setState({txLoading : true});
 		let address = a
 		const body = {
 			address : address
@@ -164,25 +194,28 @@ export default class CurrencyDetail extends Component {
 			for(let i=json.txrefs.length-1; i>-1;i--){
 			if(json.txrefs[i].tokenSymbol == "USDT"){
 			let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString() + " " + new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
-			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(2);
+			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(8);
 			tx.push(
 			<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
-					<View style = {{flexDirection: 'row'}}>
-						<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date}</Text>
+					<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>
+						<View style = {{flexDirection: 'row'}}>
+							<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
+								<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date}</Text>
+							</View>
+							<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
+								{json.txrefs[i].to == address ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {value} USDT</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>- {value} USDT</Text>}
+							</View>
 						</View>
-						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-							{json.txrefs[i].to == address ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {value} USDT</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>- {value} USDT</Text>}
-						</View>
-					</View>
+					</TouchableOpacity>
 			</View>	)
 			}
 		}
-		this.setState({tx});
+		this.setState({tx , txLoading : false});
 		});
 	}
 
 	handleCopy = async () => {
+		this.setState({copied : true})
 		const options = {
 			enableVibrateFallback: true,
 			ignoreAndroidSystemSettings: false,
@@ -368,7 +401,7 @@ export default class CurrencyDetail extends Component {
 									<Text style = {grayText}>{this.state.depositWallet}</Text>
 								</View>
 								<View style = {{ustifyContent: 'flex-end', flexDirection: 'column', alignContent: 'flex-end'}}>
-									<Text style = {yellowText} onPress = {this.handleCopy}>COPY</Text>
+									<Text style = {yellowText} onPress = {this.handleCopy}>{this.state.copied ? " COPIED" : " COPY" }</Text>
 								</View>
 							</View>
 						</View>
@@ -377,10 +410,21 @@ export default class CurrencyDetail extends Component {
 								<Text style = {mainText}>Transaction History</Text>
 							</View>
 							<View style = {{flex: 1}}>
+							<TouchableOpacity onPressIn={() => this.refreshTx()}>
 								<Icon type = "font-awesome-5" name = "sync" color = "#8E8C8C" iconStyle = {refreshIcon}/>
+							</TouchableOpacity>
 							</View>
 						</View>
-							{this.state.tx.length === 0 ? <><Text style={{textAlign:'center',fontFamily:'Armegoe',color: '#8E8C8C',fontSize: 18}}>No Transactions</Text></> : <>{this.state.tx}</>}
+						{this.state.txLoading ? <ActivityIndicator size = {55} color = "#FFBA00" /> : 
+						<>
+						{this.state.tx.length === 0 ? 
+						<Text style={{textAlign:'center',fontFamily:'Armegoe',color: '#8E8C8C',fontSize: 18}}>No Transactions</Text> 
+						: 
+						<> 
+						{this.state.tx}
+						</>
+						}
+						 </> }
 					</ScrollView>
 				</View>
             </>
