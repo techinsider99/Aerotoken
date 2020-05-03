@@ -175,12 +175,9 @@ export default class Profile extends Component {
                 marginTop: -10,
 			},
 			icon: {
-				marginLeft: wp('5%'),
-                padding: 5,
-                transform: [
-                    { rotate: '-90deg' },
-                    { rotateX: '180deg' },
-                ],
+                flexGrow: 1,
+                position: 'relative',
+                paddingHorizontal: wp('6%'),
 			},
 			title: {
 				color: 'white',
@@ -231,7 +228,9 @@ export default class Profile extends Component {
                 </View>
 				<View style = {section}>
 					<View style = {header}>
-						<Icon type = "feather" name = "bar-chart" color = "#fff" size = {wp('9.5%')} iconStyle = {icon} onPress = {() => navigation.openDrawer()} underlayColor = "transparent" />
+                        <TouchableOpacity onPress = {() => navigation.goBack()} activeOpacity = {0.9}>
+							<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('12%')} iconStyle = {icon}  underlayColor = "transparent" />
+						</TouchableOpacity>
 						<Text style = {title}>Profile</Text>
 					</View>
                     <View style = {{paddingHorizontal: wp('10%'), paddingVertical: hp('2%')}}>

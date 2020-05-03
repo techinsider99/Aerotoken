@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
-import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, ScrollView, Alert, ActivityIndicator} from 'react-native';
+import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, ScrollView, Alert, ActivityIndicator, RefreshControl} from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
 import Currency from '../components/Currency';
@@ -306,13 +306,11 @@ export default class Dashboard extends Component {
 
                         <View>
                             <ScrollView contentContainerStyle = {{paddingBottom: 120, marginTop: 50}}>
-                                <>
-                                    <Currency key = {0} navigateTo = {this.navigateScreen} avatar = {Aerotoken} currencyName = "Aerotoken" abr = "AET" currencyValue = {this.state.aetBalance} price = {this.state.aetPrice}  difference = {this.state.aetChange} />
-                                    <Currency key = {1} navigateTo = {this.navigateScreen} avatar = {Ethereum} currencyName = "Ethereum" abr = "ETH" currencyValue = {this.state.ethBalance} price = {this.state.ethPrice}   difference = {this.state.ethChange}/>
-                                    <Currency key = {2} navigateTo = {this.navigateScreen} avatar = {Bitcoin} currencyName = "Bitcoin" abr = "BTC" currencyValue = {this.state.btcBalance} price = {this.state.btcPrice}   difference = {this.state.btcChange} />
-                                    <Currency key = {3} navigateTo = {this.navigateScreen} avatar = {USDT} currencyName = "Tether USD" abr = "USDT" currencyValue = {this.state.usdtBalance} price = {this.state.usdtPrice} difference = {this.state.usdtChange} />
-                                </>
-                        </ScrollView>
+                                <Currency key = {0} navigateTo = {this.navigateScreen} avatar = {Aerotoken} currencyName = "Aerotoken" abr = "AET" currencyValue = {this.state.aetBalance} price = {this.state.aetPrice}  difference = {this.state.aetChange} />
+                                <Currency key = {1} navigateTo = {this.navigateScreen} avatar = {Ethereum} currencyName = "Ethereum" abr = "ETH" currencyValue = {this.state.ethBalance} price = {this.state.ethPrice}   difference = {this.state.ethChange}/>
+                                <Currency key = {2} navigateTo = {this.navigateScreen} avatar = {Bitcoin} currencyName = "Bitcoin" abr = "BTC" currencyValue = {this.state.btcBalance} price = {this.state.btcPrice}   difference = {this.state.btcChange} />
+                                <Currency key = {3} navigateTo = {this.navigateScreen} avatar = {USDT} currencyName = "Tether USD" abr = "USDT" currencyValue = {this.state.usdtBalance} price = {this.state.usdtPrice} difference = {this.state.usdtChange} />
+                            </ScrollView>
                         </View>
                     }
 				</View>

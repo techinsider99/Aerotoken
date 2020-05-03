@@ -9,6 +9,7 @@ import Wallet from './Wallet';
 import Exchange from './Exchange';
 import Profile from './Profile';
 import HistoryTabs from './HistoryTabs';
+import Staking from './Staking';
 
 const Tab =  createBottomTabNavigator();
 
@@ -96,10 +97,6 @@ export default class Tabs extends Component {
 
 								<Icon type = "material" name = "history" size = {37} iconStyle = {{marginTop: hp('-0.1%'), marginBottom: hp('-0.2')}} color = { isFocused ?  '#FFBA00' : '#8E8C8C'}/>
 
-								: label === 'Profile' ?
-
-								<Icon type = "feather" name = "user" size = {30} iconStyle = {{marginTop: hp('0.4%'), marginBottom: hp('0.2')}} color = { isFocused ?  '#FFBA00' : '#8E8C8C'}/>
-
 								:
 
 								null
@@ -120,7 +117,7 @@ export default class Tabs extends Component {
 					<Tab.Screen name = "Wallet" component = {Wallet}/>
 					<Tab.Screen name = "Exchange" component = {Exchange} />
 					<Tab.Screen name = "History" component = {HistoryTabs} />
-					<Tab.Screen name = "Profile" component = {Profile} />
+					<Tab.Screen name = "Staking" component = {Staking} />
 				</Tab.Navigator>
             </>
         );

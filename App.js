@@ -18,6 +18,7 @@ import Currency from './components/Currency';
 import Send from './components/Send';
 import Receive from './components/Receive';
 import SplashScreen from 'react-native-splash-screen';
+import Profile from './screens/Profile';
 
 const { Screen, Navigator } = createStackNavigator();
 
@@ -47,6 +48,7 @@ class App extends Component {
 						<Screen name = "CurrencyDetail" component = {CurrencyDetail} />
 						<Screen name = "Send" component = {Send} />
 						<Screen name = "Receive" component = {Receive} />
+						<Screen name = "Profile" component = {Profile} />
 					</Navigator>
 				</NavigationContainer>
 			</>

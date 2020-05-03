@@ -63,6 +63,13 @@ export default class Dashboard extends Component {
 							icon = {() => <Icon type = "feather" name = "log-out" color = "white"/>}
 							onPress = {() => navigation.replace('Login')}
 						/>
+						<DrawerItem
+							style = {{marginTop: hp('4%')}}
+							label = "Profile"
+							labelStyle = {label}
+							icon = {() => <Icon type = "feather" name = "user" color = "white"/>}
+							onPress = {() => navigation.navigate('Profile')}
+						/>
 					</DrawerContentScrollView>
 					<View>
 						<Image source = {require('../assets/images/Logo.png')} style = {logo}/>
