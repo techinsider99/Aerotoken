@@ -38,13 +38,13 @@ export default class Login extends Component {
 	handlePinSubmit = async () => {
 		let pin  = this.state.pin;
 		let password = await AsyncStorage.getItem('@pin');
-		if (pin == password) {
+		if (pin === password) {
 			this.setState({
                 error: '',
             }, () => this.props.navigation.replace('Dashboard'));
             this.setState({ pin: '' });
 		} else {
-			this.setState({ error: 'Enter a pin to continue' });
+			this.setState({ error: 'Enter a pin/valid pin to continue' });
 		}
 	}
 

@@ -200,12 +200,22 @@ export default class DepositHistory extends Component {
 		const { BtcTx, EthTx, UsdtTx, AetTx } = this.state;
         return (
             <>
-            <ScrollView>
-                    {BtcTx}
-                    {EthTx}
-                    {UsdtTx}
-                    {AetTx}
-            </ScrollView>
+            {
+				BtcTx.length === 0 && EthTx.length === 0 && UsdtTx.length === 0 && AetTx.length === 0 ?
+
+				<View style = {section}>
+					<Image source = {require('../assets/images/Empty.png')} style = {emptyImage}/>
+				</View>
+
+				:
+
+				<ScrollView>
+					{BtcTx}
+					{EthTx}
+					{UsdtTx}
+					{AetTx}
+				</ScrollView>
+			}
             </>
         );
     }

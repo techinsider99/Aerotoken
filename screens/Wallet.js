@@ -168,7 +168,7 @@ export default class Dashboard extends Component {
             .then(balance => {
                 let aetString = parseFloat(ethers.utils.formatEther(balance)).toFixed(4);
                 this.setState({
-                    aetBalance:aetString,
+                    aetBalance: aetString,
                     aetbalanceLoading: false
                 });
             })
@@ -257,7 +257,9 @@ export default class Dashboard extends Component {
 		const { statusBar, section, header, icon, title, mainContainer } = styles;
         const { navigation } = this.props;
         const { aetLoading, btcLoading, ethLoading, usdtLoading, btcBalanceLoading, aetbalanceLoading, ethBalanceLoading, usdtBalanceLoading } = this.state;
-        console.log(this.state.aetChange, this.state.btcChange)
+        console.log(this.state.btcBalance, this.state.btcPrice)
+        console.log('Aet Balance:', this.state.aetBalance)
+        console.log('Usdt Balance:', this.state.usdtBalance)
         return (
             <>
 				<View style = {statusBar}>
@@ -288,31 +290,13 @@ export default class Dashboard extends Component {
 						    <ActivityIndicator size = {55} color = "#FFBA00" />
                         </View>
                         
-                        : usdtLoading ? 
-                        
+                        : usdtLoading ?
+
                         <View style = {{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
 						    <ActivityIndicator size = {55} color = "#FFBA00" />
                         </View>
                         
                         : btcBalanceLoading ?
-
-                        <View style = {{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-						    <ActivityIndicator size = {55} color = "#FFBA00" />
-                        </View>
-
-                        : aetbalanceLoading ?
-
-                        <View style = {{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-						    <ActivityIndicator size = {55} color = "#FFBA00" />
-                        </View>
-
-                        : ethBalanceLoading ?
-
-                        <View style = {{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-						    <ActivityIndicator size = {55} color = "#FFBA00" />
-                        </View>
-
-                        : usdtBalanceLoading ?
 
                         <View style = {{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
 						    <ActivityIndicator size = {55} color = "#FFBA00" />
