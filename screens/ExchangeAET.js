@@ -35,7 +35,7 @@ export default class ExchangeAET extends Component {
 				textAlign: 'center',
 				alignSelf: 'center',
 				fontSize: 20,
-				marginLeft: wp('16.5%'),
+				marginLeft: wp('16%'),
 				marginTop: hp('0.5%'),
 			},
 			buttonContainer: {
@@ -149,7 +149,7 @@ export default class ExchangeAET extends Component {
                 </View>
 				<View style = {section}>
 					<View style = {header}>
-                        <Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('12%')} iconStyle = {icon} onPress = {() => navigation.goBack()} underlayColor = "transparent" />
+                        <Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('15%')} iconStyle = {icon} onPress = {() => navigation.goBack()} underlayColor = "transparent" />
                         <Text style = {title}>Exchange AET</Text>
 					</View>
 					<View>

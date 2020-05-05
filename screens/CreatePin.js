@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform} from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon, Input } from 'react-native-elements';
+import { playButtonPress } from '../components/audioHelper';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 import AsyncStorage from '@react-native-community/async-storage';
 export default class CreatePin extends Component {
@@ -14,8 +16,8 @@ export default class CreatePin extends Component {
 			secured: true,
 			iconType: 'eye-slash',
 			error: '',
-			isConfirm :false
-		}
+			isConfirm: false,
+		};
 	}
 
 	handlePin = pin => this.setState({ pin: pin })
@@ -48,6 +50,15 @@ export default class CreatePin extends Component {
 		}
 	}
 
+	handleBack = () => {
+		const options = {
+			enableVibrateFallback: true,
+			ignoreAndroidSystemSettings: false,
+		};
+		ReactNativeHapticFeedback.trigger('impactLight', options);
+		this.props.navigation.goBack();
+	}
+
     render() {
 		const styles = StyleSheet.create({
 			statusBar: {
@@ -73,7 +84,7 @@ export default class CreatePin extends Component {
 				textAlign: 'center',
 				alignSelf: 'center',
 				fontSize: 20,
-				marginLeft: wp('20%'),
+				marginLeft: wp('19.5%'),
 				marginTop: hp('0.5%'),
 			},
 			logo: {
@@ -126,7 +137,7 @@ export default class CreatePin extends Component {
                 </View>
 				<View style = {section}>
 					<View style = {header}>
-						<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('12%')} iconStyle = {icon} onPress = {() => navigation.goBack()} underlayColor = "transparent" />
+						<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('15%')} iconStyle = {icon} onPress = {this.handleBack} underlayColor = "transparent" />
 						<Text style = {title}>Create New Pin</Text>
 					</View>
 					<View>

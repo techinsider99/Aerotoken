@@ -10,6 +10,7 @@ import Bitcoin from '../assets/images/Bitcoin.png';
 import USDT from '../assets/images/USDT.png';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ethers} from 'ethers';
+import axios from 'axios';
 const provider = ethers.getDefaultProvider('homestead');
 const aet = "0x8c9E4CF756b9d01D791b95bc2D0913EF2Bf03784";
 const usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7";
@@ -44,7 +45,6 @@ export default class Dashboard extends Component {
             usdtLoading: false,
             usdtBalanceLoading: false,
 		}
-		this.componentWillMount = this.componentWillMount.bind(this);
 		this.fetchAetPrice = this.fetchAetPrice.bind(this);
 		this.fetchEthPrice = this.fetchEthPrice.bind(this);
 		this.fetchBtcPrice = this.fetchBtcPrice.bind(this);
@@ -53,26 +53,30 @@ export default class Dashboard extends Component {
 		this.fetchBitcoinBalance = this.fetchBitcoinBalance.bind(this);
 		this.fetchAetBalance = this.fetchAetBalance.bind(this);
 		this.fetchUsdtBalance = this.fetchUsdtBalance.bind(this);
-	}
+    }
 
-	async componentWillMount(){
+	componentWillMount(){
 		this.fetchAetPrice();
 		this.fetchUsdtPrice();
 		this.fetchBtcPrice();
 		this.fetchEthPrice();
-		try {
+		this.fetchBalances();
+    }
+    
+    fetchBalances = async () => {
+        try {
 			const eth = await AsyncStorage.getItem('ethWallet')
 			let ether = JSON.parse(eth);
 			const btc = await AsyncStorage.getItem('btcWallet')
 			let bitcoin = JSON.parse(btc);
 			this.fetchEthBalance(ether.ethAddress);
 			this.fetchBitcoinBalance(bitcoin.btcAddress);
-			this.fetchAetBalance(ether.ethAddress);
-			this.fetchUsdtBalance(ether.ethAddress);
+			this.fetchAetBalance();
+			this.fetchUsdtBalance();
 		 } catch (error) {
 		   Alert(error);
-		}	
-	}
+		}
+    }
 
 	fetchAetPrice(){
         this.setState({ aetLoading: true }, () => {
@@ -133,7 +137,6 @@ export default class Dashboard extends Component {
             fetch('https://api.coingecko.com/api/v3/coins/tether')
             .then((response) => response.json())
             .then(responseJson => {
-                console.log(responseJson);
                 this.setState({
                     usdtPrice:responseJson.market_data.current_price.usd,
                     usdtChange:responseJson.market_data.price_change_percentage_24h_in_currency.usd,
@@ -161,20 +164,6 @@ export default class Dashboard extends Component {
         })
 	}
 
-	fetchAetBalance(a){
-        let address = a;
-        this.setState({ aetbalanceLoading: true }, () => {
-            aetContract.balanceOf(address)
-            .then(balance => {
-                let aetString = parseFloat(ethers.utils.formatEther(balance)).toFixed(8);
-                this.setState({
-                    aetBalance: aetString,
-                    aetbalanceLoading: false
-                });
-            })
-        })  
-	}
-
 	fetchBitcoinBalance(a){
         this.setState({ btcBalanceLoading: true }, () => {
             fetch(`https://api.blockcypher.com/v1/btc/main/addrs/${a}/balance`)
@@ -191,18 +180,34 @@ export default class Dashboard extends Component {
                 Alert(err)
             })
         })
+    }
+    
+    fetchAetBalance(){
+        this.setState({ aetbalanceLoading: true }, () => {
+            axios.post('https://api-aet.herokuapp.com/aetBalance', {})
+            .then(response => {
+                this.setState({
+                    aetBalance: response.data.balance,
+                    aetbalanceLoading: false
+                })
+            }).catch(err => {
+                this.setState({ aetbalanceLoading: false })
+                console.log(err)
+            })
+        })  
 	}
 
-	fetchUsdtBalance(a){
-        let address = a;
+	fetchUsdtBalance(){
         this.setState({ usdtBalanceLoading: true }, () => {
-            usdtContract.balanceOf(address)
-            .then(balance => {
-                let usdtString = parseFloat(ethers.utils.formatEther(balance)*1000000000000).toFixed(8);
+            axios.post('https://api-aet.herokuapp.com/usdtBalance', {})
+            .then(response => {
                 this.setState({
-                    usdtBalance:usdtString,
+                    usdtBalance: response.data.balance,
                     usdtBalanceLoading: false,
-                });
+                })
+            }).catch(err => {
+                this.setState({ usdtBalanceLoading: false })
+                console.log(err)
             })
         })
 	}
@@ -241,26 +246,29 @@ export default class Dashboard extends Component {
                     { rotateX: '180deg' },
                 ],
 			},
+			refreshIcon: {
+				marginLeft: wp('2%'),
+                padding: 5,
+                transform: [
+                    { rotate: '-90deg' },
+                    { rotateX: '180deg' },
+                ],
+                marginTop: hp('0.8%'),
+			},
 			title: {
 				color: 'white',
 				fontFamily: 'Armegoe',
 				textAlign: 'center',
 				alignSelf: 'center',
 				fontSize: 20,
-				marginLeft: wp('25%'),
+                marginLeft: wp('25%'),
             },
             mainContainer: {
                 paddingTop: hp('5%'),
             },
-            refreshIcon: {
-                transform: [
-                    { rotate: '90deg' },
-                    { rotateY: '180deg' },
-                ],
-            },
 		});
 
-		const { statusBar, section, header, icon, title, mainContainer,refreshIcon } = styles;
+		const { statusBar, section, header, icon, title, mainContainer, refreshIcon } = styles;
         const { navigation } = this.props;
         const { aetLoading, btcLoading, ethLoading, usdtLoading, btcBalanceLoading, aetbalanceLoading, ethBalanceLoading, usdtBalanceLoading } = this.state;
         return (
@@ -272,7 +280,7 @@ export default class Dashboard extends Component {
 					<View style = {header}>
 						<Icon type = "feather" name = "bar-chart" color = "#fff" size = {wp('9.5%')} iconStyle = {icon} onPress = {() => navigation.openDrawer()} underlayColor = "transparent" />
 						<Text style = {title}>Wallet</Text>
-                        <Icon type = "font-awesome-5" name = "sync" color = "#8E8C8C" iconStyle = {icon} onPressIn={() => this.componentWillMount()}/>
+                        <Icon type = "font-awesome-5" name = "sync" color = "#8E8C8C" iconStyle = {refreshIcon} onPress={this.fetchBalances} underlayColor = "transparent"/>
 					</View>
                     {
                         
@@ -305,6 +313,24 @@ export default class Dashboard extends Component {
                         <View style = {{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
 						    <ActivityIndicator size = {55} color = "#FFBA00" />
                         </View>
+                        
+                        : aetbalanceLoading ?
+
+                        <View style = {{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+						    <ActivityIndicator size = {55} color = "#FFBA00" />
+                        </View>                        
+                        
+                        : usdtBalanceLoading ?
+
+                        <View style = {{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+						    <ActivityIndicator size = {55} color = "#FFBA00" />
+                        </View>                        
+                        
+                        : ethBalanceLoading ?
+
+                        <View style = {{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+						    <ActivityIndicator size = {55} color = "#FFBA00" />
+                        </View>                        
 
                         :
 

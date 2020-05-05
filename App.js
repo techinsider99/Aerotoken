@@ -1,6 +1,7 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable prettier/prettier */
 import React, {Component} from 'react';
+import Sound from 'react-native-sound'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';

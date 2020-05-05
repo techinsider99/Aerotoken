@@ -1,9 +1,13 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react'
-import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, ScrollView, Alert, ActivityIndicator} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, StatusBar, Platform, ScrollView, Alert } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon, Input } from 'react-native-elements';
+import Clipboard from "@react-native-community/clipboard";
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-community/async-storage';
+import { ethers } from 'ethers';
 
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 40 : StatusBar.currentHeight;
 
@@ -33,10 +37,17 @@ export default class Profile extends Component {
             btcPhrase: '',
             btcPhraseVisible: false,
             btcPhraseEye: 'eye-slash',
+            pin: '',
+            inputVisible: false,
+            inputEye: 'eye-slash',
+            phrase: '',
+            error1: '',
+            error2: '',
+            loading: false,
         };
     }
 
-    async componentWillMount() {
+    async UNSAFE_componentWillMount() {
         const eth = await AsyncStorage.getItem('ethWallet');
         let ethWallet = JSON.parse(eth);
         const btc = await AsyncStorage.getItem('btcWallet');
@@ -50,7 +61,6 @@ export default class Profile extends Component {
             btcPublic: btcWallet.btcPublicKey,
             btcPhrase: btcWallet.btcWIF,
         });
-        console.log(btcWallet);
     }
 
     toggleEth = () => {
@@ -158,6 +168,95 @@ export default class Profile extends Component {
         }
     }
 
+    toggleInput = () => {
+        const input = this.state.inputVisible;
+        if (input === false) {
+            this.setState({
+                inputVisible: true,
+                inputEye: 'eye',
+            });
+        } else {
+            this.setState({
+                inputVisible: false,
+                inputEye: 'eye-slash',
+            });
+        }
+    }
+
+    handlePin = pin => this.setState({ pin: pin })
+
+    handlePhrase = phrase => this.setState({ phrase: phrase })
+
+    handlePhraseSubmit = async () => {
+		let phrase  = this.state.phrase;
+        let pin = this.state.pin;
+        if (phrase) {
+            if (pin) {
+                try {
+                        this.setState({ loading: true })
+                        let walletTemp = ethers.Wallet.fromMnemonic(phrase);
+                        const walletJson = {
+                            'ethAddress' : walletTemp.address,
+                            'ethPrivateKey' : walletTemp.privateKey,
+                            'ethMnemonic' : walletTemp.mnemonic,
+                        };
+                        const wallet = JSON.stringify(walletJson);
+                        await AsyncStorage.setItem('ethWallet', wallet);
+                        await AsyncStorage.setItem('@pin', pin);
+                        this.setState({ loading: false }, () => {
+                            Alert.alert(
+                                'Reset Successful!',
+                                'You will be logged out. Please enter your new pin to login',
+                                [
+                                    {
+                                        text: 'Ok',
+                                        onPress: () => this.resetNavigation(),
+                                    },
+                                ],
+                                {
+                                    cancelable: false,
+                                }
+                            );
+                        });
+                }
+                catch (error){
+                    Alert(error);
+                }
+            } else {
+                this.setState({
+                    error1: '',
+                    error2: 'Enter the new pin',
+                });
+            }
+        } else {
+            this.setState({ error1: 'Enter the backup phrase' });
+        }
+    }
+
+    resetNavigation = () => {
+        this.props.navigation.popToTop();
+		this.props.navigation.replace('Login');
+    }
+
+    handleCopy = copyText => {
+        const options = {
+			enableVibrateFallback: true,
+			ignoreAndroidSystemSettings: false,
+        };
+        Clipboard.setString(copyText);
+        ReactNativeHapticFeedback.trigger('impactLight', options);
+        Toast.show('Copied to clipboard');
+    }
+
+    handleBack = () => {
+        const options = {
+			enableVibrateFallback: true,
+			ignoreAndroidSystemSettings: false,
+        };
+        ReactNativeHapticFeedback.trigger('impactLight', options);
+        this.props.navigation.goBack();
+    }
+
     render() {
         const styles = StyleSheet.create({
 			statusBar: {
@@ -185,7 +284,7 @@ export default class Profile extends Component {
 				textAlign: 'center',
 				alignSelf: 'center',
 				fontSize: 20,
-				marginLeft: wp('25%'),
+				marginLeft: wp('23.5%'),
             },
             mainContainer: {
                 paddingTop: hp('5%'),
@@ -203,6 +302,11 @@ export default class Profile extends Component {
                 fontSize: 18,
                 marginBottom: 10,
             },
+            inputText: {
+                fontFamily: 'Armegoe',
+                color: 'white',
+                fontSize: 18,
+            },
             grayText: {
                 fontFamily: 'Armegoe',
                 color: '#8E8C8C',
@@ -214,13 +318,44 @@ export default class Profile extends Component {
                 fontSize: 20,
                 marginLeft: wp('5%'),
                 marginBottom: hp('1%'),
-                marginTop: hp('3%')
+                marginTop: hp('3%'),
+            },
+            copyText: {
+                fontFamily: 'Armegoe',
+                color: '#FFBA00',
+                fontSize: 18,
+                marginTop: hp('0.5%'),
+            },
+            copyIcon: {
+                marginRight: wp('1%'),
+            },
+			button: {
+                backgroundColor: '#FFBA00',
+                alignSelf: 'center',
+                paddingTop: 13,
+                paddingBottom: 13,
+                width: wp('45%'),
+                borderRadius: 35,
+                position: 'relative',
+                marginTop: hp('4%'),
+                marginBottom: 10,
+            },
+            buttonText: {
+                color: 'white',
+                fontFamily: 'Armegoe',
+                fontSize: 18,
+                textAlign: 'center',
+            },
+            inputContainer: {
+                marginLeft: wp('-4%'),
+                borderBottomWidth: 0,
+                width: wp('73%'),
             },
 		});
 
-		const { statusBar, section, header, icon, title, detailContainer, mainText, grayText, yellowText } = styles;
+		const { statusBar, section, header, icon, title, detailContainer, mainText, grayText, yellowText, button, buttonText, inputText, inputContainer, copyText, copyIcon } = styles;
         const { navigation } = this.props;
-        const { ethAddress, ethAddressVisible, ethEye, ethPrivate, ethPrivateVisible, ethPrivateEye, ethPhrase, ethPhraseVisible, ethPhraseEye, btcAddress, btcAddressVisible, btcAddressEye, btcPrivate, btcPrivateVisible, btcPrivateEye, btcPublic, btcPublicVisible, btcPublicEye, btcPhrase, btcPhraseVisible, btcPhraseEye } = this.state;
+        const { ethAddress, ethAddressVisible, ethEye, ethPrivate, ethPrivateVisible, ethPrivateEye, ethPhrase, ethPhraseVisible, ethPhraseEye, btcAddress, btcAddressVisible, btcAddressEye, btcPrivate, btcPrivateVisible, btcPrivateEye, btcPublic, btcPublicVisible, btcPublicEye, btcPhrase, btcPhraseVisible, btcPhraseEye, inputEye, inputVisible, pin, phrase, error1, error2, loading } = this.state;
         return (
             <>
                 <View style = {statusBar}>
@@ -228,13 +363,13 @@ export default class Profile extends Component {
                 </View>
 				<View style = {section}>
 					<View style = {header}>
-                        <TouchableOpacity onPress = {() => navigation.goBack()} activeOpacity = {0.9}>
-							<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('12%')} iconStyle = {icon}  underlayColor = "transparent" />
+                        <TouchableOpacity onPress = {this.handleBack} activeOpacity = {0.9}>
+							<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('15%')} iconStyle = {icon}  underlayColor = "transparent" />
 						</TouchableOpacity>
-						<Text style = {title}>Profile</Text>
+						<Text style = {title}>Settings</Text>
 					</View>
                     <View style = {{paddingHorizontal: wp('10%'), paddingVertical: hp('2%')}}>
-                        <ScrollView contentContainerStyle = {{paddingBottom: 70}}>                        
+                        <ScrollView contentContainerStyle = {{paddingBottom: 70}}>
                         <Text style = {yellowText}>Ethereum</Text>
                         <View style = {detailContainer}>
                             <View style = {{flexDirection: 'row'}}>
@@ -245,7 +380,11 @@ export default class Profile extends Component {
                                 </View>
                                 <Icon type = "font-awesome" name = {ethEye} color = "white" onPress = {this.toggleEth} underlayColor = "transparent"/>
                             </View>
-                            <Input inputStyle = {grayText} multiline = {ethAddressVisible} inputContainerStyle = {{ marginLeft: wp('-4%'),borderBottomWidth: 0, borderBottomColor: 'black' }} secureTextEntry = {!ethAddressVisible} editable = {false} value = {ethAddress}/>
+                            <Input inputStyle = {grayText} multiline = {ethAddressVisible} inputContainerStyle = {inputContainer} secureTextEntry = {!ethAddressVisible} editable = {false} value = {ethAddress}/>
+                            <TouchableOpacity activeOpacity = {0.9} style = {{flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center'}} onPress = {() => this.handleCopy(ethAddress)}>
+                                <Icon type = "feather" name = "copy" color = "#FFBA00" size = {wp('4%')} iconStyle = {copyIcon}/>
+                                <Text style = {copyText}>COPY</Text>
+                            </TouchableOpacity>
                         </View>
                         <View style = {detailContainer}>
                             <View style = {{flexDirection: 'row'}}>
@@ -256,7 +395,11 @@ export default class Profile extends Component {
                                 </View>
                                 <Icon type = "font-awesome" name = {ethPrivateEye} color = "white" onPress = {this.toggleEthKey} underlayColor = "transparent"/>
                             </View>
-                            <Input inputStyle = {grayText} multiline = {ethPrivateVisible} inputContainerStyle = {{ marginLeft: wp('-4%'),borderBottomWidth: 0, borderBottomColor: 'black' }} secureTextEntry = {!ethPrivateVisible} editable = {false} value = {ethPrivate}/>
+                            <Input inputStyle = {grayText} multiline = {ethPrivateVisible} inputContainerStyle = {inputContainer} secureTextEntry = {!ethPrivateVisible} editable = {false} value = {ethPrivate}/>
+                            <TouchableOpacity activeOpacity = {0.9} style = {{flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center'}} onPress = {() => this.handleCopy(ethPrivate)}>
+                                <Icon type = "feather" name = "copy" color = "#FFBA00" size = {wp('4%')} iconStyle = {copyIcon}/>
+                                <Text style = {copyText}>COPY</Text>
+                            </TouchableOpacity>
                         </View>
                         <View style = {detailContainer}>
                             <View style = {{flexDirection: 'row'}}>
@@ -267,7 +410,11 @@ export default class Profile extends Component {
                                 </View>
                                 <Icon type = "font-awesome" name = {ethPhraseEye} color = "white" onPress = {this.toggleEthPhrase} underlayColor = "transparent"/>
                             </View>
-                            <Input inputStyle = {grayText} multiline = {ethPhraseVisible} inputContainerStyle = {{ marginLeft: wp('-4%'),borderBottomWidth: 0, borderBottomColor: 'black' }} secureTextEntry = {!ethPhraseVisible} editable = {false} value = {ethPhrase}/>
+                            <Input inputStyle = {grayText} multiline = {ethPhraseVisible} inputContainerStyle = {inputContainer} secureTextEntry = {!ethPhraseVisible} editable = {false} value = {ethPhrase}/>
+                            <TouchableOpacity activeOpacity = {0.9} style = {{flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center'}} onPress = {() => this.handleCopy(ethPhrase)}>
+                                <Icon type = "feather" name = "copy" color = "#FFBA00" size = {wp('4%')} iconStyle = {copyIcon}/>
+                                <Text style = {copyText}>COPY</Text>
+                            </TouchableOpacity>
                         </View>
                         <Text style = {yellowText}>Bitcoin</Text>
                         <View style = {detailContainer}>
@@ -279,7 +426,11 @@ export default class Profile extends Component {
                                 </View>
                                 <Icon type = "font-awesome" name = {btcAddressEye} color = "white" onPress = {this.toggleBtc} underlayColor = "transparent"/>
                             </View>
-                            <Input inputStyle = {grayText} multiline = {btcAddressVisible} inputContainerStyle = {{ marginLeft: wp('-4%'),borderBottomWidth: 0, borderBottomColor: 'black' }} secureTextEntry = {!btcAddressVisible} editable = {false} value = {btcAddress}/>
+                            <Input inputStyle = {grayText} multiline = {btcAddressVisible} inputContainerStyle = {inputContainer} secureTextEntry = {!btcAddressVisible} editable = {false} value = {btcAddress}/>
+                            <TouchableOpacity activeOpacity = {0.9} style = {{flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center'}} onPress = {() => this.handleCopy(btcAddress)}>
+                                <Icon type = "feather" name = "copy" color = "#FFBA00" size = {wp('4%')} iconStyle = {copyIcon}/>
+                                <Text style = {copyText}>COPY</Text>
+                            </TouchableOpacity>
                         </View>
                         <View style = {detailContainer}>
                             <View style = {{flexDirection: 'row'}}>
@@ -290,7 +441,11 @@ export default class Profile extends Component {
                                 </View>
                                 <Icon type = "font-awesome" name = {btcPrivateEye} color = "white" onPress = {this.toggleBtcPrivate} underlayColor = "transparent"/>
                             </View>
-                            <Input inputStyle = {grayText} multiline = {btcPrivateVisible} inputContainerStyle = {{ marginLeft: wp('-4%'),borderBottomWidth: 0, borderBottomColor: 'black' }} secureTextEntry = {!btcPrivateVisible} editable = {false} value = {btcPrivate}/>
+                            <Input inputStyle = {grayText} multiline = {btcPrivateVisible} inputContainerStyle = {inputContainer} secureTextEntry = {!btcPrivateVisible} editable = {false} value = {btcPrivate}/>
+                            <TouchableOpacity activeOpacity = {0.9} style = {{flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center'}} onPress = {() => this.handleCopy(btcPrivate)}>
+                                <Icon type = "feather" name = "copy" color = "#FFBA00" size = {wp('4%')} iconStyle = {copyIcon}/>
+                                <Text style = {copyText}>COPY</Text>
+                            </TouchableOpacity>
                         </View>
                         <View style = {detailContainer}>
                             <View style = {{flexDirection: 'row'}}>
@@ -301,7 +456,11 @@ export default class Profile extends Component {
                                 </View>
                                 <Icon type = "font-awesome" name = {btcPublicEye} color = "white" onPress = {this.toggleBtcPublic} underlayColor = "transparent"/>
                             </View>
-                            <Input inputStyle = {grayText} multiline = {btcPublicVisible} inputContainerStyle = {{ marginLeft: wp('-4%'),borderBottomWidth: 0, borderBottomColor: 'black' }} secureTextEntry = {!btcPublicVisible} editable = {false} value = {btcPublic}/>
+                            <Input inputStyle = {grayText} multiline = {btcPublicVisible} inputContainerStyle = {inputContainer} secureTextEntry = {!btcPublicVisible} editable = {false} value = {btcPublic}/>
+                            <TouchableOpacity activeOpacity = {0.9} style = {{flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center'}} onPress = {() => this.handleCopy(btcPublic)}>
+                                <Icon type = "feather" name = "copy" color = "#FFBA00" size = {wp('4%')} iconStyle = {copyIcon}/>
+                                <Text style = {copyText}>COPY</Text>
+                            </TouchableOpacity>
                         </View>
                         <View style = {detailContainer}>
                             <View style = {{flexDirection: 'row'}}>
@@ -312,7 +471,41 @@ export default class Profile extends Component {
                                 </View>
                                 <Icon type = "font-awesome" name = {btcPhraseEye} color = "white" onPress = {this.toggleBtcPhrase} underlayColor = "transparent"/>
                             </View>
-                            <Input inputStyle = {grayText} multiline = {btcPhraseVisible} inputContainerStyle = {{ marginLeft: wp('-4%'),borderBottomWidth: 0, borderBottomColor: 'black' }} secureTextEntry = {!btcPhraseVisible} editable = {false} value = {btcPhrase}/>
+                            <Input inputStyle = {grayText} multiline = {btcPhraseVisible} inputContainerStyle = {inputContainer} secureTextEntry = {!btcPhraseVisible} editable = {false} value = {btcPhrase}/>
+                            <TouchableOpacity activeOpacity = {0.9} style = {{flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center'}} onPress = {() => this.handleCopy(btcPhrase)}>
+                                <Icon type = "feather" name = "copy" color = "#FFBA00" size = {wp('4%')} iconStyle = {copyIcon}/>
+                                <Text style = {copyText}>COPY</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <Text style = {yellowText}>About Aerotoken</Text>
+                        <View style = {detailContainer}>
+                            <View style = {{flexDirection: 'row'}}>
+                                <View style = {{flex: 1, marginBottom: hp('-1%')}}>
+                                    <Text style = {mainText}>
+                                        App version
+                                    </Text>
+                                </View>
+                                <Text style = {grayText}>1.0.0</Text>
+                            </View>
+                        </View>
+                        <Text style = {yellowText}>Reset Pin</Text>
+                        <View style = {detailContainer}>
+                            <View style = {{marginHorizontal: wp('3%')}}>
+                                <Input inputStyle = {inputText} value = {phrase}  inputContainerStyle = {{ marginHorizontal: wp('-4%'),borderBottomWidth: 2, marginBottom: hp('3%') }} placeholder = "Enter 12-word backup phrase" placeholderTextColor = "#8E8C8C" onChangeText = {this.handlePhrase} errorStyle = {{color: 'red', marginLeft: wp('-4%'), marginTop: hp('-2%'), fontSize: 13}} errorMessage = {error1}/>
+                            </View>
+                            <View style = {{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginHorizontal: wp('3%')}}>
+                                <View style = {{flex: 1}}>
+                                    <Input inputStyle = {inputText} secureTextEntry = {!inputVisible} value = {pin}  inputContainerStyle = {{ marginLeft: wp('-4%'),borderBottomWidth: 2 }} placeholder = "Enter a new pin" placeholderTextColor = "#8E8C8C" onChangeText = {this.handlePin} keyboardType = "numeric" errorStyle = {{color: 'red', marginLeft: wp('-4%'), marginTop: hp('1%'), fontSize: 13}} errorMessage = {error2}/>
+                                </View>
+                                <Icon type = "font-awesome" name = {inputEye} color = "white" onPress = {this.toggleInput} underlayColor = "transparent"/>
+                            </View>
+                            <TouchableOpacity style = {button} disabled = {loading} activeOpacity = {0.5} onPress = {this.handlePhraseSubmit}>
+                                <Text style = {buttonText}>
+                                    {
+                                        loading ? 'Please wait' : 'Reset Pin'
+                                    }
+                                </Text>
+                            </TouchableOpacity>
                         </View>
                         </ScrollView>
                     </View>

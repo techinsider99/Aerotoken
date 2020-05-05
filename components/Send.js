@@ -5,7 +5,8 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import { Icon, Input } from 'react-native-elements';
 import 'ethers/dist/shims.js';
 import AsyncStorage from '@react-native-community/async-storage';
-import  {ethers,utils} from 'ethers';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import  {ethers} from 'ethers';
 const provider = ethers.getDefaultProvider();
 const aet = "0x8c9E4CF756b9d01D791b95bc2D0913EF2Bf03784";
 const usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7";
@@ -132,6 +133,15 @@ export default class Send extends Component {
     }
     }
 
+    handleBack = () => {
+		const options = {
+			enableVibrateFallback: true,
+			ignoreAndroidSystemSettings: false,
+		};
+		ReactNativeHapticFeedback.trigger('impactLight', options);
+		this.props.navigation.goBack();
+	}
+
     render() {
 
 		const styles = StyleSheet.create({
@@ -161,7 +171,7 @@ export default class Send extends Component {
 				alignSelf: 'center',
 				fontSize: 20,
                 flexGrow: 5,
-                marginLeft: wp('-15%'),
+                marginLeft: wp('-15.5%'),
             },
 			button: {
 				position: 'relative',
@@ -233,8 +243,8 @@ export default class Send extends Component {
                 </View>
 				<View style = {section}>
 					<View style = {header}>
-						<TouchableOpacity onPress = {() => navigation.goBack()} activeOpacity = {0.9}>
-							<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('12%')} iconStyle = {icon}  underlayColor = "transparent" />
+						<TouchableOpacity onPress = {this.handleBack} activeOpacity = {0.9}>
+							<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('15%')} iconStyle = {icon}  underlayColor = "transparent" />
 						</TouchableOpacity>
 						<Text style = {title}>Send {currencyName}({abr})</Text>
 					</View>

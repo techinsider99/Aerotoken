@@ -6,6 +6,7 @@ import Clipboard from "@react-native-community/clipboard";
 import { NavigationActions, StackActions } from 'react-navigation';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
+import Toast from 'react-native-simple-toast';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
@@ -24,7 +25,7 @@ export default class CreateWallet extends Component {
 
 	async UNSAFE_componentWillMount(){
 		this.setState({ loading: true }, () => {
-			axios.get('https://api-aet.herokuapp.com/create')
+			axios.post('https://api-aet.herokuapp.com/create', {})
 			.then(response => {
 				const data = response.data;
 				this.setState({
@@ -58,7 +59,7 @@ export default class CreateWallet extends Component {
 		});
 	}
 
-	handlePress = async () => {
+	handlePress = () => {
 		const options = {
 			enableVibrateFallback: true,
 			ignoreAndroidSystemSettings: false,
@@ -67,11 +68,21 @@ export default class CreateWallet extends Component {
 		const { mnemonic } = this.state;
 		this.setState({copied : true});
 		Clipboard.setString(mnemonic);
+		Toast.show('Copied to clipboard');
 	}
 
 	resetAction = () => {
 		this.props.navigation.popToTop();
 		this.props.navigation.replace('Dashboard');
+	}
+	
+	handleBack = () => {
+		const options = {
+			enableVibrateFallback: true,
+			ignoreAndroidSystemSettings: false,
+		};
+		ReactNativeHapticFeedback.trigger('impactLight', options);
+		this.props.navigation.goBack();
 	}
 
     render() {
@@ -99,7 +110,7 @@ export default class CreateWallet extends Component {
 				textAlign: 'center',
 				alignSelf: 'center',
 				fontSize: 20,
-				marginLeft: wp('16.5%'),
+				marginLeft: wp('16%'),
 				marginTop: hp('0.5%'),
 			},
 			loadingSection: {
@@ -187,7 +198,7 @@ export default class CreateWallet extends Component {
 
 					<View style = {section}>
 						<View style = {header}>
-							<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('12%')} iconStyle = {icon} onPress = {() => navigation.goBack()} underlayColor = "transparent" />
+							<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('15%')} iconStyle = {icon} onPress = {this.handleBack} underlayColor = "transparent" />
 							<Text style = {title}>Create New Wallet</Text>
 						</View>
 						<View style={{alignSelf:'center',marginVertical:70}}>

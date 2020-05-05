@@ -68,23 +68,24 @@ export default class ImportWallet extends Component {
 		let phrase  = this.state.phrase;
 		let pin = this.state.pin;
 		this.setState({ loading: true }, async () => {
-			try{
+			try {
 				let walletTemp = ethers.Wallet.fromMnemonic(phrase);
 				const walletJson = {
 					'ethAddress' : walletTemp.address,
 					'ethPrivateKey' : walletTemp.privateKey,
 					'ethMnemonic' : walletTemp.mnemonic
-				}
+				};
 				const wallet = JSON.stringify(walletJson);
 				AsyncStorage.setItem('ethWallet', wallet);
 				await AsyncStorage.setItem('@pin', pin, () => this.setState({ loading: false }));
+				this.props.navigation.popToTop();
 				this.props.navigation.replace('Dashboard');
 			}
-			catch(error){
-				this.setState({ loading: false })
+			catch (error){
+				this.setState({ loading: false });
 				Alert(error);
 			}
-		})
+		});
 	}
 
     render() {

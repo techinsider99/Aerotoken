@@ -5,6 +5,7 @@ import { Picker } from 'native-base';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ethers} from 'ethers';
 const provider = ethers.getDefaultProvider();
@@ -193,6 +194,14 @@ export default class ExchangeCoins extends Component {
         }
     }
 
+    handleBack = () => {
+		const options = {
+			enableVibrateFallback: true,
+			ignoreAndroidSystemSettings: false,
+		};
+		ReactNativeHapticFeedback.trigger('impactLight', options);
+		this.props.navigation.goBack();
+	}
 
     render() {
 		const styles = StyleSheet.create({
@@ -220,7 +229,7 @@ export default class ExchangeCoins extends Component {
 				textAlign: 'center',
 				alignSelf: 'center',
 				fontSize: 20,
-				marginLeft: wp('16.5%'),
+				marginLeft: wp('21%'),
 				marginTop: hp('0.5%'),
 			},
 			buttonContainer: {
@@ -268,7 +277,7 @@ export default class ExchangeCoins extends Component {
             downIcon: {
                 alignSelf: 'center',
                 position: 'relative',
-                top: hp('3.5%',),
+                top: hp('2%',),
                 right: wp('8'),
             },
             exchangeButton: {
@@ -322,7 +331,6 @@ export default class ExchangeCoins extends Component {
 		});
 
 		const { statusBar, section, header, icon, title, innerContainer, innerContainer1, inputBox, picker, downIcon, exchangeButton, exchangeIcon, infoContainer, balanceHeading, logo, button, buttonText } = styles;
-		const { navigation } = this.props;
         return (
             <>
             <ScrollView>
@@ -331,7 +339,7 @@ export default class ExchangeCoins extends Component {
                 </View>
 				<View style = {section}>
 					<View style = {header}>
-                        <Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('12%')} iconStyle = {icon} onPress = {() => navigation.goBack()} underlayColor = "transparent" />
+                        <Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('15%')} iconStyle = {icon} onPress = {this.handleBack} underlayColor = "transparent" />
                         <Text style = {title}>Exchange AET</Text>
 					</View>
 					<View>
@@ -357,6 +365,7 @@ export default class ExchangeCoins extends Component {
                             <Text style={buttonText}>Exchange</Text>
                         </TouchableOpacity>
                 	</View>
+                    <View style = {{marginBottom: hp('16.5%')}}>
                     <View style = {infoContainer}>
                         <Text style = {balanceHeading}>Your {this.state.currentExchange} balance will be</Text>
                         <View>
@@ -373,6 +382,7 @@ export default class ExchangeCoins extends Component {
                         <View>
                             <Text style = {{color: 'white', fontSize: 19, fontFamily: 'Armegoe', textAlign: 'right'}}>{this.state.aetAmount} AET</Text>
                         </View>
+                    </View>
                     </View>
 				</View>
                 </ScrollView>

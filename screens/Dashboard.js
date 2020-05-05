@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, Text } from 'react-native';
 import { DrawerActions } from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -25,6 +25,7 @@ export default class Dashboard extends Component {
 				color: 'white',
 				fontFamily: 'Armegoe',
 				fontSize: 24,
+				backgroundColor: 'transparent',
 			},
 			contentContainer: {
 				flex: 1,
@@ -37,10 +38,17 @@ export default class Dashboard extends Component {
 				transform: [
 					{ scale: 0.4 },
 				],
+				marginBottom: hp('-5%'),
+			},
+			versionText: {
+				fontFamily: 'Armegoe',
+				color: 'white',
+				textAlign: 'center',
+				marginBottom: hp('5%'),
 			},
 		});
 
-		const { drawer, closeIcon, label, contentContainer, logo } = styles;
+		const { drawer, closeIcon, label, contentContainer, logo, versionText } = styles;
 		const { navigation } = this.props;
 
 		const DrawerContent = () => {
@@ -55,24 +63,28 @@ export default class Dashboard extends Component {
 							labelStyle = {label}
 							icon = {() => <Icon type = "material" name = "account-balance-wallet" color = "white"/>}
 							style = {{marginBottom: 40}}
+							activeBackgroundColor = "#151721"
 							onPress = {() => navigation.navigate('Wallet')}
 						/>
 						<DrawerItem
-							label = "Logout"
+							label = "Settings"
 							labelStyle = {label}
-							icon = {() => <Icon type = "feather" name = "log-out" color = "white"/>}
-							onPress = {() => navigation.replace('Login')}
+							icon = {() => <Icon type = "feather" name = "settings" color = "white"/>}
+							activeBackgroundColor = "#151721"
+							onPress = {() => navigation.navigate('Profile')}
 						/>
 						<DrawerItem
 							style = {{marginTop: hp('4%')}}
-							label = "Profile"
+							label = "Logout"
 							labelStyle = {label}
-							icon = {() => <Icon type = "feather" name = "user" color = "white"/>}
-							onPress = {() => navigation.navigate('Profile')}
+							icon = {() => <Icon type = "feather" name = "log-out" color = "white"/>}
+							activeBackgroundColor = "#151721"
+							onPress = {() => navigation.replace('Login')}
 						/>
 					</DrawerContentScrollView>
 					<View>
 						<Image source = {require('../assets/images/Logo.png')} style = {logo}/>
+						<Text style = {versionText}>Version 1.0.0</Text>
 					</View>
 				</>
 			);

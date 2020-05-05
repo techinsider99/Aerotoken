@@ -37,16 +37,16 @@ export default class Staking extends Component {
             this.fetchEthBalance(ether.ethAddress);
             AsyncStorage.getItem('@staked')
             .then(staked=>{
-                if(staked == null){
-                    alert('Welcome to AET Staking, Get 1% of your total staked tokens every month')
+                if (staked == null){
+                    Alert.alert('AET Staking', 'Welcome to AET Staking, Get 1% of your total staked tokens every month');
                 }
-                else{
-                    this.setState({totalStaked : staked})
+                else {
+                    this.setState({totalStaked : staked});
                 }
-            })
-		 } catch (error) {
+            });
+	    } catch (error) {
 		   Alert(error);
-		}	
+		};
 	}
 
     handleAmount = amount => this.setState({ amount: amount })
@@ -136,7 +136,7 @@ export default class Staking extends Component {
 				textAlign: 'center',
 				alignSelf: 'center',
 				fontSize: 20,
-				marginLeft: wp('25%'),
+				marginLeft: wp('22%'),
             },
             staking: {
 				color: 'white',

@@ -46,12 +46,12 @@ export default class Currency extends Component {
                         <Image source = {avatar} style = {logo}/>
                     </View>
                     <View style = {details1}>
-                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, marginBottom: 8}}>{currencyName}</Text>
+                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, paddingBottom: 8}}>{currencyName}</Text>
                         <Text style = {{fontFamily: 'Armegoe', color: "#6F6E71", fontSize: 16}}>{currencyValue}</Text>
                     </View>
                     <View style = {details2}>
-                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, marginBottom: 8}}>$ {currencyValue*price}</Text>
-                        {difference < 0 ? <Text style = {{fontFamily: 'Armegoe', color: "red", fontSize: 16}}>{difference}</Text> :  <Text style = {{fontFamily: 'Armegoe', color: "green", fontSize: 16}}> + {difference}</Text> } 
+                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, marginBottom: 8}}>$ {currencyValue * price}</Text>
+                        {difference < 0 ? <Text style = {{fontFamily: 'Armegoe', color: "red", fontSize: 16}}>{difference}</Text> :  <Text style = {{fontFamily: 'Armegoe', color: "green", fontSize: 16}}> +{difference}</Text> }
                     </View>
                 </TouchableOpacity>
             </>

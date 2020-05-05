@@ -103,7 +103,8 @@ export default class HistoryTabs extends Component {
                                 paddingBottom: 20,
                                 borderBottomWidth: 3,
                                 borderBottomColor: isFocused ? '#FFBA00' : 'transparent',
-                                marginLeft: 20,
+								marginLeft: 20,
+								backgroundColor: '#060E17',
 							},
 							tabLabel: {
 								textAlign: 'center',

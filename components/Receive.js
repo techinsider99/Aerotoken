@@ -1,12 +1,33 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react'
-import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, KeyboardAvoidingView, Share, Alert } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { Icon, Input } from 'react-native-elements';
 import QRCode from 'react-qr-code';
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 
 export default class Receive extends Component {
+
+    handleBack = () => {
+		const options = {
+			enableVibrateFallback: true,
+			ignoreAndroidSystemSettings: false,
+		};
+		ReactNativeHapticFeedback.trigger('impactLight', options);
+		this.props.navigation.goBack();
+    }
+
+    handleShare = async (abr, address) => {
+        try {
+            await Share.share({
+              message: `My ${abr} address: ${address}`,
+            });
+          } catch (error) {
+            Alert(error.message);
+          }
+    }
+
     render() {
 		const styles = StyleSheet.create({
 			statusBar: {
@@ -35,7 +56,7 @@ export default class Receive extends Component {
 				alignSelf: 'center',
 				fontSize: 20,
                 flexGrow: 5,
-                marginLeft: wp('-15%'),
+                marginLeft: wp('-15.5%'),
             },
 			button: {
 				position: 'relative',
@@ -112,8 +133,8 @@ export default class Receive extends Component {
                 </View>
 				<View style = {section}>
 					<View style = {header}>
-						<TouchableOpacity onPress = {() => navigation.goBack()} activeOpacity = {0.9}>
-							<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('12%')} iconStyle = {icon}  underlayColor = "transparent" />
+						<TouchableOpacity onPress = {this.handleBack} activeOpacity = {0.9}>
+							<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('15%')} iconStyle = {icon}  underlayColor = "transparent" />
 						</TouchableOpacity>
 						<Text style = {title}>Receive {currencyName}({abr})</Text>
 					</View>
@@ -130,7 +151,7 @@ export default class Receive extends Component {
                         <Text style = {yellowText}>{address}</Text>
                     </View>
                     <KeyboardAvoidingView enabled = {false}>
-                        <TouchableOpacity style = {button} activeOpacity = {0.9} onPress = {this.handlePhraseSubmit}>
+                        <TouchableOpacity style = {button} activeOpacity = {0.9} onPress = {() => this.handleShare(abr, address)}>
                             <Icon type = "feather" name = "share-2" color = "white" iconStyle = {{marginRight: 5}}/>
                             <Text style = {buttonText}>Share</Text>
                         </TouchableOpacity>

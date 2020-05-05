@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
-import { StyleSheet, View, Image,Text,ScrollView,Linking } from 'react-native';
+import { StyleSheet, View, Image,Text,ScrollView,Linking, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 const {ethers}  = require('ethers');
@@ -60,8 +60,9 @@ export default class DepositHistory extends Component {
                                     <View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
                                         <Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 15,}}>{new Date(json.txrefs[i].confirmed).toLocaleDateString() + " " + new Date(json.txrefs[i].confirmed).toLocaleTimeString()}</Text>
                                     </View> 
-                                    <View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center',marginLeft:15}}>
-                                    <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text>
+                                    <View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center', marginLeft:15}}>
+									{json.txrefs[i].spent ? <Text style = {{fontFamily: 'Armegoe',color: '#FFBA00',fontSize: 18}}>- {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> : <Text style = {{fontFamily:'Armegoe',color: '#2CC593',fontSize: 18}}>+ {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> }
+                                    {/* <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> */}
                                     </View>
                                 </View>
 							</TouchableOpacity>
@@ -94,7 +95,9 @@ export default class DepositHistory extends Component {
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{date}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-							 <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {value} ETH</Text>
+							<Text style = {{fontFamily: 'Armegoe',color: value >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
+								{ value >= 0 ? '+' : '-' } {value} ETH
+							</Text>
 						</View>
 					</View>
 				</TouchableOpacity>
@@ -136,7 +139,9 @@ export default class DepositHistory extends Component {
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{date}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {value} AET</Text>
+							<Text style = {{fontFamily: 'Armegoe',color: value >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
+								{ value >= 0 ? '+' : '-' } {value} AET
+							</Text>
 						</View>
 					</View>
 				</TouchableOpacity>
@@ -170,13 +175,15 @@ export default class DepositHistory extends Component {
 			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(2);
 			UsdtTx.push(
 			<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
-				<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>	
+				<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>
 					<View style = {{flexDirection: 'row'}}>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {value} USDT</Text>
+						<Text style = {{fontFamily: 'Armegoe',color: value >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
+								{ value >= 0 ? '+' : '-' } {value} USDT
+							</Text>
 						</View>
 					</View>
 				</TouchableOpacity>
@@ -199,7 +206,7 @@ export default class DepositHistory extends Component {
             },
             emptyImage: {
                 transform: [
-                    { scale: 0.6 }
+                    { scale: 0.15 }
                 ],
             },
         });
@@ -207,16 +214,14 @@ export default class DepositHistory extends Component {
         const { section, emptyImage } = styles;
 		const { BtcTx, EthTx, UsdtTx, AetTx } = this.state;
         return (
-            <>
+            <View style = {section}>
             {
 				BtcTx.length === 0 && EthTx.length === 0 && UsdtTx.length === 0 && AetTx.length === 0 ?
 
-				<View style = {section}>
-					<Image source = {require('../assets/images/Empty.png')} style = {emptyImage}/>
-				</View>
+				<Image source = {require('../assets/images/EmptyFinal.png')} style = {emptyImage}/>
 
 				:
-
+				
 				<ScrollView>
 					<View style={section}>
 					{BtcTx}
@@ -226,7 +231,7 @@ export default class DepositHistory extends Component {
 					</View>
 				</ScrollView>
 			}
-            </>
+            </View>
         );
     }
 }

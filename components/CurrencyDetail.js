@@ -239,8 +239,17 @@ export default class CurrencyDetail extends Component {
 		this.props.navigation.navigate('Receive', {
 			currencyName: currencyName,
 			abr: abr,
-			address : this.state.depositWallet
+			address : this.state.depositWallet,
 		});
+	}
+
+	handleBack = () => {
+		const options = {
+			enableVibrateFallback: true,
+			ignoreAndroidSystemSettings: false,
+		};
+		ReactNativeHapticFeedback.trigger('impactLight', options);
+		this.props.navigation.goBack();
 	}
 
 	render() {
@@ -271,7 +280,7 @@ export default class CurrencyDetail extends Component {
 				alignSelf: 'center',
 				fontSize: 20,
                 flexGrow: 5,
-                marginLeft: wp('-15%'),
+                marginLeft: wp('-15.5%'),
             },
             buttonContainer: {
                 position: 'relative',
@@ -359,8 +368,8 @@ export default class CurrencyDetail extends Component {
                 </View>
 				<View style = {section}>
 					<View style = {header}>
-						<TouchableOpacity onPress = {() => navigation.goBack()} activeOpacity = {0.9}>
-							<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('12%')} iconStyle = {icon}  underlayColor = "transparent" />
+						<TouchableOpacity onPress = {this.handleBack} activeOpacity = {0.9}>
+							<Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('15%')} iconStyle = {icon}  underlayColor = "transparent" />
 						</TouchableOpacity>
 						<Text style = {title}>{currencyName}</Text>
 					</View>
@@ -397,11 +406,11 @@ export default class CurrencyDetail extends Component {
 						<View style = {balanceContainer}>
 							<Text style = {mainText}>Your {abr} address</Text>
 							<View style = {{flexDirection: 'row', marginTop: hp('1.5%'), flexWrap: 'wrap'}}>
-								<View style = {{flex: 5}}>
+								<View style = {{flex: 5, marginRight: wp('1%')}}>
 									<Text style = {grayText}>{this.state.depositWallet}</Text>
 								</View>
 								<View style = {{ustifyContent: 'flex-end', flexDirection: 'column', alignContent: 'flex-end'}}>
-									<Text style = {yellowText} onPress = {this.handleCopy}>{this.state.copied ? " COPIED" : " COPY" }</Text>
+									<Text style = {yellowText} onPress = {this.handleCopy}>{this.state.copied ? 'COPIED' : 'COPY' }</Text>
 								</View>
 							</View>
 						</View>
@@ -415,10 +424,10 @@ export default class CurrencyDetail extends Component {
 							</TouchableOpacity>
 							</View>
 						</View>
-						{this.state.txLoading ? <ActivityIndicator size = {55} color = "#FFBA00" /> : 
+						{this.state.txLoading ? <ActivityIndicator size = {55} color = "#FFBA00" style = {{marginTop: hp('5%')}}/> : 
 						<>
-						{this.state.tx.length === 0 ? 
-						<Text style={{textAlign:'center',fontFamily:'Armegoe',color: '#8E8C8C',fontSize: 18}}>No Transactions</Text> 
+						{this.state.tx.length === 0 ?
+						<Text style={{textAlign:'center',fontFamily:'Armegoe',color: '#8E8C8C',fontSize: 18, marginTop: hp('5%')}}>No Transactions</Text> 
 						: 
 						<> 
 						{this.state.tx}
