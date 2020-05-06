@@ -71,8 +71,8 @@ export default class Dashboard extends Component {
 			let bitcoin = JSON.parse(btc);
 			this.fetchEthBalance(ether.ethAddress);
 			this.fetchBitcoinBalance(bitcoin.btcAddress);
-			this.fetchAetBalance();
-			this.fetchUsdtBalance();
+			this.fetchAetBalance(ether.ethAddress);
+			this.fetchUsdtBalance(ether.ethAddress);
 		 } catch (error) {
 		   Alert(error);
 		}
@@ -182,9 +182,11 @@ export default class Dashboard extends Component {
         })
     }
     
-    fetchAetBalance(){
+    fetchAetBalance(a){
         this.setState({ aetbalanceLoading: true }, () => {
-            axios.post('https://api-aet.herokuapp.com/aetBalance', {})
+            axios.post('https://api-aet.herokuapp.com/aetBalance', {
+                address: a
+            })
             .then(response => {
                 this.setState({
                     aetBalance: response.data.balance,
@@ -197,9 +199,11 @@ export default class Dashboard extends Component {
         })  
 	}
 
-	fetchUsdtBalance(){
+	fetchUsdtBalance(a){
         this.setState({ usdtBalanceLoading: true }, () => {
-            axios.post('https://api-aet.herokuapp.com/usdtBalance', {})
+            axios.post('https://api-aet.herokuapp.com/usdtBalance', {
+                address: a
+            })
             .then(response => {
                 this.setState({
                     usdtBalance: response.data.balance,

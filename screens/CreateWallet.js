@@ -25,7 +25,7 @@ export default class CreateWallet extends Component {
 
 	async UNSAFE_componentWillMount(){
 		this.setState({ loading: true }, () => {
-			axios.post('https://api-aet.herokuapp.com/create', {})
+			axios.get('https://api-aet.herokuapp.com/create')
 			.then(response => {
 				const data = response.data;
 				this.setState({
