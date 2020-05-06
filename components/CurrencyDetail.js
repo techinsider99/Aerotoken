@@ -361,6 +361,7 @@ export default class CurrencyDetail extends Component {
 		const { statusBar, section, header, icon, title, button, buttonText, balanceContainer, historyContainer, mainText, priceText, grayText, logo, buttonContainer, yellowText, refreshIcon, greenText } = styles;
 		const { navigation } = this.props;
 		const { currencyName, price, currencyValue, avatar, abr, cost } = this.props.route.params;
+		const balance = currencyValue * price;
         return (
             <>
                 <View style = {statusBar}>
@@ -378,7 +379,7 @@ export default class CurrencyDetail extends Component {
 							<View style = {{flexDirection: 'row', marginBottom: hp('4%')}}>
 								<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
 									<Text style = {mainText}>Current balance</Text>
-									<Text style = {priceText}>$ {currencyValue*price}</Text>
+									<Text style = {priceText}>$ {balance === 0 ? balance : balance.toFixed(8)}</Text>
 								</View>
 								<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row'}}>
 									<Text style = {mainText}>USD</Text>

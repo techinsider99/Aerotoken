@@ -39,6 +39,7 @@ export default class Currency extends Component {
         });
         const { mainContainer, logo, details1, details2 } = styles;
         const { avatar, currencyName, currencyValue, price, difference, abr } = this.props;
+        const balance = currencyValue * price;
         return (
             <>
                 <TouchableOpacity style = {mainContainer} activeOpacity = {0.8} onPress = {() => this.props.navigateTo('CurrencyDetail', currencyName, price, currencyValue, avatar, abr)}>
@@ -46,12 +47,12 @@ export default class Currency extends Component {
                         <Image source = {avatar} style = {logo}/>
                     </View>
                     <View style = {details1}>
-                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, paddingBottom: 8}}>{currencyName}</Text>
-                        <Text style = {{fontFamily: 'Armegoe', color: "#6F6E71", fontSize: 16}}>{currencyValue}</Text>
+                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: wp('5%'), paddingBottom: 8}}>{currencyName}</Text>
+                        <Text style = {{fontFamily: 'Armegoe', color: "#6F6E71", fontSize: wp('4%')}}>{currencyValue}</Text>
                     </View>
                     <View style = {details2}>
-                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: 19, marginBottom: 8}}>$ {currencyValue * price}</Text>
-                        {difference < 0 ? <Text style = {{fontFamily: 'Armegoe', color: "red", fontSize: 16}}>{difference}</Text> :  <Text style = {{fontFamily: 'Armegoe', color: "green", fontSize: 16}}> +{difference}</Text> }
+                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: wp('4.5'), marginBottom: 8}}>$ {balance === 0 ? balance : balance.toFixed(8)}</Text>
+                        {difference < 0 ? <Text style = {{fontFamily: 'Armegoe', color: "red", fontSize: wp('4%')}}>{difference}</Text> :  <Text style = {{fontFamily: 'Armegoe', color: "green", fontSize: wp('4%')}}> +{difference}</Text> }
                     </View>
                 </TouchableOpacity>
             </>

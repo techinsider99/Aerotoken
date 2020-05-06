@@ -31,8 +31,6 @@ export default class DepositHistory extends Component {
         this.fetchEthTx(ether.ethAddress);
         this.fetchAetTx(ether.ethAddress);
 		this.fetchUsdtTx(ether.ethAddress);	
-		console.log('btcAddress', bitcoin.btcAddress)
-		console.log('ethAddress', ether.ethAddress)
         }
         catch(err){
             console.log(err);
@@ -55,7 +53,8 @@ export default class DepositHistory extends Component {
                 let BtcTx = this.state.BtcTx;
                 BtcTx = [];
 				for(let i=0;i<json.txrefs.length;i++){
-                    if(json.txrefs[i].spent == false){
+                    if(json.txrefs[i].spent === false){
+						var value = parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)
                         BtcTx.push(
                             <View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
                              <TouchableOpacity onPress={()=>{Linking.openURL(`https://www.blockchain.com/btc/tx/${json.txrefs[i].tx_hash}`)}}>
@@ -64,8 +63,9 @@ export default class DepositHistory extends Component {
                                         <Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 15,}}>{new Date(json.txrefs[i].confirmed).toLocaleDateString() + " " + new Date(json.txrefs[i].confirmed).toLocaleTimeString()}</Text>
                                     </View> 
                                     <View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center',marginLeft:15}}>
-									{json.txrefs[i].spent ? <Text style = {{fontFamily: 'Armegoe',color: '#FFBA00',fontSize: 18}}>- {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> : <Text style = {{fontFamily:'Armegoe',color: '#2CC593',fontSize: 18}}>+ {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text>}
-                                    {/* <Text style = {{fontFamily: 'Armegoe',color: '#FFBA00',fontSize: 18}}>+ {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> */}
+                                    <Text style = {{fontFamily: 'Armegoe',color: value >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
+										{ value >= 0 ? '+' : '-' } {value} BTC
+									</Text>
                                     </View>
                                 </View>
 							</TouchableOpacity>
@@ -121,9 +121,9 @@ export default class DepositHistory extends Component {
 			address : address
 		}
 		fetch('https://api-aet.herokuapp.com/api/v1/coinHistory',{
-		method: 'post',
-		body:    JSON.stringify(body),
-		headers: { 'Content-Type': 'application/json' },
+			method: 'post',
+			body: JSON.stringify(body),
+			headers: { 'Content-Type': 'application/json' },
 		})
 		.then(res => res.json())
 		.then(json => {
@@ -207,7 +207,7 @@ export default class DepositHistory extends Component {
             },
             emptyImage: {
                 transform: [
-                    { scale: 0.15 }
+                    { scale: 0.15 },
                 ],
             },
         });

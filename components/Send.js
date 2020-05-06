@@ -180,11 +180,11 @@ export default class Send extends Component {
                 alignItems: 'center',
                 justifyContent: 'center',
                 paddingVertical: 13,
-                width: wp('75%'),
+                width: wp('70%'),
                 borderRadius: 25,
                 marginHorizontal: wp('5%'),
                 flexDirection: 'row',
-                marginTop: hp('20%'),
+                marginTop: hp('5%'),
             },
             buttonText: {
                 color: 'white',

@@ -53,7 +53,7 @@ export default class Staking extends Component {
 
     handleStake(){
         if(this.state.amount > this.state.aetBalance){
-            alert('Insufficient Balance');
+            alert('Minimum stake is 1000');
         }
         else if(this.state.ethBalance < '0.01'){
             alert('Insufficient Gas. Fund Your Account With Alteast 0.05 ETH to pay for Gas')

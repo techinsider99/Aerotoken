@@ -52,7 +52,7 @@ export default class DepositHistory extends Component {
                 let BtcTx = this.state.BtcTx;
                 BtcTx = [];
 				for(let i=0;i<json.txrefs.length;i++){
-                    if(json.txrefs[i].spent == true){
+                    if(json.txrefs[i].spent === true){
                         BtcTx.push(
                             <View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
                             <TouchableOpacity onPress={()=>{Linking.openURL(`https://www.blockchain.com/btc/tx/${json.txrefs[i].tx_hash}`)}}>
@@ -62,7 +62,6 @@ export default class DepositHistory extends Component {
                                     </View> 
                                     <View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center', marginLeft:15}}>
 									{json.txrefs[i].spent ? <Text style = {{fontFamily: 'Armegoe',color: '#FFBA00',fontSize: 18}}>- {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> : <Text style = {{fontFamily:'Armegoe',color: '#2CC593',fontSize: 18}}>+ {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> }
-                                    {/* <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> */}
                                     </View>
                                 </View>
 							</TouchableOpacity>
@@ -84,7 +83,7 @@ export default class DepositHistory extends Component {
             let EthTx = this.state.EthTx;
             EthTx = [];
 			for(let i=history.length-1; i>-1;i--){
-				if(ethers.utils.formatEther(history[i].value) > 0 && history[i].to == address){
+				if(ethers.utils.formatEther(history[i].value) > 0 && history[i].to === address){
 				let date = new Date(history[i].timestamp*1000).toLocaleDateString() + " " + new Date(history[i].timestamp*1000).toLocaleTimeString();
 				let value = parseFloat(ethers.utils.formatEther(history[i].value)).toFixed(4);
 				EthTx.push(
@@ -128,7 +127,7 @@ export default class DepositHistory extends Component {
             AetTx = [];
 			for(let i=json.txrefs.length-1; i>-1;i--){
             console.log(json.txrefs[i].tokenSymbol);
-			if(json.txrefs[i].tokenSymbol == "AET" && json.txrefs[i].to == address){
+			if(json.txrefs[i].tokenSymbol == "AET" && json.txrefs[i].to === address){
 			let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString() + " " + new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
 			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)).toFixed(2);
 			AetTx.push(
@@ -170,7 +169,7 @@ export default class DepositHistory extends Component {
             let UsdtTx = this.state.UsdtTx;
             UsdtTx = [];
 			for(let i=json.txrefs.length-1; i>-1;i--){
-			if(json.txrefs[i].tokenSymbol == "USDT" && json.txrefs[i].to == address){
+			if(json.txrefs[i].tokenSymbol == "USDT" && json.txrefs[i].to === address){
 			let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString() + " " + new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
 			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(2);
 			UsdtTx.push(

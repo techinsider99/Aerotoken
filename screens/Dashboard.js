@@ -47,7 +47,6 @@ export default class Dashboard extends Component {
 				marginBottom: hp('5%'),
 			},
 		});
-
 		const { drawer, closeIcon, label, contentContainer, logo, versionText } = styles;
 		const { navigation } = this.props;
 
@@ -62,7 +61,7 @@ export default class Dashboard extends Component {
 							label = "Wallet"
 							labelStyle = {label}
 							icon = {() => <Icon type = "material" name = "account-balance-wallet" color = "white"/>}
-							style = {{marginBottom: 40}}
+							style = {{marginVertical: hp('4%')}}
 							activeBackgroundColor = "#151721"
 							onPress = {() => navigation.navigate('Wallet')}
 						/>
@@ -70,11 +69,11 @@ export default class Dashboard extends Component {
 							label = "Settings"
 							labelStyle = {label}
 							icon = {() => <Icon type = "feather" name = "settings" color = "white"/>}
+							style = {{marginBottom: hp('4%')}}
 							activeBackgroundColor = "#151721"
 							onPress = {() => navigation.navigate('Profile')}
 						/>
 						<DrawerItem
-							style = {{marginTop: hp('4%')}}
 							label = "Logout"
 							labelStyle = {label}
 							icon = {() => <Icon type = "feather" name = "log-out" color = "white"/>}
