@@ -203,7 +203,7 @@ export default class CurrencyDetail extends Component {
 								<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date}</Text>
 							</View>
 							<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-								{json.txrefs[i].to == address ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {value} USDT</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>- {value} USDT</Text>}
+								{json.txrefs[i].to === address ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {value} USDT</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>- {value} USDT</Text>}
 							</View>
 						</View>
 					</TouchableOpacity>

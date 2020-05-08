@@ -94,8 +94,8 @@ export default class DepositHistory extends Component {
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{date}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: value >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-								{ value >= 0 ? '+' : '-' } {value} ETH
+							<Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
+								{ parseFloat(value) >= 0 ? '+' : '-' } {value} ETH
 							</Text>
 						</View>
 					</View>
@@ -138,8 +138,8 @@ export default class DepositHistory extends Component {
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{date}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: value >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-								{ value >= 0 ? '+' : '-' } {value} AET
+							<Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
+								{ parseFloat(value) >= 0 ? '+' : '-' } {value} AET
 							</Text>
 						</View>
 					</View>
@@ -180,8 +180,8 @@ export default class DepositHistory extends Component {
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-						<Text style = {{fontFamily: 'Armegoe',color: value >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-								{ value >= 0 ? '+' : '-' } {value} USDT
+						<Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
+								{ parseFloat(value) >= 0 ? '+' : '-' } {value} USDT
 							</Text>
 						</View>
 					</View>

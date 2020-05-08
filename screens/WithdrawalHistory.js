@@ -54,7 +54,7 @@ export default class DepositHistory extends Component {
                 BtcTx = [];
 				for(let i=0;i<json.txrefs.length;i++){
                     if(json.txrefs[i].spent === false){
-						var value = parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)
+						var value = parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8);
                         BtcTx.push(
                             <View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
                              <TouchableOpacity onPress={()=>{Linking.openURL(`https://www.blockchain.com/btc/tx/${json.txrefs[i].tx_hash}`)}}>
@@ -63,8 +63,8 @@ export default class DepositHistory extends Component {
                                         <Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 15,}}>{new Date(json.txrefs[i].confirmed).toLocaleDateString() + " " + new Date(json.txrefs[i].confirmed).toLocaleTimeString()}</Text>
                                     </View> 
                                     <View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center',marginLeft:15}}>
-                                    <Text style = {{fontFamily: 'Armegoe',color: value >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-										{ value >= 0 ? '+' : '-' } {value} BTC
+                                    <Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
+										{ parseFloat(value) >= 0 ? '+' : '-' } {value} BTC
 									</Text>
                                     </View>
                                 </View>
@@ -98,8 +98,8 @@ export default class DepositHistory extends Component {
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{date}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: value >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-								{ value >= 0 ? '+' : '-' } {value} ETH
+							<Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
+								{ parseFloat(value) >= 0 ? '+' : '-' } {value} ETH
 							</Text>
 						</View>
 					</View>
@@ -142,8 +142,8 @@ export default class DepositHistory extends Component {
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{date}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-						<Text style = {{fontFamily: 'Armegoe',color: value >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-								{ value >= 0 ? '+' : '-' } {value} AET
+						<Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
+								{ parseFloat(value) >= 0 ? '+' : '-' } {value} AET
 							</Text>
 						</View>
 					</View>
@@ -184,8 +184,8 @@ export default class DepositHistory extends Component {
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: value >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-								{ value >= 0 ? '+' : '-' } {value} USDT
+							<Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
+								{ parseFloat(value) >= 0 ? '+' : '-' } {value} USDT
 							</Text>
 						</View>
 					</View>

@@ -23,9 +23,9 @@ export default class Receive extends Component {
             await Share.share({
               message: `My ${abr} address: ${address}`,
             });
-          } catch (error) {
+        } catch (error) {
             Alert(error.message);
-          }
+        }
     }
 
     render() {
