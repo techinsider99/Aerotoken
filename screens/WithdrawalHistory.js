@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
-import { StyleSheet, View, Image,Text,ScrollView,Linking, TouchableOpacity} from 'react-native';
+import { StyleSheet, View, Image,Text,ScrollView,Linking, TouchableOpacity, Alert} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import axios from 'axios';
@@ -22,7 +22,7 @@ export default class DepositHistory extends Component {
     }
 
     async UNSAFE_componentWillMount(){
-        try{
+        try {
         const eth = await AsyncStorage.getItem('ethWallet')
 		let ether = JSON.parse(eth);
 		const btc = await AsyncStorage.getItem('btcWallet')
@@ -32,9 +32,9 @@ export default class DepositHistory extends Component {
         this.fetchAetTx(ether.ethAddress);
 		this.fetchUsdtTx(ether.ethAddress);	
         }
-        catch(err){
+        catch (err){
             console.log(err);
-            alert("Error")
+            Alert("Error")
         }
     }
 
@@ -56,15 +56,15 @@ export default class DepositHistory extends Component {
                     if(json.txrefs[i].spent === false){
 						var value = parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8);
                         BtcTx.push(
-                            <View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
+                            <View style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
                              <TouchableOpacity onPress={()=>{Linking.openURL(`https://www.blockchain.com/btc/tx/${json.txrefs[i].tx_hash}`)}}>
 								<View style = {{flexDirection: 'row'}}>
-                                    <View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
+                                    <View style = {{flex: 1, flexWrap: 'wrap'}}>
                                         <Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 15,}}>{new Date(json.txrefs[i].confirmed).toLocaleDateString() + " " + new Date(json.txrefs[i].confirmed).toLocaleTimeString()}</Text>
                                     </View> 
-                                    <View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center',marginLeft:15}}>
+                                    <View style = {{flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center',marginLeft:15}}>
                                     <Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-										{ parseFloat(value) >= 0 ? '+' : '-' } {value} BTC
+										{ parseFloat(value) >= 0 ? '+' : '-' }{value} BTC
 									</Text>
                                     </View>
                                 </View>
@@ -89,22 +89,20 @@ export default class DepositHistory extends Component {
 			for(let i=history.length-1; i>-1;i--){
 				if(ethers.utils.formatEther(history[i].value) > 0 && history[i].to !== address){
 				let date = new Date(history[i].timestamp*1000).toLocaleDateString() + " " + new Date(history[i].timestamp*1000).toLocaleTimeString();
-				let value = parseFloat(ethers.utils.formatEther(history[i].value)).toFixed(4);
+				let value = parseFloat(ethers.utils.formatEther(history[i].value)).toFixed(8);
 				EthTx.push(
-				<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
-				<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${history[i].hash}`)}}>
+				<TouchableOpacity style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}} onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${history[i].hash}`)}}>
 					<View style = {{flexDirection: 'row'}}>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{date}</Text>
+							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
 							<Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-								{ parseFloat(value) >= 0 ? '+' : '-' } {value} ETH
+								{ parseFloat(value) >= 0 ? '+' : '-' }{value} ETH
 							</Text>
 						</View>
 					</View>
 				</TouchableOpacity >
-				</View>	
 				)
 				}
 			}
@@ -127,23 +125,24 @@ export default class DepositHistory extends Component {
 		})
 		.then(res => res.json())
 		.then(json => {
+			console.log(json)
             let AetTx = this.state.AetTx;
             AetTx = [];
 			for(let i=json.txrefs.length-1; i>-1;i--){
             // console.log((json.txrefs[i].to.toString ));
 			if(json.txrefs[i].tokenSymbol == "AET" && json.txrefs[i].to !== address){
 			let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString() + " " + new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
-			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)).toFixed(2);
+			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)).toFixed(8);
 			AetTx.push(
-			<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
+			<View style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
 				<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>
 					<View style = {{flexDirection: 'row'}}>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{date}</Text>
+							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('1%')}}>{date}</Text>
 						</View>
-						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
+						<View style = {{justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
 						<Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-								{ parseFloat(value) >= 0 ? '+' : '-' } {value} AET
+								{ parseFloat(value) >= 0 ? '+' : '-' }{value} AET
 							</Text>
 						</View>
 					</View>
@@ -155,7 +154,7 @@ export default class DepositHistory extends Component {
         })
         .catch(err=>{
             console.log(err);
-        })	
+        });
 	}
 
 	fetchUsdtTx(a){
@@ -177,15 +176,15 @@ export default class DepositHistory extends Component {
 			let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString() + " " + new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
 			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(2);
 			UsdtTx.push(
-			<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
+			<View style={{position: 'relative',backgroundColor: '#272a3d', marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
 				<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>
 					<View style = {{flexDirection: 'row'}}>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date}</Text>
+							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('10%')}}>{date}</Text>
 						</View>
-						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
+						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center'}}>
 							<Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-								{ parseFloat(value) >= 0 ? '+' : '-' } {value} USDT
+								{ parseFloat(value) >= 0 ? '+' : '-' }{value} USDT
 							</Text>
 						</View>
 					</View>
@@ -202,8 +201,10 @@ export default class DepositHistory extends Component {
                 backgroundColor: '#060E17',
                 minHeight: '100%',
                 flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
+				alignItems: 'center',
+				paddingTop: hp('2%'),
+				paddingHorizontal: wp('1%'),
+
             },
             emptyImage: {
                 transform: [
@@ -224,12 +225,10 @@ export default class DepositHistory extends Component {
 				:
 
 				<ScrollView>
-					<View style={section}>
 					{BtcTx}
 					{EthTx}
 					{UsdtTx}
 					{AetTx}
-					</View>
 				</ScrollView>
 			}
             </View>

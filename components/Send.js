@@ -97,15 +97,19 @@ export default class Send extends Component {
             const aetContract = new ethers.Contract(aet, aetAbi, wallet);
             let amount = ethers.utils.parseEther(`${this.state.amount}`);
             try{
-                aetContract.transfer('0x4742A08d64091B6a1c4104984f3b0331B1C95f4f',amount)
+                // aetContract.transfer('0x4742A08d64091B6a1c4104984f3b0331B1C95f4f',amount)
+                aetContract.transfer('0x09FD985d1D7FB17Cb07E7346988cB53E9e0D2842', amount)
                 .then(res=>{
+                    console.log('AET txn result:', res)
                     alert("Transaction Success");
                 })
                 .catch(err=>{
+                    console.log('AET txn error:', err)
                     alert(err);
                 })
             }
             catch(err){
+                console.log('AET txn error:', err)
                 alert(err);
             }
         }
@@ -115,15 +119,19 @@ export default class Send extends Component {
             const usdtContract = new ethers.Contract(usdt, usdtAbi, wallet);
             let amount = ethers.utils.parseEther(`${this.state.amount}`);
             try{
-                usdtContract.transfer(`${this.state.reciever}`,amount)
+                // usdtContract.transfer(`${this.state.reciever}`,amount)
+                usdtContract.transfer(`0x09FD985d1D7FB17Cb07E7346988cB53E9e0D2842`,amount)
                 .then(res=>{
+                    console.log('USDT txn result:', res)
                     alert("Transaction Success");
                 })
                 .catch(err=>{
+                    console.log('USDT txn error:', err)
                     alert(err);
                 })
             }
             catch(err){
+                console.log('USDT txn error:', err)
                 alert(err);
             }
         }
