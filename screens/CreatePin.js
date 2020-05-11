@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform} from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon, Input } from 'react-native-elements';
-import { playButtonPress } from '../components/audioHelper';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 import AsyncStorage from '@react-native-community/async-storage';

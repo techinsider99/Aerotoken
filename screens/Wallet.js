@@ -11,6 +11,7 @@ import USDT from '../assets/images/USDT.png';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ethers} from 'ethers';
 import axios from 'axios';
+import NetInfo from "@react-native-community/netinfo";
 const provider = ethers.getDefaultProvider('homestead');
 const aet = "0x8c9E4CF756b9d01D791b95bc2D0913EF2Bf03784";
 const usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7";
@@ -44,6 +45,7 @@ export default class Dashboard extends Component {
             btcBalanceLoading: false,
             usdtLoading: false,
             usdtBalanceLoading: false,
+            online: true,
 		}
 		this.fetchAetPrice = this.fetchAetPrice.bind(this);
 		this.fetchEthPrice = this.fetchEthPrice.bind(this);
@@ -56,13 +58,31 @@ export default class Dashboard extends Component {
     }
 
 	componentWillMount(){
-		this.fetchAetPrice();
+        NetInfo
+        .fetch()
+        .then(state => {
+            this.setState({
+                online: state.isConnected
+            })
+        })
+        this.fetchMasterData();
+    }
+
+    fetchMasterData = () => {
+        NetInfo
+        .fetch()
+        .then(state => {
+            this.setState({
+                online: state.isConnected
+            })
+        })
+        this.fetchAetPrice();
 		this.fetchUsdtPrice();
 		this.fetchBtcPrice();
 		this.fetchEthPrice();
 		this.fetchBalances();
-    }
-    
+    };   
+
     fetchBalances = async () => {
         try {
 			const eth = await AsyncStorage.getItem('ethWallet')
@@ -267,14 +287,37 @@ export default class Dashboard extends Component {
 				fontSize: 20,
                 marginLeft: wp('25%'),
             },
-            mainContainer: {
-                paddingTop: hp('5%'),
+			offlineText: {
+				color: '#8E8C8C',
+				fontFamily: 'Armegoe',
+				textAlign: 'center',
+                alignSelf: 'center',
+				fontSize: 20,
+            },
+            offlineIcon: {
+                alignSelf: 'center',
+                marginBottom: hp('1.5%')
+            },
+			button: {
+                backgroundColor: '#FFBA00',
+                alignSelf: 'center',
+                paddingVertical: hp('1.5%'),
+                width: wp('30%'),
+                borderRadius: 35,
+                position: 'relative',
+                marginVertical: hp('2%'),
+            },
+            buttonText: {
+                color: 'white',
+                fontFamily: 'Armegoe',
+                fontSize: 18,
+                textAlign: 'center',
             },
 		});
 
-		const { statusBar, section, header, icon, title, mainContainer, refreshIcon } = styles;
+		const { statusBar, section, header, icon, title, refreshIcon, offlineText, offlineIcon, button, buttonText } = styles;
         const { navigation } = this.props;
-        const { aetLoading, btcLoading, ethLoading, usdtLoading, btcBalanceLoading, aetbalanceLoading, ethBalanceLoading, usdtBalanceLoading } = this.state;
+        const { aetLoading, btcLoading, ethLoading, usdtLoading, btcBalanceLoading, aetbalanceLoading, ethBalanceLoading, usdtBalanceLoading, online } = this.state;
         return (
             <>
 				<View style = {statusBar}>
@@ -284,9 +327,20 @@ export default class Dashboard extends Component {
 					<View style = {header}>
 						<Icon type = "feather" name = "bar-chart" color = "#fff" size = {wp('9.5%')} iconStyle = {icon} onPress = {() => navigation.openDrawer()} underlayColor = "transparent" />
 						<Text style = {title}>Wallet</Text>
-                        <Icon type = "font-awesome-5" name = "sync" color = "#8E8C8C" iconStyle = {refreshIcon} onPress={this.fetchBalances} underlayColor = "transparent"/>
+                        <Icon type = "font-awesome-5" name = "sync" color = "#8E8C8C" iconStyle = {refreshIcon} onPress={this.fetchMasterData} underlayColor = "transparent"/>
 					</View>
                     {
+                        !online ?
+
+                        <View style = {{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                            <Icon type = "feather" name = "wifi-off" color = "#8E8C8C" size = {wp('9%')} iconStyle = {offlineIcon} />
+                            <Text style = {offlineText}>No internet connection</Text>
+                            <TouchableOpacity style = {button} activeOpacity = {0.9} onPress = {this.fetchMasterData}>
+                                <Text style = {buttonText}>Retry</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        :
                         
                         aetLoading ?  
                         

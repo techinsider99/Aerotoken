@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
-import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, ScrollView, ActivityIndicator, Linking } from 'react-native';
+import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, ScrollView, ActivityIndicator, Linking, Alert } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { Icon } from 'react-native-elements';
@@ -51,32 +51,32 @@ export default class CurrencyDetail extends Component {
 				this.fetchUsdtTx(ether.ethAddress);	
 			}
 		}
-		catch(err){
-			alert(err);
+		catch (err){
+			Alert(err);
 		}
 	}
 
 	refreshTx(){
 		const { abr } = this.props.route.params;
-		if(abr === "BTC"){
+		if (abr === 'BTC'){
 			this.fetchBtcTx(this.state.depositWallet);
 		}
-		else if(abr == "ETH"){
+		else if (abr === 'ETH'){
 			this.fetchEthTx(this.state.depositWallet);
 		}
-		else if(abr == "AET"){
+		else if (abr === 'AET'){
 			this.fetchAetTx(this.state.depositWallet);
 		}
-		else{
-			this.fetchUsdtTx(this.state.depositWallet);	
+		else {
+			this.fetchUsdtTx(this.state.depositWallet);
 		}
 	}
 
 	fetchBtcTx(a){
 		this.setState({txLoading : true});
-		const body={
-			address : a
-		}
+		const body = {
+			address : a,
+		};
 		fetch('https://api-aet.herokuapp.com/api/v1/history',{
                 method: 'post',
                 body:    JSON.stringify(body),
@@ -86,7 +86,7 @@ export default class CurrencyDetail extends Component {
             .then(json => {
 				let tx = this.state.tx;
 				tx = [];
-				for(let i=0;i<json.txrefs.length;i++){
+				for (let i = 0; i < json.txrefs.length; i++) {
 					tx.push(
 						<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
 							<TouchableOpacity onPress={()=>{Linking.openURL(`https://www.blockchain.com/btc/tx/${json.txrefs[i].tx_hash}`)}}>
@@ -135,19 +135,19 @@ export default class CurrencyDetail extends Component {
 				}
 			}
 			this.setState({tx , txLoading : false});
-		})		
+		})
 	}
 
 	fetchAetTx(a){
 		this.setState({txLoading : true});
-		let address = a
+		let address = a;
 		const body = {
-			address : address
-		}
-		fetch('https://api-aet.herokuapp.com/api/v1/coinHistory',{
-		method: 'post',
-		body:    JSON.stringify(body),
-		headers: { 'Content-Type': 'application/json' },
+			address : address,
+		};
+		fetch('https://api-aet.herokuapp.com/api/v1/coinHistory', {
+			method: 'post',
+			body:    JSON.stringify(body),
+			headers: { 'Content-Type': 'application/json' },
 		})
 		.then(res => res.json())
 		.then(json => {
@@ -178,39 +178,40 @@ export default class CurrencyDetail extends Component {
 
 	fetchUsdtTx(a){
 		this.setState({txLoading : true});
-		let address = a
+		let address = a;
 		const body = {
-			address : address
-		}
+			address : address,
+		};
 		fetch('https://api-aet.herokuapp.com/api/v1/coinHistory',{
-		method: 'post',
-		body:    JSON.stringify(body),
-		headers: { 'Content-Type': 'application/json' },
+			method: 'post',
+			body:    JSON.stringify(body),
+			headers: { 'Content-Type': 'application/json' },
 		})
 		.then(res => res.json())
 		.then(json => {
 			let tx = this.state.tx;
 			tx = [];
-			for(let i=json.txrefs.length-1; i>-1;i--){
-			if(json.txrefs[i].tokenSymbol == "USDT"){
-			let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString() + " " + new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
-			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(8);
-			tx.push(
-			<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
-					<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>
-						<View style = {{flexDirection: 'row'}}>
-							<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
-								<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date}</Text>
-							</View>
-							<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-								{json.txrefs[i].to === address ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {value} USDT</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>- {value} USDT</Text>}
-							</View>
+			for (let i=json.txrefs.length-1; i>-1;i--) {
+				if (json.txrefs[i].tokenSymbol === 'USDT') {
+					let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString() + " " + new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
+					let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(2);
+					tx.push(
+						<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
+							<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>
+								<View style = {{flexDirection: 'row'}}>
+									<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
+										<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date}</Text>
+									</View>
+									<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
+										{json.txrefs[i].to === address ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+ {value} USDT</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>- {value} USDT</Text>}
+									</View>
+								</View>
+							</TouchableOpacity>
 						</View>
-					</TouchableOpacity>
-			</View>	)
+					);
+				}
 			}
-		}
-		this.setState({tx , txLoading : false});
+			this.setState({tx , txLoading : false});
 		});
 	}
 
@@ -379,7 +380,7 @@ export default class CurrencyDetail extends Component {
 							<View style = {{flexDirection: 'row', marginBottom: hp('4%')}}>
 								<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
 									<Text style = {mainText}>Current balance</Text>
-									<Text style = {priceText}>$ {balance === 0 ? balance : balance.toFixed(8)}</Text>
+									<Text style = {priceText}>$ {balance === 0 ? balance : currencyName === 'Tether USD' ? balance.toFixed(2) : balance.toFixed(8)}</Text>
 								</View>
 								<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row'}}>
 									<Text style = {mainText}>USD</Text>

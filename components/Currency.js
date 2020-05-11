@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
-import { NavigationActions } from 'react-navigation';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 export default class Currency extends Component {
@@ -51,7 +50,7 @@ export default class Currency extends Component {
                         <Text style = {{fontFamily: 'Armegoe', color: "#6F6E71", fontSize: wp('4%')}}>{currencyValue}</Text>
                     </View>
                     <View style = {details2}>
-                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: wp('4.5'), marginBottom: 8}}>$ {balance === 0 ? balance : balance.toFixed(8)}</Text>
+                        <Text style = {{fontFamily: 'Armegoe', color: "white", fontSize: wp('4.5'), marginBottom: 8}}>$ {balance === 0 ? balance : currencyName === 'Tether USD' ? balance.toFixed(2) : balance.toFixed(8)}</Text>
                         {difference < 0 ? <Text style = {{fontFamily: 'Armegoe', color: "red", fontSize: wp('4%')}}>{difference}</Text> :  <Text style = {{fontFamily: 'Armegoe', color: "green", fontSize: wp('4%')}}> +{difference}</Text> }
                     </View>
                 </TouchableOpacity>
