@@ -5,6 +5,8 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import { Icon, Input } from 'react-native-elements';
 import { ethers } from 'ethers';
 import AsyncStorage from '@react-native-community/async-storage';
+import Toast from 'react-native-simple-toast';
+
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 
 export default class ImportWallet extends Component {
@@ -17,7 +19,7 @@ export default class ImportWallet extends Component {
 			iconType: 'eye',
 			pin:'',
 			error:'',
-			loading: false
+			loading: false,
 		};
 	}
 
@@ -64,28 +66,27 @@ export default class ImportWallet extends Component {
 		}
     }
 
-	handlePhraseSubmit = () => {
+	handlePhraseSubmit = async () => {
+		console.log('Submitted')
 		let phrase  = this.state.phrase;
 		let pin = this.state.pin;
-		this.setState({ loading: true }, async () => {
-			try {
-				let walletTemp = ethers.Wallet.fromMnemonic(phrase);
-				const walletJson = {
-					'ethAddress' : walletTemp.address,
-					'ethPrivateKey' : walletTemp.privateKey,
-					'ethMnemonic' : walletTemp.mnemonic
-				};
-				const wallet = JSON.stringify(walletJson);
-				AsyncStorage.setItem('ethWallet', wallet);
-				await AsyncStorage.setItem('@pin', pin, () => this.setState({ loading: false }));
-				this.props.navigation.popToTop();
-				this.props.navigation.replace('Dashboard');
-			}
-			catch (error){
-				this.setState({ loading: false });
-				Alert(error);
-			}
-		});
+		try {
+			let walletTemp = ethers.Wallet.fromMnemonic(phrase);
+			const walletJson = {
+				'ethAddress' : walletTemp.address,
+				'ethPrivateKey' : walletTemp.privateKey,
+				'ethMnemonic' : walletTemp.mnemonic,
+			};
+			const wallet = JSON.stringify(walletJson);
+			await AsyncStorage.setItem('ethWallet', wallet);
+			await AsyncStorage.setItem('@pin', pin);
+			this.props.navigation.popToTop();
+			this.props.navigation.replace('Dashboard');
+		}
+		catch (error){
+			this.setState({ loading: false });
+			Alert(error);
+		}
 	}
 
     render() {
@@ -161,16 +162,8 @@ export default class ImportWallet extends Component {
                                 <Icon type = "font-awesome" name = {iconType} color = "#fff" onPress = {this.handleSecuredEntry} underlayColor = "transparent"/>
                             }/>
 						</View>
-						<TouchableOpacity style = {button} activeOpacity = {0.9} onPress = {this.handlePhraseSubmit} disabled = {isLoading}>
-							{
-								isLoading ?
-
-								<ActivityIndicator size = {24} color = "#fff" />
-
-								:
-
-								<Text style = {buttonText}>Import Wallet</Text>
-							}
+						<TouchableOpacity style = {button} activeOpacity = {0.5} onPress = {this.handlePhraseSubmit} disabled = {isLoading}>
+							<Text style = {buttonText}> { isLoading ? 'Importing' : 'Import' } Wallet</Text>
                         </TouchableOpacity>
 					</View>
 				</View>

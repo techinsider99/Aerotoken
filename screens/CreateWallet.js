@@ -19,7 +19,7 @@ export default class CreateWallet extends Component {
 		this.state = {
 			mnemonic :'',
 			loading: false,
-			copied : false
+			copied : false,
 		};
 	}
 

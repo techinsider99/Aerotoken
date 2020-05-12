@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react'
-import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, KeyboardAvoidingView, Alert } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon, Input } from 'react-native-elements';
 import 'ethers/dist/shims.js';
@@ -22,7 +22,8 @@ export default class Send extends Component {
             reciever : '',
             amount : 0,
             usdPrice : 0,
-            privateKey:''
+            privateKey:'',
+            loading: false
         }
         this.handleSend = this.handleSend.bind(this);
     }
@@ -31,7 +32,7 @@ export default class Send extends Component {
         const {abr} = this.props.route.params;
         try{
 			const eth = await AsyncStorage.getItem('ethWallet')
-			let ether = JSON.parse(eth);
+            let ether = JSON.parse(eth);
 			const btc = await AsyncStorage.getItem('btcWallet')
 			let bitcoin = JSON.parse(btc);
 			if(abr === "BTC"){
@@ -50,95 +51,124 @@ export default class Send extends Component {
 
     handleAmount = amount => this.setState({ amount: amount });
 
-    handleSend(){
+    async handleSend(){
         const {abr} = this.props.route.params;
         const { currencyValue} = this.props.route.params;
-        if(this.state.amount  < currencyValue){
-        if(abr == "BTC"){
-            const body = {
-                to_address : this.state.reciever,
-                value_satoshis : this.state.amount,
-                from_private: this.state.privateKey
+        console.log(this.state.amount)
+        if(this.state.amount > 0) {
+            if(this.state.amount  < currencyValue){
+                if(abr == "BTC"){
+                    this.setState({ loading: true }, () => {
+                        const body = {
+                            to_address : this.state.reciever,
+                            value_satoshis : this.state.amount,
+                            from_private: this.state.privateKey
+                        }
+                        console.log(body);
+                        fetch('https://api-aet.herokuapp.com/api/v1/send/btc',{
+                            method: 'post',
+                            body:    JSON.stringify(body),
+                            headers: { 'Content-Type': 'application/json' },
+                        })
+                        .then(res => res.json())
+                        .then(json => {
+                            console.log(json);
+                            alert('Transaction success')
+                            this.goToWallet();
+                            this.setState({ loading: false })
+                        })
+                    })
+                }
+                else if(abr == "ETH"){
+                    this.setState({ loading: false }, () => {
+                        let privateKey = this.state.privateKey;
+                        let wallet = new ethers.Wallet(privateKey, provider); 
+                        let tx = {
+                            to: this.state.reciever,
+                            value: ethers.utils.parseEther(`${this.state.amount}`)
+                        };      
+                        try{
+                            let sendPromise = wallet.sendTransaction(tx);
+                            sendPromise.then((tx) => {
+                                alert('Transaction success');
+                                this.goToWallet();
+                                this.setState({ loading: false })
+                            })
+                            .catch(err=>{
+                                this.setState({ loading: false })
+                                alert(err);
+                            })
+                        }
+                        catch(err){
+                            this.setState({ loading: false })
+                            alert(err);
+                        }
+                    })
+                }
+                else if(abr == "AET"){
+                    this.setState({ loading: true }, () => {
+                        let privateKey = this.state.privateKey;
+                        let wallet = new ethers.Wallet(privateKey, provider); 
+                        const aetContract = new ethers.Contract(aet, aetAbi, wallet);
+                        let amount = ethers.utils.parseEther(`${this.state.amount}`);
+                        let receiver = this.state.reciever.toLowerCase()
+                        try{
+                            aetContract.transfer(receiver, amount)
+                            .then(res=>{
+                                alert("Transaction Success");
+                                this.goToWallet();
+                                this.setState({ loading: false })
+                            })
+                            .catch(err=>{
+                                this.setState({ loading: false })
+                                console.log('AET txn error:', err)
+                                alert(err);
+                            })
+                        }
+                        catch(err){
+                            this.setState({ loading: false })
+                            console.log('AET txn error:', err)
+                            alert(err);
+                        } 
+                    })
+                }
+                else {
+                    this.setState({ loading: true }, async () => {
+                        let privateKey = this.state.privateKey;
+                        let wallet = new ethers.Wallet(privateKey, provider); 
+                        const usdtContract = new ethers.Contract(usdt, usdtAbi, wallet);
+                        var amount = ethers.utils.parseEther(`${this.state.amount}`)*0.000000000001;
+                        try{
+                            usdtContract.transfer(`${this.state.reciever}`,amount)
+                            .then(res=>{
+                                alert("Transaction Success");
+                                this.goToWallet();
+                                this.setState({ loading: false })
+                            })
+                            .catch(err=>{
+                                this.setState({ loading: false })
+                                alert(err);
+                            })
+                        }
+                        catch(err){
+                            this.setState({ loading: false })
+                            alert(err);
+                        }
+                    })  
+                }
             }
-            console.log(body);
-            fetch('https://api-aet.herokuapp.com/api/v1/send/btc',{
-                method: 'post',
-                body:    JSON.stringify(body),
-                headers: { 'Content-Type': 'application/json' },
-            })
-            .then(res => res.json())
-            .then(json => {
-                console.log(json);
-            })
-        }
-        else if(abr == "ETH"){
-            let privateKey = this.state.privateKey;
-            let wallet = new ethers.Wallet(privateKey, provider); 
-            let tx = {
-                to: '0x4742A08d64091B6a1c4104984f3b0331B1C95f4f',
-                value: ethers.utils.parseEther(`${this.state.amount}`)
-            };      
-            try{
-                let sendPromise = wallet.sendTransaction(tx);
-                sendPromise.then((tx) => {
-                    alert(tx.hash);
-                })
-                .catch(err=>{
-                    alert(err);
-                })
+            else{
+                Alert("Insufficient Balance");
             }
-            catch(err){
-                alert(err);
-            }
-        }
-        else if(abr == "AET"){
-            let privateKey = this.state.privateKey;
-            let wallet = new ethers.Wallet(privateKey, provider); 
-            const aetContract = new ethers.Contract(aet, aetAbi, wallet);
-            let amount = ethers.utils.parseEther(`${this.state.amount}`);
-            try{
-                // aetContract.transfer('0x4742A08d64091B6a1c4104984f3b0331B1C95f4f',amount)
-                aetContract.transfer('0x09FD985d1D7FB17Cb07E7346988cB53E9e0D2842', amount)
-                .then(res=>{
-                    console.log('AET txn result:', res)
-                    alert("Transaction Success");
-                })
-                .catch(err=>{
-                    console.log('AET txn error:', err)
-                    alert(err);
-                })
-            }
-            catch(err){
-                console.log('AET txn error:', err)
-                alert(err);
-            }
-        }
-        else {
-            let privateKey = this.state.privateKey;
-            let wallet = new ethers.Wallet(privateKey, provider); 
-            const usdtContract = new ethers.Contract(usdt, usdtAbi, wallet);
-            let amount = ethers.utils.parseEther(`${this.state.amount}`);
-            try{
-                // usdtContract.transfer(`${this.state.reciever}`,amount)
-                usdtContract.transfer(`0x09FD985d1D7FB17Cb07E7346988cB53E9e0D2842`,amount)
-                .then(res=>{
-                    console.log('USDT txn result:', res)
-                    alert("Transaction Success");
-                })
-                .catch(err=>{
-                    console.log('USDT txn error:', err)
-                    alert(err);
-                })
-            }
-            catch(err){
-                console.log('USDT txn error:', err)
-                alert(err);
-            }
+        } else {
+            Alert('Amount must not be empty')
         }
     }
-    else{
-        alert("Insufficient Balance");
-    }
+
+    goToWallet = () => {
+        const { navigation } = this.props;
+        navigation.popToTop();
+        navigation.replace('Dashboard');
     }
 
     handleBack = () => {
@@ -281,9 +311,9 @@ export default class Send extends Component {
                         </View>
                     </View>
                     <KeyboardAvoidingView enabled = {false}>
-                        <TouchableOpacity style = {button} activeOpacity = {0.9} onPress = {this.handleSend}>
+                        <TouchableOpacity style = {button} activeOpacity = {0.9} disabled = {this.state.loading} onPress = {this.handleSend}>
                             <Icon type = "feather" name = "arrow-up-right" color = "white" />
-                            <Text style = {buttonText} >Send</Text>
+                            <Text style = {buttonText} >{ this.state.loading ? 'Sending' : 'Send' }</Text>
                         </TouchableOpacity>
                     </KeyboardAvoidingView>
 				</View>

@@ -52,11 +52,11 @@ export default class Staking extends Component {
     handleAmount = amount => this.setState({ amount: amount })
 
     handleStake(){
-        if(this.state.amount > this.state.aetBalance){
-            alert('Minimum stake is 1000');
+        if(this.state.amount >= this.state.aetBalance && this.state.aetBalance > 1000){
+            alert('You must have minimum 1000 coins to stake');
         }
-        else if(this.state.ethBalance < '0.01'){
-            alert('Insufficient Gas. Fund Your Account With Alteast 0.05 ETH to pay for Gas')
+        else if(this.state.ethBalance < '0.0001'){
+            alert('Insufficient Gas. Fund Your Account to pay for Gas')
         }
         else{
             let privateKey = this.state.privateKey;
@@ -176,7 +176,7 @@ export default class Staking extends Component {
 			},
 		});
 
-        const { statusBar, section, header, icon, title, button, buttonText, inputBox, inputContainer,staking } = styles;
+        const { statusBar, section, header, icon, title, button, buttonText, inputBox, inputContainer, staking } = styles;
         const { navigation } = this.props;
         return (
             <>
@@ -195,7 +195,7 @@ export default class Staking extends Component {
                             <Text style = {buttonText}>Start Staking</Text>
                     </TouchableOpacity>
                     <View style = {{display:'flex',alignItems:'center',justifyContent:'center',marginTop : 20}}>
-						<Text style = {staking}>Total Staked : {this.state.totalStaked ==  0 ? 0 : this.state.totalStaked}</Text>
+						<Text style = {staking}>Total Staked : {this.state.totalStaked ===  0 ? 0 : this.state.totalStaked}</Text>
                     </View>
                 </View>
             </>

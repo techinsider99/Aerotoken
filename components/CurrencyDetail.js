@@ -129,7 +129,7 @@ export default class CurrencyDetail extends Component {
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>{time}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-							{history[i].to !== address ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+{value} ETH</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>-{value} ETH</Text>}
+							{history[i].to !== address ? <Text style = {{fontFamily: 'Armegoe',color: '#FFBA00',fontSize: 18}}>-{value} ETH</Text> : <Text style = {{fontFamily:'Armegoe',color: '#2CC593',fontSize: 18}}>+{value} ETH</Text>}
 						</View>
 					</View>
 					</TouchableOpacity>
@@ -156,8 +156,9 @@ export default class CurrencyDetail extends Component {
 		.then(json => {
 			let tx = this.state.tx;
 			tx = [];
+			console.log('AET TRANSACTIONS:', json.txrefs)
 			for(let i=json.txrefs.length-1; i>-1;i--){
-			if(json.txrefs[i].tokenSymbol == "AET"){
+			if(json.txrefs[i].tokenSymbol === "AET"){
 			let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString();
 			let time = new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
 			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)).toFixed(8);
@@ -170,7 +171,7 @@ export default class CurrencyDetail extends Component {
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>{time}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-							{json.txrefs[i].to == address ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+{value} AET</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>-{value} AET</Text>}
+							{json.txrefs[i].to === address.toLowerCase() ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+{value} AET</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>-{value} AET</Text>}
 						</View>
 					</View>
 				</TouchableOpacity>
@@ -200,7 +201,7 @@ export default class CurrencyDetail extends Component {
 				if (json.txrefs[i].tokenSymbol === 'USDT') {
 					let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString()
 					let time = new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
-					let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(2);
+					let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(8);
 					tx.push(
 						<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
 							<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>
@@ -210,7 +211,7 @@ export default class CurrencyDetail extends Component {
 										<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>{time}</Text>
 									</View>
 									<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-										{json.txrefs[i].to !== address ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+{value} USDT</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>-{value} USDT</Text>}
+										{json.txrefs[i].from !== address.toLowerCase() ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+{value} USDT</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>-{value} USDT</Text>}
 									</View>
 								</View>
 							</TouchableOpacity>
@@ -386,7 +387,7 @@ export default class CurrencyDetail extends Component {
 							<View style = {{flexDirection: 'row', marginBottom: hp('4%')}}>
 								<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
 									<Text style = {mainText}>Current balance</Text>
-									<Text style = {priceText}>$ {balance === 0 ? balance : currencyName === 'Tether USD' ? balance.toFixed(2) : balance.toFixed(8)}</Text>
+									<Text style = {priceText}>$ {balance === 0 ? balance : balance.toFixed(8)}</Text>
 								</View>
 								<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row'}}>
 									<Text style = {mainText}>USD</Text>

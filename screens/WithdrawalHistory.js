@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
-import { StyleSheet, View, Image,Text,ScrollView,Linking, TouchableOpacity, Alert} from 'react-native';
+import { StyleSheet, View, Image,Text,ScrollView,Linking, TouchableOpacity, Alert, RefreshControl} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import axios from 'axios';
@@ -12,25 +12,24 @@ export default class DepositHistory extends Component {
         this.state={
             BtcTx : [],
             EthTx : [],
-            UsdtTx : [],
-            AetTx : []
-        }
+			CoinTx: [],
+			refreshing: false,
+			btcAddress: '',
+			ethAddress: '',
+        };
         this.fetchBtcTx=this.fetchBtcTx.bind(this);
 		this.fetchEthTx = this.fetchEthTx.bind(this);
-		this.fetchAetTx = this.fetchAetTx.bind(this);
-		this.fetchUsdtTx = this.fetchUsdtTx.bind(this);
     }
 
     async UNSAFE_componentWillMount(){
         try {
-        const eth = await AsyncStorage.getItem('ethWallet')
+        const eth = await AsyncStorage.getItem('ethWallet');
 		let ether = JSON.parse(eth);
-		const btc = await AsyncStorage.getItem('btcWallet')
-        let bitcoin = JSON.parse(btc);
+		const btc = await AsyncStorage.getItem('btcWallet');
+		let bitcoin = JSON.parse(btc);
         this.fetchBtcTx(bitcoin.btcAddress);
         this.fetchEthTx(ether.ethAddress);
-        this.fetchAetTx(ether.ethAddress);
-		this.fetchUsdtTx(ether.ethAddress);	
+        this.fetchTransactions(ether.ethAddress);
         }
         catch (err){
             console.log(err);
@@ -42,6 +41,7 @@ export default class DepositHistory extends Component {
 		const body={
 			address : a
 		}
+		this.setState({ btcAddress: a })
 		fetch('https://api-aet.herokuapp.com/api/v1/history',{
                 method: 'post',
                 body:    JSON.stringify(body),
@@ -49,7 +49,6 @@ export default class DepositHistory extends Component {
             })
             .then(res => res.json())
             .then(json => {
-                console.log(json);
                 let BtcTx = this.state.BtcTx;
                 BtcTx = [];
 				for(let i=0;i<json.txrefs.length;i++){
@@ -63,8 +62,8 @@ export default class DepositHistory extends Component {
                                         <Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 15,}}>{new Date(json.txrefs[i].confirmed).toLocaleDateString() + " " + new Date(json.txrefs[i].confirmed).toLocaleTimeString()}</Text>
                                     </View> 
                                     <View style = {{flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center',marginLeft:15}}>
-                                    <Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-										{ parseFloat(value) >= 0 ? '+' : '-' }{value} BTC
+                                    <Text style = {{fontFamily: 'Armegoe',color: '#FFBA00', fontSize: 18}}>
+										-{value} BTC
 									</Text>
                                     </View>
                                 </View>
@@ -82,23 +81,24 @@ export default class DepositHistory extends Component {
 
 	fetchEthTx(a){
 		let address = a;
+		this.setState({ ethAddress: address })
 		let etherscanProvider = new ethers.providers.EtherscanProvider();
 		etherscanProvider.getHistory(address).then((history) => {
             let EthTx = this.state.EthTx;
             EthTx = [];
 			for(let i=history.length-1; i>-1;i--){
-				if(ethers.utils.formatEther(history[i].value) > 0 && history[i].to !== address){
+				if(ethers.utils.formatEther(history[i].value) > 0 && history[i].from === address){
 				let date = new Date(history[i].timestamp*1000).toLocaleDateString() + " " + new Date(history[i].timestamp*1000).toLocaleTimeString();
 				let value = parseFloat(ethers.utils.formatEther(history[i].value)).toFixed(8);
 				EthTx.push(
 				<TouchableOpacity style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}} onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${history[i].hash}`)}}>
 					<View style = {{flexDirection: 'row'}}>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date}</Text>
+							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('1%')}}>{date}</Text>
 						</View>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-								{ parseFloat(value) >= 0 ? '+' : '-' }{value} ETH
+							<Text style = {{fontFamily: 'Armegoe',color: '#FFBA00', fontSize: 18}}>
+								-{value} ETH
 							</Text>
 						</View>
 					</View>
@@ -113,88 +113,61 @@ export default class DepositHistory extends Component {
             })	
 	}
 
-	fetchAetTx(a){
-		let address = a
+	fetchTransactions = address => {
 		const body = {
-			address : address
-		}
-		fetch('https://api-aet.herokuapp.com/api/v1/coinHistory',{
-			method: 'post',
-			body: JSON.stringify(body),
-			headers: { 'Content-Type': 'application/json' },
-		})
-		.then(res => res.json())
-		.then(json => {
-			console.log(json)
-            let AetTx = this.state.AetTx;
-            AetTx = [];
-			for(let i=json.txrefs.length-1; i>-1;i--){
-            // console.log((json.txrefs[i].to.toString ));
-			if(json.txrefs[i].tokenSymbol == "AET" && json.txrefs[i].to !== address){
-			let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString() + " " + new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
-			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)).toFixed(8);
-			AetTx.push(
-			<View style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
-				<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>
-					<View style = {{flexDirection: 'row'}}>
-						<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('1%')}}>{date}</Text>
-						</View>
-						<View style = {{justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-						<Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-								{ parseFloat(value) >= 0 ? '+' : '-' }{value} AET
-							</Text>
-						</View>
-					</View>
-				</TouchableOpacity>
-			</View>	)
-			}
-		}
-		this.setState({AetTx});
-        })
-        .catch(err=>{
-            console.log(err);
-        });
+			address: address,
+		};
+		axios.post('https://api-aet.herokuapp.com/api/v1/coinHistory', body)
+		.then(res => {
+			let data = res.data.txrefs;
+			data = data.filter(transaction => {
+				return transaction.from === address.toLowerCase();
+			}).map(transaction => {
+				return (
+					<>
+						{
+							<View style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
+								<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${transaction.hash}`)}}>
+									<View style = {{flexDirection: 'row'}}>
+										<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
+											<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('1%')}}>
+												{new Date(transaction.timeStamp*1000).toLocaleDateString() + " " + new Date(transaction.timeStamp*1000*1000).toLocaleTimeString()}
+											</Text>
+										</View>
+										<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
+											<Text style = {{fontFamily: 'Armegoe',color: '#FFBA00', fontSize: 18}}>
+												-{
+													transaction.tokenSymbol === 'USDT' ?
+
+													parseFloat(ethers.utils.formatEther(transaction.value)*1000000000000).toFixed(8)
+
+													:
+
+													parseFloat(ethers.utils.formatEther(transaction.value)).toFixed(8)
+												} { transaction.tokenSymbol }
+											</Text>
+										</View>
+									</View>
+								</TouchableOpacity>
+							</View>
+						}
+					</>
+				);
+			});
+			this.setState({ CoinTx: data});
+		}).catch(err => console.log(err));
 	}
 
-	fetchUsdtTx(a){
-		let address = a
-		const body = {
-			address : address
-		}
-		fetch('https://api-aet.herokuapp.com/api/v1/coinHistory',{
-		method: 'post',
-		body:    JSON.stringify(body),
-		headers: { 'Content-Type': 'application/json' },
+	handleRefresh = () => {
+		const { ethAddress, btcAddress } = this.state;
+		this.setState({ refreshing: true }, () => {
+			this.fetchBtcTx(btcAddress);
+			this.fetchEthTx(ethAddress);
+			this.fetchTransactions(ethAddress);
 		})
-		.then(res => res.json())
-		.then(json => {
-            let UsdtTx = this.state.UsdtTx;
-            UsdtTx = [];
-			for(let i=json.txrefs.length-1; i>-1;i--){
-			if(json.txrefs[i].tokenSymbol == "USDT" && json.txrefs[i].to !== address){
-			let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString() + " " + new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
-			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(2);
-			UsdtTx.push(
-			<View style={{position: 'relative',backgroundColor: '#272a3d', marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
-				<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>
-					<View style = {{flexDirection: 'row'}}>
-						<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('10%')}}>{date}</Text>
-						</View>
-						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center'}}>
-							<Text style = {{fontFamily: 'Armegoe',color: parseFloat(value) >= 0 ? '#2CC593' : '#FFBA00', fontSize: 18}}>
-								{ parseFloat(value) >= 0 ? '+' : '-' }{value} USDT
-							</Text>
-						</View>
-					</View>
-				</TouchableOpacity>
-			</View>	)
-			}
-		}
-		this.setState({UsdtTx});
-		})
+		this.setState({ refreshing: false })
 	}
+
     render() {
         const styles = StyleSheet.create({
             section: {
@@ -214,21 +187,20 @@ export default class DepositHistory extends Component {
         });
 
 		const { section, emptyImage } = styles;
-		const { BtcTx, EthTx, UsdtTx, AetTx } = this.state;
+		const { BtcTx, EthTx, CoinTx, refreshing } = this.state;
         return (
             <View style = {section}>
 			{
-				BtcTx.length === 0 && EthTx.length === 0 && UsdtTx.length === 0 && AetTx.length === 0 ?
+				BtcTx.length === 0 && EthTx.length === 0 && CoinTx.length === 0 ?
 
 				<Image source = {require('../assets/images/EmptyFinal.png')} style = {emptyImage}/>
 
 				:
 
-				<ScrollView>
+				<ScrollView refreshControl = {<RefreshControl refreshing = {refreshing} onRefresh = {this.handleRefresh}/>}>
 					{BtcTx}
 					{EthTx}
-					{UsdtTx}
-					{AetTx}
+					{CoinTx}
 				</ScrollView>
 			}
             </View>
