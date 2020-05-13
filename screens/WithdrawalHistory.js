@@ -38,11 +38,11 @@ export default class DepositHistory extends Component {
     }
 
     fetchBtcTx(a){
-		const body={
-			address : a
-		}
-		this.setState({ btcAddress: a })
-		fetch('https://api-aet.herokuapp.com/api/v1/history',{
+		const body = {
+			address : a,
+		};
+		this.setState({ btcAddress: a });
+		fetch('https://aet-wallet.herokuapp.com/api/v1/history',{
                 method: 'post',
                 body:    JSON.stringify(body),
                 headers: { 'Content-Type': 'application/json' },
@@ -55,13 +55,18 @@ export default class DepositHistory extends Component {
                     if(json.txrefs[i].spent === false){
 						var value = parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8);
                         BtcTx.push(
-                            <View style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
+                            <View style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15, width: wp('85%')}}>
                              <TouchableOpacity onPress={()=>{Linking.openURL(`https://www.blockchain.com/btc/tx/${json.txrefs[i].tx_hash}`)}}>
 								<View style = {{flexDirection: 'row'}}>
                                     <View style = {{flex: 1, flexWrap: 'wrap'}}>
-                                        <Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 15,}}>{new Date(json.txrefs[i].confirmed).toLocaleDateString() + " " + new Date(json.txrefs[i].confirmed).toLocaleTimeString()}</Text>
-                                    </View> 
-                                    <View style = {{flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center',marginLeft:15}}>
+                                        <Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>
+											{new Date(json.txrefs[i].confirmed).toLocaleDateString()}
+										</Text>
+										<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>
+											{new Date(json.txrefs[i].confirmed).toLocaleTimeString()}
+										</Text>
+                                    </View>
+                                    <View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'flex-end', alignContent: 'flex-end'}}>
                                     <Text style = {{fontFamily: 'Armegoe',color: '#FFBA00', fontSize: 18}}>
 										-{value} BTC
 									</Text>
@@ -88,15 +93,17 @@ export default class DepositHistory extends Component {
             EthTx = [];
 			for(let i=history.length-1; i>-1;i--){
 				if(ethers.utils.formatEther(history[i].value) > 0 && history[i].from === address){
-				let date = new Date(history[i].timestamp*1000).toLocaleDateString() + " " + new Date(history[i].timestamp*1000).toLocaleTimeString();
+				let date = new Date(history[i].timestamp*1000).toLocaleDateString();
+				let time = new Date(history[i].timestamp*1000).toLocaleTimeString();
 				let value = parseFloat(ethers.utils.formatEther(history[i].value)).toFixed(8);
 				EthTx.push(
-				<TouchableOpacity style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}} onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${history[i].hash}`)}}>
+				<TouchableOpacity style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15, width: wp('85%')}} onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${history[i].hash}`)}}>
 					<View style = {{flexDirection: 'row'}}>
 						<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('1%')}}>{date}</Text>
+							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>{time}</Text>
 						</View>
-						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
+						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'flex-end', alignContent: 'flex-end'}}>
 							<Text style = {{fontFamily: 'Armegoe',color: '#FFBA00', fontSize: 18}}>
 								-{value} ETH
 							</Text>
@@ -117,7 +124,7 @@ export default class DepositHistory extends Component {
 		const body = {
 			address: address,
 		};
-		axios.post('https://api-aet.herokuapp.com/api/v1/coinHistory', body)
+		axios.post('https://aet-wallet.herokuapp.com/api/v1/coinHistory', body)
 		.then(res => {
 			let data = res.data.txrefs;
 			data = data.filter(transaction => {
@@ -126,15 +133,18 @@ export default class DepositHistory extends Component {
 				return (
 					<>
 						{
-							<View style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
+							<View style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15, width: wp('85%')}}>
 								<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${transaction.hash}`)}}>
 									<View style = {{flexDirection: 'row'}}>
 										<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
 											<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('1%')}}>
-												{new Date(transaction.timeStamp*1000).toLocaleDateString() + " " + new Date(transaction.timeStamp*1000*1000).toLocaleTimeString()}
+												{new Date(transaction.timeStamp*1000).toLocaleDateString()} 
+											</Text>
+											<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>
+												{new Date(transaction.timeStamp*1000*1000).toLocaleTimeString()}
 											</Text>
 										</View>
-										<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
+										<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'flex-end', alignContent: 'flex-end'}}>
 											<Text style = {{fontFamily: 'Armegoe',color: '#FFBA00', fontSize: 18}}>
 												-{
 													transaction.tokenSymbol === 'USDT' ?

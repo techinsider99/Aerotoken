@@ -1,12 +1,9 @@
 /* eslint-disable prettier/prettier */
-import React, { Component } from 'react'
-import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform} from 'react-native';
-import { Container, Tabs, Tab } from 'native-base';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import React, { Component } from 'react';
+import { StyleSheet, View, Text, StatusBar, Platform} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
 import TabNavigator from './HistoryTabs';
-import DepositHistory from './DepositHistory';
-import WithdrawalHistory from './WithdrawalHistory';
 
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 

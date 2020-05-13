@@ -1,14 +1,12 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Text, Platform, StatusBar } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Platform, StatusBar } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Animated from 'react-native-reanimated';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { Icon } from 'react-native-elements';
 import DepositHistory from './DepositHistory';
 import WithdrawalHistory from './WithdrawalHistory';
-import { NavigationEvents } from 'react-navigation';
-import { Icon } from 'react-native-elements';
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -60,7 +58,7 @@ export default class HistoryTabs extends Component {
 			},
 		});
 
-        const { tabsContainer, statusBar, section, header, icon, title } = mainStyles;
+        const { tabsContainer, header, icon, title } = mainStyles;
         const { navigation } = this.props;
 
 		const TabBar =  ({state, descriptors, navigation}) => {

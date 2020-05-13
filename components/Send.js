@@ -65,7 +65,7 @@ export default class Send extends Component {
                             from_private: this.state.privateKey
                         }
                         console.log(body);
-                        fetch('https://api-aet.herokuapp.com/api/v1/send/btc',{
+                        fetch('https://aet-wallet.herokuapp.com/api/v1/send/btc',{
                             method: 'post',
                             body:    JSON.stringify(body),
                             headers: { 'Content-Type': 'application/json' },
@@ -311,7 +311,7 @@ export default class Send extends Component {
                         </View>
                     </View>
                     <KeyboardAvoidingView enabled = {false}>
-                        <TouchableOpacity style = {button} activeOpacity = {0.9} disabled = {this.state.loading} onPress = {this.handleSend}>
+                        <TouchableOpacity style = {button} activeOpacity = {0.6} disabled = {this.state.loading} onPress = {this.handleSend}>
                             <Icon type = "feather" name = "arrow-up-right" color = "white" />
                             <Text style = {buttonText} >{ this.state.loading ? 'Sending' : 'Send' }</Text>
                         </TouchableOpacity>

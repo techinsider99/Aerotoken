@@ -8,8 +8,8 @@ import { Icon } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 import Clipboard from '@react-native-community/clipboard';
 const {ethers}  = require('ethers');
-const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 
+const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 export default class CurrencyDetail extends Component {
 
 	constructor(props){
@@ -77,7 +77,7 @@ export default class CurrencyDetail extends Component {
 		const body = {
 			address : a,
 		};
-		fetch('https://api-aet.herokuapp.com/api/v1/history',{
+		fetch('https://aet-wallet.herokuapp.com/api/v1/history',{
                 method: 'post',
                 body:    JSON.stringify(body),
                 headers: { 'Content-Type': 'application/json' },
@@ -147,7 +147,7 @@ export default class CurrencyDetail extends Component {
 		const body = {
 			address : address,
 		};
-		fetch('https://api-aet.herokuapp.com/api/v1/coinHistory', {
+		fetch('https://aet-wallet.herokuapp.com/api/v1/coinHistory', {
 			method: 'post',
 			body:    JSON.stringify(body),
 			headers: { 'Content-Type': 'application/json' },
@@ -188,7 +188,7 @@ export default class CurrencyDetail extends Component {
 		const body = {
 			address : address,
 		};
-		fetch('https://api-aet.herokuapp.com/api/v1/coinHistory',{
+		fetch('https://aet-wallet.herokuapp.com/api/v1/coinHistory',{
 			method: 'post',
 			body:    JSON.stringify(body),
 			headers: { 'Content-Type': 'application/json' },

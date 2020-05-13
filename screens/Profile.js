@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { StyleSheet, View, TouchableOpacity, Text, StatusBar, Platform, ScrollView, Alert } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon, Input } from 'react-native-elements';
-import Clipboard from "@react-native-community/clipboard";
+import Clipboard from '@react-native-community/clipboard';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -193,7 +193,7 @@ export default class Profile extends Component {
         if (phrase) {
             if (pin) {
                 try {
-                        this.setState({ loading: true })
+                        this.setState({ loading: true });
                         let walletTemp = ethers.Wallet.fromMnemonic(phrase);
                         const walletJson = {
                             'ethAddress' : walletTemp.address,
@@ -354,7 +354,6 @@ export default class Profile extends Component {
 		});
 
 		const { statusBar, section, header, icon, title, detailContainer, mainText, grayText, yellowText, button, buttonText, inputText, inputContainer, copyText, copyIcon } = styles;
-        const { navigation } = this.props;
         const { ethAddress, ethAddressVisible, ethEye, ethPrivate, ethPrivateVisible, ethPrivateEye, ethPhrase, ethPhraseVisible, ethPhraseEye, btcAddress, btcAddressVisible, btcAddressEye, btcPrivate, btcPrivateVisible, btcPrivateEye, btcPublic, btcPublicVisible, btcPublicEye, btcPhrase, btcPhraseVisible, btcPhraseEye, inputEye, inputVisible, pin, phrase, error1, error2, loading } = this.state;
         return (
             <>

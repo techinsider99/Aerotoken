@@ -124,7 +124,6 @@ export default class Receive extends Component {
 		});
 
 		const { statusBar, section, header, icon, title, button, buttonText, mainText, yellowText, logo, container } = styles;
-		const { navigation } = this.props;
 		const { currencyName, abr, address} = this.props.route.params;
         return (
             <>

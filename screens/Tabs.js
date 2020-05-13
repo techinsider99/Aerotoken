@@ -1,13 +1,12 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
 import Wallet from './Wallet';
 import Exchange from './Exchange';
-import Profile from './Profile';
 import HistoryTabs from './HistoryTabs';
 import Staking from './Staking';
 

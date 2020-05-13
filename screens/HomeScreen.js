@@ -3,14 +3,14 @@
 import React, { Component } from 'react';
 import { SafeAreaView, StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform} from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 
+const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 export default class HomeScreen extends Component {
 
     constructor(props){
-        this.state={
-            pin : ''
-        }
+        this.state = {
+            pin : '',
+        };
     }
 
     render() {

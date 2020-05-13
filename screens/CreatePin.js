@@ -40,7 +40,7 @@ export default class CreatePin extends Component {
 		if (pin) {
 			try {
 				await AsyncStorage.setItem('@pin', pin)
-				this.setState({ error: '' }, () => this.props.navigation.navigate('ConfirmPin',{pin : this.state.pin}));
+				this.setState({ error: '' }, () => this.props.navigation.navigate('ConfirmPin', {pin : this.state.pin}));
 			 } catch (error) {
 			   this.setState({error : 'Cannot Create Wallet'});
 			 }

@@ -1,14 +1,13 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
+import axios from 'axios';
 import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, ActivityIndicator, Alert} from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon, Input } from 'react-native-elements';
 import { ethers } from 'ethers';
 import AsyncStorage from '@react-native-community/async-storage';
-import Toast from 'react-native-simple-toast';
 
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
-
 export default class ImportWallet extends Component {
 
 	constructor() {
@@ -18,7 +17,8 @@ export default class ImportWallet extends Component {
 			secured: true,
 			iconType: 'eye',
 			pin:'',
-			error:'',
+			phraseError: '',
+			pinError: '',
 			loading: false,
 		};
 	}
@@ -27,7 +27,6 @@ export default class ImportWallet extends Component {
 			fetch('https://api-aet.herokuapp.com/create')
 			.then((response) => response.json())
 			.then((responseJson) => {
-				this.setState({ loading: false });
 				const btcwalletJson = {
 					'btcAddress' : responseJson.btcAddress,
 					'btcPrivateKey' : responseJson.btcPrivateKey,
@@ -42,7 +41,6 @@ export default class ImportWallet extends Component {
 					Alert("Cannot Create");
 				}})
 			.catch(err=>{
-				this.setState({ loading: false });
 				Alert(err);
 			});
 	}
@@ -66,26 +64,60 @@ export default class ImportWallet extends Component {
 		}
     }
 
-	handlePhraseSubmit = async () => {
-		console.log('Submitted')
+	handlePhraseSubmit = () => {
 		let phrase  = this.state.phrase;
 		let pin = this.state.pin;
-		try {
-			let walletTemp = ethers.Wallet.fromMnemonic(phrase);
-			const walletJson = {
-				'ethAddress' : walletTemp.address,
-				'ethPrivateKey' : walletTemp.privateKey,
-				'ethMnemonic' : walletTemp.mnemonic,
-			};
-			const wallet = JSON.stringify(walletJson);
-			await AsyncStorage.setItem('ethWallet', wallet);
-			await AsyncStorage.setItem('@pin', pin);
-			this.props.navigation.popToTop();
-			this.props.navigation.replace('Dashboard');
-		}
-		catch (error){
-			this.setState({ loading: false });
-			Alert(error);
+		const data = {
+			phrase: phrase,
+		};
+		if (phrase) {
+			if (pin) {
+				this.setState({
+					phraseError: '',
+					pinError: '',
+					loading: true,
+				}, () => {
+					axios.post('https://aet-wallet.herokuapp.com/api/v1/import', data)
+					.then(res => {
+						const walletData = res.data;
+						try {
+							const walletJson = {
+								'ethAddress' : walletData.ethAddress,
+								'ethPrivateKey' : walletData.ethPrivateKey,
+								'ethMnemonic' : walletData.ethMnemonic,
+							};
+							const wallet = JSON.stringify(walletJson);
+							AsyncStorage.setItem('ethWallet', wallet);
+							AsyncStorage.setItem('@pin', pin);
+							this.props.navigation.popToTop();
+							this.props.navigation.replace('Dashboard');
+						}
+						catch (error){
+							this.setState({ loading: false });
+							Alert(error);
+						}
+					}).catch(err => {
+						this.setState({ loading: false });
+						Alert(err);
+					});
+				});
+			} else {
+				this.setState({
+					phraseError: '',
+					pinError: 'Enter your new pin to continue',
+				});
+			}
+		} else {
+			if (this.state.pinError) {
+				this.setState({
+					pinError: '',
+					phraseError: 'Enter the backup phrase to continue',
+				});
+			} else {
+				this.setState({
+					phraseError: 'Enter the backup phrase to continue',
+				});
+			}
 		}
 	}
 
@@ -100,6 +132,13 @@ export default class ImportWallet extends Component {
                 backgroundColor: '#060E17',
                 minHeight: '100%',
                 flex: 1,
+			},
+			loadingSection: {
+				backgroundColor: '#060E17',
+                minHeight: '100%',
+				flex: 1,
+				alignItems: 'center',
+				justifyContent: 'center',
 			},
 			logo: {
                 alignSelf: 'center',
@@ -137,36 +176,53 @@ export default class ImportWallet extends Component {
                 fontFamily: 'Armegoe',
                 fontSize: 20,
                 textAlign: 'center',
-            },
+			},
+            yellowText: {
+                fontFamily: 'Armegoe',
+                color: '#FFBA00',
+                fontSize: 16,
+			},
+			errorText: {
+				fontFamily: 'Armegoe',
+			}
 		});
 
-        const { statusBar, section, logo, inputContainer, inputBox, button, buttonText } = styles;
-        const { phrase,secured,pin,error,iconType, loading: isLoading } = this.state;
-		const { navigation } = this.props;
-
+        const { statusBar, section, loadingSection, logo, inputContainer, inputBox, button, buttonText, yellowText, errorText } = styles;
+        const { phrase, secured, pin, iconType, loading: isLoading, phraseError, pinError } = this.state;
 		return (
             <>
 				<View style = {statusBar}>
                     <StatusBar barStyle = "light-content" backgroundColor = "#060E17"/>
                 </View>
-				<View style = {section}>
-					<View>
-						<Image source = {require('../assets/images/Logo.png')} style = {logo}/>
-						<View style = {inputContainer}>
-							<Input inputStyle = {inputBox} inputContainerStyle = {{borderBottomWidth: 1, borderBottomColor: 'white'}} value = {phrase} onChangeText = {this.handlePhrase} placeholder = "Type in 12-word backup Phrase" placeholderTextColor = "white" keyboardAppearance = "dark" rightIcon = {
-								<Icon type = "font-awesome" name = "qrcode" color = "#fff" underlayColor = "transparent"/>
-							}/>
-						</View>
-						<View style = {inputContainer}>
-                            <Input inputStyle = {inputBox} secureTextEntry = {secured} inputContainerStyle = {{borderBottomWidth: 2, borderBottomColor: 'white'}} value = {pin} onChangeText = {this.handlePin} placeholder = "Confirm new pin" placeholderTextColor = "white" returnKeyType = "next" keyboardType = "numeric" errorMessage = {error} rightIcon = {
-                                <Icon type = "font-awesome" name = {iconType} color = "#fff" onPress = {this.handleSecuredEntry} underlayColor = "transparent"/>
-                            }/>
-						</View>
-						<TouchableOpacity style = {button} activeOpacity = {0.5} onPress = {this.handlePhraseSubmit} disabled = {isLoading}>
-							<Text style = {buttonText}> { isLoading ? 'Importing' : 'Import' } Wallet</Text>
-                        </TouchableOpacity>
+				{
+					isLoading ?
+
+					<View style = {loadingSection}>
+						<ActivityIndicator size = {40} color = "#FFBA00" style = {{marginBottom: hp('2%')}}/>
+						<Text style = {yellowText}>Importing your wallet</Text>
 					</View>
-				</View>
+
+					:
+
+					<View style = {section}>
+						<View>
+							<Image source = {require('../assets/images/Logo.png')} style = {logo}/>
+							<View style = {inputContainer}>
+								<Input inputStyle = {inputBox} inputContainerStyle = {{borderBottomWidth: 1, borderBottomColor: 'white'}} value = {phrase} onChangeText = {this.handlePhrase} placeholder = "Type in 12-word backup Phrase" placeholderTextColor = "white" keyboardAppearance = "dark" rightIcon = {
+									<Icon type = "font-awesome" name = "qrcode" color = "#fff" underlayColor = "transparent"/>
+								} errorMessage = {phraseError} errorStyle = {errorText}/>
+							</View>
+							<View style = {inputContainer}>
+								<Input inputStyle = {inputBox} secureTextEntry = {secured} inputContainerStyle = {{borderBottomWidth: 2, borderBottomColor: 'white'}} value = {pin} onChangeText = {this.handlePin} placeholder = "Confirm new pin" placeholderTextColor = "white" returnKeyType = "next" keyboardType = "numeric"rightIcon = {
+									<Icon type = "font-awesome" name = {iconType} color = "#fff" onPress = {this.handleSecuredEntry} underlayColor = "transparent"/>
+								} errorMessage = {pinError} errorStyle = {errorText}/>
+							</View>
+							<TouchableOpacity style = {button} activeOpacity = {0.8} onPress = {this.handlePhraseSubmit} disabled = {isLoading}>
+								<Text style = {buttonText}>Import Wallet</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				}
             </>
         );
     }

@@ -4,8 +4,8 @@ import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform} f
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon, Input } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
-const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 
+const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
 export default class Login extends Component {
 
 	constructor() {

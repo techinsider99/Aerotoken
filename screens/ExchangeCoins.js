@@ -156,7 +156,7 @@ export default class ExchangeCoins extends Component {
             aetReciever : this.state.ethAddress
         }
         console.log(body);
-        fetch('https://api-aet.herokuapp.com/api/v1/exchange/btc',{
+        fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/btc',{
             method: 'post',
             body:    JSON.stringify(body),
             headers: { 'Content-Type': 'application/json' },
@@ -176,7 +176,7 @@ export default class ExchangeCoins extends Component {
                 aetAmount : this.state.aetAmount,
                 aetReciever : this.state.ethAddress
             }
-            fetch('https://api-aet.herokuapp.com/api/v1/exchange/eth',{
+            fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/eth',{
                 method: 'post',
                 body:    JSON.stringify(body),
                 headers: { 'Content-Type': 'application/json' },

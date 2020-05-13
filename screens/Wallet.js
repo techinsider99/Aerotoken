@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
-import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, ScrollView, Alert, ActivityIndicator, RefreshControl} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, StatusBar, Platform, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
 import Currency from '../components/Currency';
@@ -204,7 +204,7 @@ export default class Dashboard extends Component {
     
     fetchAetBalance(a){
         this.setState({ aetbalanceLoading: true }, () => {
-            axios.post('https://api-aet.herokuapp.com/aetBalance', {
+            axios.post('https://aet-wallet.herokuapp.com/aetBalance', {
                 address: a
             })
             .then(response => {
@@ -221,7 +221,7 @@ export default class Dashboard extends Component {
 
 	fetchUsdtBalance(a){
         this.setState({ usdtBalanceLoading: true }, () => {
-            axios.post('https://api-aet.herokuapp.com/usdtBalance', {
+            axios.post('https://aet-wallet.herokuapp.com/usdtBalance', {
                 address: a
             })
             .then(response => {

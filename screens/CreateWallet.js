@@ -25,7 +25,7 @@ export default class CreateWallet extends Component {
 
 	async UNSAFE_componentWillMount(){
 		this.setState({ loading: true }, () => {
-			axios.get('https://api-aet.herokuapp.com/create')
+			axios.get('https://aet-wallet.herokuapp.com/create')
 			.then(response => {
 				const data = response.data;
 				this.setState({
@@ -75,7 +75,7 @@ export default class CreateWallet extends Component {
 		this.props.navigation.popToTop();
 		this.props.navigation.replace('Dashboard');
 	}
-	
+
 	handleBack = () => {
 		const options = {
 			enableVibrateFallback: true,

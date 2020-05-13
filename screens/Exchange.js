@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react'
-import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform} from 'react-native';
+import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, Alert} from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
 
@@ -80,7 +80,7 @@ export default class Exchange extends Component {
 						<TouchableOpacity style = {button} onPress = {() => navigation.navigate('ExchangeCoins')} activeOpacity = {0.8}>
 							<Text style = {buttonText}>Exchange AET with coins</Text>
 						</TouchableOpacity>
-						<TouchableOpacity style = {button} onPress = {() => alert('Coming Soon')} activeOpacity = {0.8}>
+						<TouchableOpacity style = {button} onPress = {() => Alert('Coming Soon')} activeOpacity = {0.8}>
 							<Text style = {buttonText}>Exchange AET with Fiat</Text>
 						</TouchableOpacity>
 					</View>
