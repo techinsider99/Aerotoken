@@ -220,7 +220,7 @@ export default class Profile extends Component {
                         });
                 }
                 catch (error){
-                    Alert(error);
+                    Alert.alert('Error', error);
                 }
             } else {
                 this.setState({

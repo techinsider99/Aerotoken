@@ -4,7 +4,9 @@ import axios from 'axios';
 import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, ActivityIndicator, Alert} from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon, Input } from 'react-native-elements';
-import { ethers } from 'ethers';
+import '../shim.js';
+import crypto from 'crypto';
+import { Buffer } from 'buffer';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
@@ -62,10 +64,22 @@ export default class ImportWallet extends Component {
 				secured: true,
 			});
 		}
+	}
+
+	encrypt = data => {
+        const key = '8tAGG7bur1V4qpy6LN5E5Fy2bUAD9loo';
+        const iv = 't8iMMFqZroPuNn7N';
+        let encipher = crypto.createCipheriv('aes-256-cbc', key, iv),
+          buffer = Buffer.concat([
+            encipher.update(data),
+            encipher.final(),
+          ]);
+        return buffer.toString('base64');
     }
 
 	handlePhraseSubmit = () => {
 		let phrase  = this.state.phrase;
+		phrase = this.encrypt(phrase);
 		let pin = this.state.pin;
 		const data = {
 			phrase: phrase,
@@ -94,11 +108,11 @@ export default class ImportWallet extends Component {
 						}
 						catch (error){
 							this.setState({ loading: false });
-							Alert(error);
+							Alert.alert('Error', error);
 						}
 					}).catch(err => {
 						this.setState({ loading: false });
-						Alert(err);
+						Alert.alert('Error', err);
 					});
 				});
 			} else {

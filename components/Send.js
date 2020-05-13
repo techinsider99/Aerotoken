@@ -7,6 +7,9 @@ import 'ethers/dist/shims.js';
 import AsyncStorage from '@react-native-community/async-storage';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import  {ethers} from 'ethers';
+import '../shim.js';
+import crypto from 'crypto';
+import { Buffer } from 'buffer';
 const provider = ethers.getDefaultProvider();
 const aet = "0x8c9E4CF756b9d01D791b95bc2D0913EF2Bf03784";
 const usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7";
@@ -51,10 +54,21 @@ export default class Send extends Component {
 
     handleAmount = amount => this.setState({ amount: amount });
 
+    encrypt = data => {
+        const key = '8tAGG7bur1V4qpy6LN5E5Fy2bUAD9loo';
+        const iv = 't8iMMFqZroPuNn7N';
+        let encipher = crypto.createCipheriv('aes-256-cbc', key, iv),
+          buffer = Buffer.concat([
+            encipher.update(data),
+            encipher.final(),
+          ]);
+        return buffer.toString('base64');
+    }
+
     async handleSend(){
         const {abr} = this.props.route.params;
         const { currencyValue} = this.props.route.params;
-        console.log(this.state.amount)
+        let privateKey = this.encrypt(this.state.privateKey);
         if(this.state.amount > 0) {
             if(this.state.amount  < currencyValue){
                 if(abr == "BTC"){
@@ -62,7 +76,7 @@ export default class Send extends Component {
                         const body = {
                             to_address : this.state.reciever,
                             value_satoshis : this.state.amount,
-                            from_private: this.state.privateKey
+                            key: privateKey
                         }
                         console.log(body);
                         fetch('https://aet-wallet.herokuapp.com/api/v1/send/btc',{

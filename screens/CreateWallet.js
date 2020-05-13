@@ -50,11 +50,11 @@ export default class CreateWallet extends Component {
 					AsyncStorage.setItem('btcWallet', btcwallet);
 				}
 				catch {
-					Alert('Cannot Create');
+					Alert.alert('Error','Cannot Create');
 				}
 			}).catch(err => {
 				this.setState({ loading: false });
-				Alert(err);
+				Alert.alert('Error', err);
 			});
 		});
 	}

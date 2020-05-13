@@ -18,7 +18,7 @@ export default class CurrencyDetail extends Component {
 			depositWallet : '',
 			tx : [],
 			copied : false,
-			txLoading : true
+			txLoading : true,
 		}
 		this.fetchBtcTx=this.fetchBtcTx.bind(this);
 		this.fetchEthTx = this.fetchEthTx.bind(this);
@@ -95,8 +95,8 @@ export default class CurrencyDetail extends Component {
 										<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18,}}>{new Date(json.txrefs[i].confirmed).toLocaleDateString()},</Text>
 										<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>{new Date(json.txrefs[i].confirmed).toLocaleTimeString()}</Text>
 									</View>
-									<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
-									{json.txrefs[i].spent ? <Text style = {{fontFamily: 'Armegoe',color: '#FFBA00',fontSize: 18}}>-{parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> : <Text style = {{fontFamily:'Armegoe',color: '#2CC593',fontSize: 18}}>+{parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> }
+									<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'flex-end', alignContent: 'flex-end'}}>
+									{json.txrefs[i].spent ? <Text style = {{fontFamily: 'Armegoe',color: '#FFBA00',fontSize: 18}}>-{parseFloat(json.txrefs[i].value * 0.00000001).toFixed(8)} BTC</Text> : <Text style = {{fontFamily:'Armegoe',color: '#2CC593',fontSize: 18}}>+{parseFloat(json.txrefs[i].value * 0.00000001).toFixed(5)} BTC</Text> }
 									</View>
 								</View>
 							</TouchableOpacity>
@@ -119,7 +119,7 @@ export default class CurrencyDetail extends Component {
 				if(ethers.utils.formatEther(history[i].value) > 0){
 				let date = new Date(history[i].timestamp*1000).toLocaleDateString();
 				let time = new Date(history[i].timestamp*1000).toLocaleTimeString();
-				let value = parseFloat(ethers.utils.formatEther(history[i].value)).toFixed(8);
+				let value = parseFloat(ethers.utils.formatEther(history[i].value)).toFixed(5);
 				tx.push(
 				<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
 				<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${history[i].hash}`)}}>
@@ -128,7 +128,7 @@ export default class CurrencyDetail extends Component {
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date},</Text>
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>{time}</Text>
 						</View>
-						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
+						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'flex-end', alignContent: 'flex-end'}}>
 							{history[i].to !== address ? <Text style = {{fontFamily: 'Armegoe',color: '#FFBA00',fontSize: 18}}>-{value} ETH</Text> : <Text style = {{fontFamily:'Armegoe',color: '#2CC593',fontSize: 18}}>+{value} ETH</Text>}
 						</View>
 					</View>
@@ -161,7 +161,7 @@ export default class CurrencyDetail extends Component {
 			if(json.txrefs[i].tokenSymbol === "AET"){
 			let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString();
 			let time = new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
-			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)).toFixed(8);
+			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)).toFixed(5);
 			tx.push(
 			<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
 				<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>
@@ -170,7 +170,7 @@ export default class CurrencyDetail extends Component {
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>{date},</Text>
 							<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>{time}</Text>
 						</View>
-						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'flex-end', flexDirection: 'row', alignItems: 'center'}}>
+						<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'flex-end', alignContent: 'flex-end'}}>
 							{json.txrefs[i].to === address.toLowerCase() ? <Text style = {{fontFamily: 'Armegoe',color: '#2CC593',fontSize: 18}}>+{value} AET</Text> : <Text style = {{fontFamily:'Armegoe',color: '#FFBA00',fontSize: 18}}>-{value} AET</Text>}
 						</View>
 					</View>
@@ -201,7 +201,7 @@ export default class CurrencyDetail extends Component {
 				if (json.txrefs[i].tokenSymbol === 'USDT') {
 					let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString()
 					let time = new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
-					let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(8);
+					let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(5);
 					tx.push(
 						<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
 							<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${json.txrefs[i].hash}`)}}>

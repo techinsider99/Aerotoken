@@ -94,7 +94,7 @@ export default class Dashboard extends Component {
 			this.fetchAetBalance(ether.ethAddress);
 			this.fetchUsdtBalance(ether.ethAddress);
 		 } catch (error) {
-		   Alert(error);
+		   Alert.alert('Error', error);
 		}
     }
 
@@ -111,7 +111,7 @@ export default class Dashboard extends Component {
             }
             ).catch(err => {
                 this.setState({ aetLoading: false })
-                Alert(err)
+                Alert.alert('Error', err)
             })
         })
 	}
@@ -129,7 +129,7 @@ export default class Dashboard extends Component {
             }
             ).catch(err => {
                 this.setState({ ethLoading: false });
-                Alert(err);
+                Alert('Error', err);
             })
         })
 	}
@@ -147,7 +147,7 @@ export default class Dashboard extends Component {
             }
             ).catch(err => {
                 this.setState({ btcLoading: false })
-                Alert(err);
+                Alert('Error', err);
             })
         })
 	}
@@ -197,7 +197,7 @@ export default class Dashboard extends Component {
                 });
             }).catch(err => {
                 this.setState({ btcBalanceLoading: false })
-                Alert(err)
+                Alert('Error', err)
             })
         })
     }

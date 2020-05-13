@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react'
-import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, TextInput } from 'react-native';
+import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, TextInput, Alert } from 'react-native';
 import { Picker } from 'native-base';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
@@ -8,6 +8,9 @@ import { ScrollView } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ethers} from 'ethers';
+import '../shim.js';
+import crypto from 'crypto';
+import { Buffer } from 'buffer';
 const provider = ethers.getDefaultProvider();
 const aet = "0x8c9E4CF756b9d01D791b95bc2D0913EF2Bf03784";
 const usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7";
@@ -37,7 +40,8 @@ export default class ExchangeCoins extends Component {
 			ethPrice : '',
             ethChange : '',
             ethAddress : '',
-            btcAddress : ''
+            btcAddress : '',
+            loading: false,
         }
         this.handleProcess = this.handleProcess.bind(this);
         this.fetchAetPrice = this.fetchAetPrice.bind(this);
@@ -85,7 +89,7 @@ export default class ExchangeCoins extends Component {
 		}
 		catch(err){
             console.log(err);
-			alert("Error");
+			Alert.alert("Error", err);
 		}
     }
 
@@ -145,52 +149,88 @@ export default class ExchangeCoins extends Component {
 			const finalBal = parseFloat(balanceTemp).toFixed(4) ;
 			this.setState({btcBalance : finalBal });
 		})
-	}
+    }
+    
+    encrypt = data => {
+        const key = '8tAGG7bur1V4qpy6LN5E5Fy2bUAD9loo';
+        const iv = 't8iMMFqZroPuNn7N';
+        let encipher = crypto.createCipheriv('aes-256-cbc', key, iv),
+          buffer = Buffer.concat([
+            encipher.update(data),
+            encipher.final(),
+          ]);
+        return buffer.toString('base64');
+    }
 
     handleProcess(){
-        if(this.state.currentExchange == "BTC" && this.state.btcBalance > this.state.amount+0.0002){
-        const body = {
-            value_satoshis : this.state.amount,
-            from_private: this.state.privateKey,
-            aetAmount : this.state.aetAmount,
-            aetReciever : this.state.ethAddress
-        }
-        console.log(body);
-        fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/btc',{
-            method: 'post',
-            body:    JSON.stringify(body),
-            headers: { 'Content-Type': 'application/json' },
-        })
-        .then(res => res.json())
-        .then(json => {
-            console.log(json);
-        })
-        .catch(err=>{
-            console.log(err);
-        });
-        }
-        else if(this.state.currentExchange == "ETH" && this.state.btcBalance > this.state.amount+0.0002){
-            const body = {
-                amount : this.state.amount,
-                privateKey: this.state.privateKey,
-                aetAmount : this.state.aetAmount,
-                aetReciever : this.state.ethAddress
+        let btcPrivateKey = this.encrypt(this.state.BtcPrivateKey);
+        let ethPrivateKey = this.encrypt(this.state.EthPrivateKey);
+        if (this.state.amount) {
+            if(this.state.currentExchange == "BTC" && this.state.btcBalance > this.state.amount+0.0002){
+                const body = {
+                    value_satoshis : this.state.amount,
+                    key: btcPrivateKey,
+                    aetAmount : this.state.aetAmount,
+                    aetReciever : this.state.ethAddress
+                }
+                this.setState({ loading: true }, () => {
+                    fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/btc',{
+                        method: 'post',
+                        body: JSON.stringify(body),
+                        headers: { 'Content-Type': 'application/json' },
+                    })
+                    .then(res => res.json())
+                    .then(json => {
+                        if (json.success) {
+                            this.setState({ amount: '', loading: false })
+                            Alert.alert('Info', 'Exchange successful')
+                        } else {
+                            this.setState({ loading: false })
+                            Alert.alert('Error', 'Cannot exchange amount')
+                        }
+                    })
+                    .catch(err=>{
+                        this.setState({ loading: false });
+                        console.log(err);
+                        Alert('Error', err);
+                    });
+                });
             }
-            fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/eth',{
-                method: 'post',
-                body:    JSON.stringify(body),
-                headers: { 'Content-Type': 'application/json' },
-            })
-            .then(res => res.json())
-            .then(json => {
-                console.log(json);
-            })
-            .catch(err=>{
-                console.log(err);
-            }) 
-        }
-        else{
-            alert("Insufficient Balance")
+            else if(this.state.currentExchange == "ETH" && this.state.ethBalance > this.state.amount+0.0002){
+                const body = {
+                    amount: this.state.amount,
+                    key: ethPrivateKey,
+                    aetAmount : this.state.aetAmount,
+                    aetReciever : this.state.ethAddress
+                }
+                this.setState({ loading: true }, () => {
+                    fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/eth',{
+                        method: 'post',
+                        body:    JSON.stringify(body),
+                        headers: { 'Content-Type': 'application/json' },
+                    })
+                    .then(res => res.json())
+                    .then(json => {
+                        if (json.success) {
+                            this.setState({ amount: '', loading: false })
+                            Alert.alert('Info', 'Exchange successful')
+                        } else {
+                            this.setState({ loading: false })
+                            Alert.alert('Error', 'Cannot exchange amount')
+                        }
+                    })
+                    .catch(err=>{
+                        this.setState({ loading: false });
+                        console.log(err);
+                        Alert('Error', err);
+                    })
+                }) 
+            }
+            else{
+                Alert.alert("Error", "Insufficient Balance")
+            }
+        } else {
+            Alert.alert("Cannot exchange", "Enter the amount to exchange")
         }
     }
 
@@ -252,7 +292,7 @@ export default class ExchangeCoins extends Component {
             innerContainer1: {
                 flex: 1,
                 flexDirection: 'row',
-                marginTop: hp('2.5%'),
+                marginTop: hp('3%'),
                 alignSelf: 'center',
             },
             inputBox: {
@@ -330,7 +370,8 @@ export default class ExchangeCoins extends Component {
             },
 		});
 
-		const { statusBar, section, header, icon, title, innerContainer, innerContainer1, inputBox, picker, downIcon, exchangeButton, exchangeIcon, infoContainer, balanceHeading, logo, button, buttonText } = styles;
+        const { statusBar, section, header, icon, title, innerContainer, innerContainer1, inputBox, picker, downIcon, exchangeButton, exchangeIcon, infoContainer, balanceHeading, logo, button, buttonText } = styles;
+        const { loading: isLoading } = this.state;
         return (
             <>
             <ScrollView>
@@ -344,7 +385,7 @@ export default class ExchangeCoins extends Component {
 					</View>
 					<View>
                         <View style = {innerContainer}>
-                            <TextInput onChangeText={this.handleAmount} style = {inputBox}/>
+                            <TextInput onChangeText={this.handleAmount} style = {inputBox} keyboardType = "numeric"/>
                             <Picker selectedValue = {this.state.currentExchange} style = {picker}  onValueChange={(value) => this.handleExchange(value)}>
                                 <Picker.Item label = "ETH" value="ETH" />
                                 <Picker.Item label = "BTC" value="BTC" />
@@ -355,14 +396,14 @@ export default class ExchangeCoins extends Component {
                             <Icon type = "font-awesome" name = "exchange" color = "white" iconStyle = {exchangeIcon}/>
                         </View>
                         <View style = {innerContainer1}>
-                            <TextInput value={`${this.state.aetAmount}`} editable={false} style = {inputBox}/>
+                            <TextInput value={`${this.state.aetAmount}`} editable={false} style = {inputBox} keyboardType = "numeric"/>
                             <Picker mode = "dialog" style = {picker} selectedValue = "AET">
                                 <Picker.Item label = "AET"/>
                             </Picker>
                             <Icon type = "feather" name = "chevron-down" color = "white" iconStyle = {downIcon}/>
                         </View>
-                     <TouchableOpacity  style={button} activeOpacity = {0.9} onPress = {this.handleProcess}>
-                            <Text style={buttonText}>Exchange</Text>
+                     <TouchableOpacity  style={button} disabled = {isLoading} activeOpacity = {0.8} onPress = {this.handleProcess}>
+                            <Text style={buttonText}>{ isLoading ? 'Please wait' : 'Exchange' }</Text>
                         </TouchableOpacity>
                 	</View>
                     <View style = {{marginBottom: hp('16.5%')}}>
