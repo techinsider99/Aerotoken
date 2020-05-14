@@ -9,7 +9,7 @@ export default class DepositHistory extends Component {
 
     constructor(props){
         super(props);
-        this.state={
+        this.state = {
             BtcTx : [],
 			EthTx : [],
 			CoinTx: [],
@@ -52,7 +52,7 @@ export default class DepositHistory extends Component {
             })
             .then(res => res.json())
             .then(json => {
-                let BtcTx = this.state.BtcTx;
+				let BtcTx = this.state.BtcTx;
                 BtcTx = [];
 				for(let i=0;i<json.txrefs.length;i++){
                     if(json.txrefs[i].spent === true){
@@ -61,10 +61,10 @@ export default class DepositHistory extends Component {
                             <TouchableOpacity onPress={()=>{Linking.openURL(`https://www.blockchain.com/btc/tx/${json.txrefs[i].tx_hash}`)}}>
 							    <View style = {{flexDirection: 'row'}}>
                                     <View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
-                                        <Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 15}}>
+                                        <Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>
 											{new Date(json.txrefs[i].confirmed).toLocaleDateString()},
 										</Text>
-										<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 15, marginTop: hp('0.2%')}}>
+										<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>
 											{new Date(json.txrefs[i].confirmed).toLocaleTimeString()}
 										</Text>
                                     </View> 

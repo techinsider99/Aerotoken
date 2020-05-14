@@ -9,6 +9,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import  {ethers} from 'ethers';
 import '../shim.js';
 import crypto from 'crypto';
+import { KEY, IV } from '../config';
 import { Buffer } from 'buffer';
 const provider = ethers.getDefaultProvider();
 const aet = "0x8c9E4CF756b9d01D791b95bc2D0913EF2Bf03784";
@@ -55,8 +56,8 @@ export default class Send extends Component {
     handleAmount = amount => this.setState({ amount: amount });
 
     encrypt = data => {
-        const key = '8tAGG7bur1V4qpy6LN5E5Fy2bUAD9loo';
-        const iv = 't8iMMFqZroPuNn7N';
+        const key = KEY;
+        const iv = IV;
         let encipher = crypto.createCipheriv('aes-256-cbc', key, iv),
           buffer = Buffer.concat([
             encipher.update(data),
@@ -286,8 +287,7 @@ export default class Send extends Component {
 		});
 
 		const { statusBar, section, header, icon, title, button, buttonText, mainText, logo, container, inputBox, borderedLabel, label } = styles;
-		const { navigation } = this.props;
-		const { currencyName, abr, avatar, currencyValue,price} = this.props.route.params;
+		const { currencyName, abr, avatar, currencyValue, price} = this.props.route.params;
         return (
             <>
                 <View style = {statusBar}>

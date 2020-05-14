@@ -52,10 +52,10 @@ export default class DepositHistory extends Component {
             })
             .then(res => res.json())
             .then(json => {
-                let BtcTx = this.state.BtcTx;
+				let BtcTx = this.state.BtcTx;
                 BtcTx = [];
-				for(let i=0;i<json.txrefs.length;i++){
-                    if(json.txrefs[i].spent === false){
+				for(let i=0; i<json.txrefs.length; i++){
+                    if(!json.txrefs[i].spent){
 						var value = parseFloat(json.txrefs[i].value * 0.00000001).toFixed(5);
                         BtcTx.push(
                             <View style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15, width: wp('85%')}}>
@@ -65,7 +65,7 @@ export default class DepositHistory extends Component {
                                         <Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>
 											{new Date(json.txrefs[i].confirmed).toLocaleDateString()},
 										</Text>
-										<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>
+										<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>
 											{new Date(json.txrefs[i].confirmed).toLocaleTimeString()}
 										</Text>
                                     </View>
@@ -86,7 +86,7 @@ export default class DepositHistory extends Component {
 				this.setState({ btcLoading: false });
                 console.log(err);
             });
-		}); 
+		});
 	}
 
 	fetchEthTx(a){

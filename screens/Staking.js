@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {ethers} from 'ethers';
 import '../shim.js';
 import crypto from 'crypto';
+import { KEY, IV } from '../config';
 import { Buffer } from 'buffer';
 const provider = ethers.getDefaultProvider('homestead');
 const aet = "0x8c9E4CF756b9d01D791b95bc2D0913EF2Bf03784";
@@ -40,40 +41,44 @@ export default class Staking extends Component {
             this.setState({privateKey : ether.ethPrivateKey});
             this.fetchAetBalance(ether.ethAddress);
             this.fetchEthBalance(ether.ethAddress);
-            AsyncStorage.getItem('@staked')
-            .then(staked=>{
-                if (staked == null){
-                    Alert.alert('AET Staking', 'Welcome to AET Staking, Get 1% of your total staked tokens every month');
-                }
-                else {
-                    this.setState({totalStaked : staked});
-                }
-            });
+            this.getStaking();
 	    } catch (error) {
 		   Alert.alert(error);
 		}
-	}
+    }
+    
+    getStaking = () => {
+        AsyncStorage.getItem('@staked')
+        .then(staked=>{
+            if (staked == null){
+                Alert.alert('AET Staking', 'Welcome to AET Staking, Get 1% of your total staked tokens every month');
+            }
+            else {
+                this.setState({totalStaked : staked});
+            }
+        });
+    }
 
     handleAmount = amount => this.setState({ amount: amount })
 
     encrypt = data => {
-        const key = '8tAGG7bur1V4qpy6LN5E5Fy2bUAD9loo';
-        const iv = 't8iMMFqZroPuNn7N';
+        const key = KEY;
+        const iv = IV;
         let encipher = crypto.createCipheriv('aes-256-cbc', key, iv),
-          buffer = Buffer.concat([
-            encipher.update(data),
-            encipher.final(),
-          ]);
+            buffer = Buffer.concat([
+                encipher.update(data),
+                encipher.final(),
+            ]);
         return buffer.toString('base64');
     }
 
     handleStake(){
         if (this.state.amount) {
-            if (this.state.amount >= this.state.aetBalance) {
-                this.setState({ error: 'Insufficient AET balance' });
-            }
-            else if (this.state.aetBalance < 1000){
+            if (this.state.aetBalance < 1000){
                 this.setState({ error: 'You must have minimum 1000 coins to stake' });
+            }
+            else if (this.state.amount >= this.state.aetBalance) {
+                this.setState({ error: 'Insufficient AET balance' });
             }
             else if (this.state.ethBalance < 0.0001){
                 this.setState({ error: 'Insufficient Gas. Fund Your Account to pay for Gas' });
@@ -95,8 +100,10 @@ export default class Staking extends Component {
                         try {
                             if (state.success === 'Transaction Success') {
                                 Alert.alert('Info', 'Transaction success');
-                                let total = this.state.totalStaked + this.state.amount;
+                                let total = parseFloat(this.state.totalStaked) + parseFloat(this.state.amount);
                                 AsyncStorage.setItem('@staked',total);
+                                this.setState({ amount: '' });
+                                this.getStaking();
                             } else {
                                 Alert.alert('Error',state.error);
                             }
@@ -111,7 +118,7 @@ export default class Staking extends Component {
                         Alert.alert('Error', err);
                     });
                 });
-            } 
+            }  
         } else {
             this.setState({ error: 'Enter the amount to stake' });
         }
@@ -124,10 +131,10 @@ export default class Staking extends Component {
             .then((balance) => {
                 let etherString = parseFloat(ethers.utils.formatEther(balance)).toFixed(4);
                 this.setState({
-                    ethBalance : etherString,
+                    ethBalance: etherString,
                 });
             });
-        })
+        });
 	}
 
     fetchAetBalance(a){
@@ -140,7 +147,7 @@ export default class Staking extends Component {
                     aetBalance: aetString,
                 });
             });
-        }) ;
+        });
 	}
 
     render() {

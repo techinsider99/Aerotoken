@@ -10,6 +10,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ethers} from 'ethers';
 import '../shim.js';
+import { KEY, IV } from '../config';
 import crypto from 'crypto';
 import { Buffer } from 'buffer';
 const provider = ethers.getDefaultProvider();
@@ -158,8 +159,8 @@ export default class ExchangeCoins extends Component {
     }
     
     encrypt = data => {
-        const key = '8tAGG7bur1V4qpy6LN5E5Fy2bUAD9loo';
-        const iv = 't8iMMFqZroPuNn7N';
+        const key = KEY;
+        const iv = IV;
         let encipher = crypto.createCipheriv('aes-256-cbc', key, iv),
           buffer = Buffer.concat([
             encipher.update(data),

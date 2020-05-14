@@ -6,6 +6,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import { Icon, Input } from 'react-native-elements';
 import '../shim.js';
 import crypto from 'crypto';
+import { KEY, IV } from '../config';
 import { Buffer } from 'buffer';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -67,8 +68,8 @@ export default class ImportWallet extends Component {
 	}
 
 	encrypt = data => {
-        const key = '8tAGG7bur1V4qpy6LN5E5Fy2bUAD9loo';
-        const iv = 't8iMMFqZroPuNn7N';
+        const key = KEY;
+        const iv = IV;
         let encipher = crypto.createCipheriv('aes-256-cbc', key, iv),
           buffer = Buffer.concat([
             encipher.update(data),
