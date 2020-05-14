@@ -45,7 +45,7 @@ export default class DepositHistory extends Component {
 			address : a,
 		};
 		this.setState({ btcAddress: a, btcLoading: true }, () => {
-			fetch('https://aet-wallet.herokuapp.com/api/v1/history',{
+			fetch('https://aet-wallet.herokuapp.com/api/v1/history', {
                 method: 'post',
                 body:    JSON.stringify(body),
                 headers: { 'Content-Type': 'application/json' },
@@ -63,7 +63,7 @@ export default class DepositHistory extends Component {
 								<View style = {{flexDirection: 'row'}}>
                                     <View style = {{flex: 1, flexWrap: 'wrap'}}>
                                         <Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18}}>
-											{new Date(json.txrefs[i].confirmed).toLocaleDateString()}
+											{new Date(json.txrefs[i].confirmed).toLocaleDateString()},
 										</Text>
 										<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>
 											{new Date(json.txrefs[i].confirmed).toLocaleTimeString()}
@@ -105,7 +105,7 @@ export default class DepositHistory extends Component {
 					<TouchableOpacity style={{position: 'relative',backgroundColor: '#272a3d',marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15, width: wp('85%')}} onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${history[i].hash}`)}}>
 						<View style = {{flexDirection: 'row'}}>
 							<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
-								<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('1%')}}>{date}</Text>
+								<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('1%')}}>{date},</Text>
 								<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>{time}</Text>
 							</View>
 							<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'flex-end', alignContent: 'flex-end'}}>
@@ -146,10 +146,10 @@ export default class DepositHistory extends Component {
 									<View style = {{flexDirection: 'row'}}>
 										<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
 											<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('1%')}}>
-												{new Date(transaction.timeStamp*1000).toLocaleDateString()} 
+												{new Date(transaction.timeStamp * 1000).toLocaleDateString()},
 											</Text>
 											<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>
-												{new Date(transaction.timeStamp*1000*1000).toLocaleTimeString()}
+												{new Date(transaction.timeStamp * 1000 * 1000).toLocaleTimeString()}
 											</Text>
 										</View>
 										<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'flex-end', alignContent: 'flex-end'}}>
@@ -157,7 +157,7 @@ export default class DepositHistory extends Component {
 												-{
 													transaction.tokenSymbol === 'USDT' ?
 
-													parseFloat(ethers.utils.formatEther(transaction.value)*1000000000000).toFixed(5)
+													parseFloat(ethers.utils.formatEther(transaction.value) * 1000000000000).toFixed(5)
 
 													:
 
@@ -242,14 +242,14 @@ export default class DepositHistory extends Component {
 
 				BtcTx.length === 0 && EthTx.length === 0 && CoinTx.length === 0 ?
 
-				<View style = {section}>
+				<ScrollView refreshControl = {<RefreshControl progressBackgroundColor = "#FFBA00" colors = {['#060E17']} refreshing = {refreshing} onRefresh = {this.handleRefresh}/>} contentContainerStyle = {section}>
 					<Image source = {require('../assets/images/EmptyFinal.png')} style = {emptyImage}/>
-				</View>
+				</ScrollView>
 
 				:
 
 				<View style = {historySection}>
-					<ScrollView refreshControl = {<RefreshControl refreshing = {refreshing} onRefresh = {this.handleRefresh}/>}>
+					<ScrollView refreshControl = {<RefreshControl progressBackgroundColor = "#FFBA00" colors = {['#060E17']} refreshing = {refreshing} onRefresh = {this.handleRefresh}/>}>
 						{BtcTx}
 						{EthTx}
 						{CoinTx}

@@ -153,6 +153,7 @@ export default class ImportWallet extends Component {
 				flex: 1,
 				alignItems: 'center',
 				justifyContent: 'center',
+				
 			},
 			logo: {
                 alignSelf: 'center',
@@ -191,17 +192,17 @@ export default class ImportWallet extends Component {
                 fontSize: 20,
                 textAlign: 'center',
 			},
-            yellowText: {
+            grayText: {
                 fontFamily: 'Armegoe',
-                color: '#FFBA00',
+                color: '#8E8C8C',
                 fontSize: 16,
 			},
 			errorText: {
 				fontFamily: 'Armegoe',
-			}
+			},
 		});
 
-        const { statusBar, section, loadingSection, logo, inputContainer, inputBox, button, buttonText, yellowText, errorText } = styles;
+        const { statusBar, section, loadingSection, logo, inputContainer, inputBox, button, buttonText, grayText, errorText } = styles;
         const { phrase, secured, pin, iconType, loading: isLoading, phraseError, pinError } = this.state;
 		return (
             <>
@@ -213,7 +214,7 @@ export default class ImportWallet extends Component {
 
 					<View style = {loadingSection}>
 						<ActivityIndicator size = {40} color = "#FFBA00" style = {{marginBottom: hp('2%')}}/>
-						<Text style = {yellowText}>Importing your wallet</Text>
+						<Text style = {grayText}>Importing your wallet</Text>
 					</View>
 
 					:

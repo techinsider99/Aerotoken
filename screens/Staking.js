@@ -77,7 +77,7 @@ export default class Staking extends Component {
             }
             else if (this.state.ethBalance < 0.0001){
                 this.setState({ error: 'Insufficient Gas. Fund Your Account to pay for Gas' });
-            } else { 
+            } else {
                 let privateKey = this.state.privateKey;
                 privateKey = this.encrypt(privateKey);
                 let amount = this.state.amount.toString();

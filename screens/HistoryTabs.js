@@ -123,6 +123,7 @@ export default class HistoryTabs extends Component {
 							onPress={onPress}
 							onLongPress={onLongPress}
 							style={tab}
+							activeOpacity = {0.9}
 						>
 							<Text style={tabLabel}>
 								{label}

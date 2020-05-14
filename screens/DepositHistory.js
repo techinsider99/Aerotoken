@@ -62,7 +62,7 @@ export default class DepositHistory extends Component {
 							    <View style = {{flexDirection: 'row'}}>
                                     <View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
                                         <Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 15}}>
-											{new Date(json.txrefs[i].confirmed).toLocaleDateString()}
+											{new Date(json.txrefs[i].confirmed).toLocaleDateString()},
 										</Text>
 										<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 15, marginTop: hp('0.2%')}}>
 											{new Date(json.txrefs[i].confirmed).toLocaleTimeString()}
@@ -103,7 +103,7 @@ export default class DepositHistory extends Component {
 					<TouchableOpacity onPress={()=>{Linking.openURL(`https://etherscan.io/tx/${history[i].hash}`)}}>
 						<View style = {{flexDirection: 'row'}}>
 							<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
-								<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('1%')}}>{date}</Text>
+								<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('1%')}}>{date},</Text>
 								<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>{time}</Text>
 							</View>
 							<View style = {{flexGrow: 1, flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'flex-end', alignContent: 'flex-end'}}>
@@ -145,7 +145,7 @@ export default class DepositHistory extends Component {
 										<View style = {{flexDirection: 'row'}}>
 											<View style = {{flexGrow: 1, flexWrap: 'wrap'}}>
 												<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginRight: wp('1%')}}>
-													{new Date(transaction.timeStamp*1000).toLocaleDateString()}
+													{new Date(transaction.timeStamp*1000).toLocaleDateString()},
 												</Text>
 												<Text style = {{fontFamily: 'Armegoe',color: 'white',fontSize: 18, marginTop: hp('0.2%')}}>
 													{new Date(transaction.timeStamp*1000*1000).toLocaleTimeString()}
@@ -243,14 +243,14 @@ export default class DepositHistory extends Component {
 
 				BtcTx.length === 0 && EthTx.length === 0 && CoinTx.length === 0 ?
 
-				<View style = {section}>
+				<ScrollView refreshControl = {<RefreshControl progressBackgroundColor = "#FFBA00" colors = {['#060E17']} refreshing = {refreshing} onRefresh = {this.handleRefresh}/>} contentContainerStyle = {section}>
 					<Image source = {require('../assets/images/EmptyFinal.png')} style = {emptyImage}/>
-				</View>
+				</ScrollView>
 
 				:
 
 				<View style = {historySection}>
-					<ScrollView refreshControl = {<RefreshControl refreshing = {refreshing} onRefresh = {this.handleRefresh}/>}>
+					<ScrollView refreshControl = {<RefreshControl progressBackgroundColor = "#FFBA00" colors = {['#060E17']} refreshing = {refreshing} onRefresh = {this.handleRefresh}/>}>
 						{BtcTx}
 						{EthTx}
 						{CoinTx}

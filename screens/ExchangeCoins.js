@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import axios from 'axios';
 import { StyleSheet, Image, View, TouchableOpacity, Text, StatusBar, Platform, TextInput, Alert } from 'react-native';
 import { Picker } from 'native-base';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -27,9 +28,10 @@ export default class ExchangeCoins extends Component {
         this.state={
             BtcPrivateKey : '',
             EthPrivateKey : '',
-            amount : 0,
-            aetAmount : 0,
-            currentExchange : 'ETH',
+            amount: 0,
+            ethTotal: 0,
+            btcTotal: 0,
+            currentExchange: 'ETH',
             ethBalance : '',
 			btcBalance : '',
 			aetBalance : '',
@@ -42,6 +44,7 @@ export default class ExchangeCoins extends Component {
             ethAddress : '',
             btcAddress : '',
             loading: false,
+            checkingPrice: false,
         }
         this.handleProcess = this.handleProcess.bind(this);
         this.fetchAetPrice = this.fetchAetPrice.bind(this);
@@ -55,21 +58,24 @@ export default class ExchangeCoins extends Component {
 
     handleExchange = value => {
         this.setState({
-          currentExchange: value
+          currentExchange: value,
         });
-      }
+        this.handleAmount(this.state.amount)
+    }
 
     handleAmount = amount => {
-        if(this.currentExchange == "ETH"){
-        let total = amount * this.state.ethPrice;
-        let aetTotal = total/this.state.aetPrice;
-        this.setState({ amount: amount, aetAmount : aetTotal})
-        }
-        else{
-            let total = amount * this.state.btcPrice;
-            let aetTotal = total/this.state.aetPrice;
-            this.setState({ amount: amount, aetAmount : aetTotal})  
-        }
+        this.setState({ amount: amount }, () => {
+            if (this.state.currentExchange === 'ETH'){
+                let total = amount * this.state.ethPrice;
+                let aetTotal = total/this.state.aetPrice;
+                this.setState({ethTotal: aetTotal})
+            }
+            else if (this.state.currentExchange === 'BTC'){
+                let total = amount * this.state.btcPrice;
+                let aetTotal = total/this.state.aetPrice;
+                this.setState({btcTotal: aetTotal})  
+            }
+        })
     };
 
     async UNSAFE_componentWillMount(){
@@ -165,7 +171,7 @@ export default class ExchangeCoins extends Component {
     handleProcess(){
         let btcPrivateKey = this.encrypt(this.state.BtcPrivateKey);
         let ethPrivateKey = this.encrypt(this.state.EthPrivateKey);
-        if (this.state.amount) {
+        if (this.state.amount > 0) {
             if(this.state.currentExchange == "BTC" && this.state.btcBalance > this.state.amount+0.0002){
                 const body = {
                     value_satoshis : this.state.amount,
@@ -173,27 +179,46 @@ export default class ExchangeCoins extends Component {
                     aetAmount : this.state.aetAmount,
                     aetReciever : this.state.ethAddress
                 }
-                this.setState({ loading: true }, () => {
-                    fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/btc',{
-                        method: 'post',
-                        body: JSON.stringify(body),
-                        headers: { 'Content-Type': 'application/json' },
-                    })
-                    .then(res => res.json())
-                    .then(json => {
-                        if (json.success) {
-                            this.setState({ amount: '', loading: false })
-                            Alert.alert('Info', 'Exchange successful')
-                        } else {
-                            this.setState({ loading: false })
-                            Alert.alert('Error', 'Cannot exchange amount')
+                this.setState({ checkingPrice: true }, () => {
+                    axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin')
+                    .then(res => {
+                        this.setState({ checkingPrice: false });
+                        const btc = res.data;
+                        let amountInDollars = btc[0].current_price * this.state.amount;
+                        amountInDollars = amountInDollars.toFixed(5);
+                        if(amountInDollars < 5) {
+                            Alert.alert(
+                                'Cannot perform exchange',
+                                `Exchange value must be greater than $5. The value of your exchange was $${amountInDollars}`
+                            )
+                        } else if (amountInDollars > 5) {
+                            this.setState({ loading: true }, () => {
+                                fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/btc',{
+                                    method: 'post',
+                                    body: JSON.stringify(body),
+                                    headers: { 'Content-Type': 'application/json' },
+                                })
+                                .then(res => res.json())
+                                .then(json => {
+                                    if (json.success) {
+                                        this.setState({ amount: '', loading: false })
+                                        Alert.alert('Info', 'Exchange successful')
+                                    } else {
+                                        this.setState({ loading: false })
+                                        Alert.alert('Error', 'Cannot exchange amount')
+                                    }
+                                })
+                                .catch(err=>{
+                                    this.setState({ loading: false });
+                                    console.log(err);
+                                    Alert('Error', err);
+                                });
+                            });
                         }
+                    }).catch(err => {
+                        this.setState({ checkingPrice: false });
+                        Alert.alert('Error', err)
                     })
-                    .catch(err=>{
-                        this.setState({ loading: false });
-                        console.log(err);
-                        Alert('Error', err);
-                    });
                 });
             }
             else if(this.state.currentExchange == "ETH" && this.state.ethBalance > this.state.amount+0.0002){
@@ -203,28 +228,47 @@ export default class ExchangeCoins extends Component {
                     aetAmount : this.state.aetAmount,
                     aetReciever : this.state.ethAddress
                 }
-                this.setState({ loading: true }, () => {
-                    fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/eth',{
-                        method: 'post',
-                        body:    JSON.stringify(body),
-                        headers: { 'Content-Type': 'application/json' },
-                    })
-                    .then(res => res.json())
-                    .then(json => {
-                        if (json.success) {
-                            this.setState({ amount: '', loading: false })
-                            Alert.alert('Info', 'Exchange successful')
-                        } else {
-                            this.setState({ loading: false })
-                            Alert.alert('Error', 'Cannot exchange amount')
+                this.setState({ checkingPrice: true }, () => {
+                    axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum')
+                    .then(res => {
+                        this.setState({ checkingPrice: false });
+                        const eth = res.data;
+                        let amountInDollars = eth[0].current_price * this.state.amount;
+                        amountInDollars = amountInDollars.toFixed(5)
+                        if(amountInDollars < 5) {
+                            Alert.alert(
+                                'Cannot perform exchange',
+                                `Exchange value must be greater than $5. The value of your exchange was $${amountInDollars}`
+                            )
+                        } else if (amountInDollars >= 5) {
+                            this.setState({ loading: true }, () => {
+                                fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/eth',{
+                                    method: 'post',
+                                    body: JSON.stringify(body),
+                                    headers: { 'Content-Type': 'application/json' },
+                                })
+                                .then(res => res.json())
+                                .then(json => {
+                                    if (json.success) {
+                                        this.setState({ amount: '', loading: false })
+                                        Alert.alert('Info', 'Exchange successful')
+                                    } else {
+                                        this.setState({ loading: false })
+                                        Alert.alert('Error', 'Cannot exchange amount')
+                                    }
+                                })
+                                .catch(err=>{
+                                    this.setState({ loading: false });
+                                    console.log(err);
+                                    Alert('Error', err);
+                                })
+                            })
                         }
+                    }).catch(err => {
+                        this.setState({ checkingPrice: false });
+                        Alert.alert('Error', err)
                     })
-                    .catch(err=>{
-                        this.setState({ loading: false });
-                        console.log(err);
-                        Alert('Error', err);
-                    })
-                }) 
+                }); 
             }
             else{
                 Alert.alert("Error", "Insufficient Balance")
@@ -371,7 +415,7 @@ export default class ExchangeCoins extends Component {
 		});
 
         const { statusBar, section, header, icon, title, innerContainer, innerContainer1, inputBox, picker, downIcon, exchangeButton, exchangeIcon, infoContainer, balanceHeading, logo, button, buttonText } = styles;
-        const { loading: isLoading } = this.state;
+        const { loading: isLoading, checkingPrice } = this.state;
         return (
             <>
             <ScrollView>
@@ -385,8 +429,8 @@ export default class ExchangeCoins extends Component {
 					</View>
 					<View>
                         <View style = {innerContainer}>
-                            <TextInput onChangeText={this.handleAmount} style = {inputBox} keyboardType = "numeric"/>
-                            <Picker selectedValue = {this.state.currentExchange} style = {picker}  onValueChange={(value) => this.handleExchange(value)}>
+                            <TextInput onChangeText={this.handleAmount} value = {this.state.amount} style = {inputBox} keyboardType = "numeric"/>
+                            <Picker selectedValue = {this.state.currentExchange} style = {picker} onValueChange={(value) => this.handleExchange(value)}>
                                 <Picker.Item label = "ETH" value="ETH" />
                                 <Picker.Item label = "BTC" value="BTC" />
                             </Picker>
@@ -396,14 +440,14 @@ export default class ExchangeCoins extends Component {
                             <Icon type = "font-awesome" name = "exchange" color = "white" iconStyle = {exchangeIcon}/>
                         </View>
                         <View style = {innerContainer1}>
-                            <TextInput value={`${this.state.aetAmount}`} editable={false} style = {inputBox} keyboardType = "numeric"/>
+                            <TextInput value={`${this.state.currentExchange === 'ETH' ? this.state.ethTotal : this.state.currentExchange === 'BTC' ? this.state.btcTotal : null}`} editable={false} style = {inputBox}/>
                             <Picker mode = "dialog" style = {picker} selectedValue = "AET">
                                 <Picker.Item label = "AET"/>
                             </Picker>
                             <Icon type = "feather" name = "chevron-down" color = "white" iconStyle = {downIcon}/>
                         </View>
                      <TouchableOpacity  style={button} disabled = {isLoading} activeOpacity = {0.8} onPress = {this.handleProcess}>
-                            <Text style={buttonText}>{ isLoading ? 'Please wait' : 'Exchange' }</Text>
+                            <Text style={buttonText}>{ checkingPrice ? 'Validating exchange' : isLoading ? 'Please wait' : 'Exchange' }</Text>
                         </TouchableOpacity>
                 	</View>
                     <View style = {{marginBottom: hp('16.5%')}}>
@@ -421,7 +465,7 @@ export default class ExchangeCoins extends Component {
                             <Text style = {balanceHeading}>balance will be</Text>
                         </View>
                         <View>
-                            <Text style = {{color: 'white', fontSize: 19, fontFamily: 'Armegoe', textAlign: 'right'}}>{this.state.aetAmount} AET</Text>
+                            <Text style = {{color: 'white', fontSize: 19, fontFamily: 'Armegoe', textAlign: 'right'}}>{this.state.currentExchange === 'ETH' ? this.state.ethTotal : this.state.currentExchange === 'BTC' ? this.state.btcTotal : null} AET</Text>
                         </View>
                     </View>
                     </View>

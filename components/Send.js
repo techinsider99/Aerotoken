@@ -65,7 +65,7 @@ export default class Send extends Component {
         return buffer.toString('base64');
     }
 
-    async handleSend(){
+    handleSend(){
         const {abr} = this.props.route.params;
         const { currencyValue} = this.props.route.params;
         let privateKey = this.encrypt(this.state.privateKey);
@@ -94,7 +94,7 @@ export default class Send extends Component {
                     })
                 }
                 else if(abr == "ETH"){
-                    this.setState({ loading: false }, () => {
+                    this.setState({ loading: true }, () => {
                         let privateKey = this.state.privateKey;
                         let wallet = new ethers.Wallet(privateKey, provider); 
                         let tx = {
@@ -172,10 +172,10 @@ export default class Send extends Component {
                 }
             }
             else{
-                Alert("Insufficient Balance");
+                Alert.alert("Error", "Insufficient Balance");
             }
         } else {
-            Alert('Amount must not be empty')
+            Alert.alert("Error", "Amount must not be empty");
         }
     }
 
