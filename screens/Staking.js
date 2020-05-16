@@ -46,17 +46,26 @@ export default class Staking extends Component {
 		   Alert.alert(error);
 		}
     }
-    
-    getStaking = () => {
-        AsyncStorage.getItem('@staked')
-        .then(staked=>{
-            if (staked == null){
+
+    getStaking = async () => {
+        try {
+            let staked = await AsyncStorage.getItem('@staked');
+            if (staked !== null) {
+                this.setState({totalStaked: staked});
+            } else {
                 Alert.alert('AET Staking', 'Welcome to AET Staking, Get 1% of your total staked tokens every month');
             }
-            else {
-                this.setState({totalStaked : staked});
-            }
-        });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    setStaking = async staking => {
+        try {
+            await AsyncStorage.setItem('@staked', staking);
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     handleAmount = amount => this.setState({ amount: amount })
@@ -74,13 +83,13 @@ export default class Staking extends Component {
 
     handleStake(){
         if (this.state.amount) {
-            if (this.state.aetBalance < 1000){
+            if (parseFloat(this.state.aetBalance) < 1000){
                 this.setState({ error: 'You must have minimum 1000 coins to stake' });
             }
-            else if (this.state.amount >= this.state.aetBalance) {
+            else if (parseFloat(this.state.amount) >= parseFloat(this.state.aetBalance)) {
                 this.setState({ error: 'Insufficient AET balance' });
             }
-            else if (this.state.ethBalance < 0.0001){
+            else if (parseFloat(this.state.ethBalance) < 0.0001){
                 this.setState({ error: 'Insufficient Gas. Fund Your Account to pay for Gas' });
             } else {
                 let privateKey = this.state.privateKey;
@@ -101,11 +110,12 @@ export default class Staking extends Component {
                             if (state.success === 'Transaction Success') {
                                 Alert.alert('Info', 'Transaction success');
                                 let total = parseFloat(this.state.totalStaked) + parseFloat(this.state.amount);
-                                AsyncStorage.setItem('@staked',total);
+                                let totalString = total.toString();
+                                this.setStaking(totalString);
                                 this.setState({ amount: '' });
                                 this.getStaking();
                             } else {
-                                Alert.alert('Error',state.error);
+                                Alert.alert('Error', state.error);
                             }
                         }
                         catch (err){
@@ -118,7 +128,7 @@ export default class Staking extends Component {
                         Alert.alert('Error', err);
                     });
                 });
-            }  
+            }
         } else {
             this.setState({ error: 'Enter the amount to stake' });
         }

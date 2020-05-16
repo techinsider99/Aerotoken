@@ -177,7 +177,7 @@ export default class ExchangeCoins extends Component {
                 const body = {
                     value_satoshis : this.state.amount,
                     key: btcPrivateKey,
-                    aetAmount : this.state.aetAmount,
+                    aetAmount : this.state.btcTotal,
                     aetReciever : this.state.ethAddress
                 }
                 this.setState({ checkingPrice: true }, () => {
@@ -192,7 +192,7 @@ export default class ExchangeCoins extends Component {
                                 'Cannot perform exchange',
                                 `Exchange value must be greater than $5. The value of your exchange was $${amountInDollars}`
                             )
-                        } else if (amountInDollars > 5) {
+                        } else if (amountInDollars > 5) { 
                             this.setState({ loading: true }, () => {
                                 fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/btc',{
                                     method: 'post',
@@ -201,12 +201,13 @@ export default class ExchangeCoins extends Component {
                                 })
                                 .then(res => res.json())
                                 .then(json => {
+                                    console.log(json)
                                     if (json.success) {
                                         this.setState({ amount: '', loading: false })
                                         Alert.alert('Info', 'Exchange successful')
                                     } else {
                                         this.setState({ loading: false })
-                                        Alert.alert('Error', 'Cannot exchange amount')
+                                        Alert.alert('Error', 'Cannot exchange amount. Please try again.')
                                     }
                                 })
                                 .catch(err=>{
@@ -226,7 +227,7 @@ export default class ExchangeCoins extends Component {
                 const body = {
                     amount: this.state.amount,
                     key: ethPrivateKey,
-                    aetAmount : this.state.aetAmount,
+                    aetAmount : this.state.ethTotal,
                     aetReciever : this.state.ethAddress
                 }
                 this.setState({ checkingPrice: true }, () => {

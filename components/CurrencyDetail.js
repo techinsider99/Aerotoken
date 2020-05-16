@@ -7,6 +7,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { Icon } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 import Clipboard from '@react-native-community/clipboard';
+import { calculateTime } from '../utils';
 const {ethers}  = require('ethers');
 
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
@@ -161,6 +162,7 @@ export default class CurrencyDetail extends Component {
 			if(json.txrefs[i].tokenSymbol === "AET"){
 			let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString();
 			let time = new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
+			//time = calculateTime(time);
 			let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)).toFixed(5);
 			tx.push(
 			<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>
@@ -199,8 +201,10 @@ export default class CurrencyDetail extends Component {
 			tx = [];
 			for (let i=json.txrefs.length-1; i>-1;i--) {
 				if (json.txrefs[i].tokenSymbol === 'USDT') {
-					let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString()
+					console.log('TIMESTAMP:', json.txrefs[i].timeStamp)
+					let date = new Date(json.txrefs[i].timeStamp*1000).toLocaleDateString();
 					let time = new Date(json.txrefs[i].timeStamp*1000*1000).toLocaleTimeString();
+					//time = calculateTime(time);
 					let value = parseFloat(ethers.utils.formatEther(json.txrefs[i].value)*1000000000000).toFixed(5);
 					tx.push(
 						<View style={{position: 'relative',backgroundColor: '#272a3d',marginHorizontal: wp('5%'),marginVertical: hp('1%'),padding: wp('5%'),borderRadius: 15}}>

@@ -165,7 +165,7 @@ export default class Dashboard extends Component {
             }
             ).catch(err => {
                 this.setState({ usdtLoading: false })
-                Alert(err);
+                Alert.alert('Error', err);
             })
         })
 	}

@@ -80,13 +80,13 @@ export default class ImportWallet extends Component {
 
 	handlePhraseSubmit = () => {
 		let phrase  = this.state.phrase;
-		phrase = this.encrypt(phrase);
 		let pin = this.state.pin;
 		const data = {
 			phrase: phrase,
 		};
 		if (phrase) {
 			if (pin) {
+				phrase = this.encrypt(phrase);
 				this.setState({
 					phraseError: '',
 					pinError: '',

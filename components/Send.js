@@ -87,11 +87,14 @@ export default class Send extends Component {
                         })
                         .then(res => res.json())
                         .then(json => {
-                            console.log(json);
-                            alert('Transaction success')
-                            this.goToWallet();
                             this.setState({ loading: false })
-                        })
+                            if (json.success) {
+                                alert('Transaction success');
+                                this.goToWallet();
+                            } else {
+                                alert('An error occured. Please try again');
+                            }
+                        }).catch(err => alert(err));
                     })
                 }
                 else if(abr == "ETH"){

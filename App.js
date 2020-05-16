@@ -1,4 +1,3 @@
-/* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable prettier/prettier */
 import React, {Component} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
@@ -45,10 +44,10 @@ class App extends Component {
 						<Screen name = "ExchangeAET" component = {ExchangeAET}/>
 						<Screen name = "ExchangeCoins" component = {ExchangeCoins}/>
 						<Screen name = "Currency" component = {Currency}/>
-						<Screen name = "CurrencyDetail" component = {CurrencyDetail} />
-						<Screen name = "Send" component = {Send} />
-						<Screen name = "Receive" component = {Receive} />
-						<Screen name = "Profile" component = {Profile} />
+						<Screen name = "CurrencyDetail" component = {CurrencyDetail}/>
+						<Screen name = "Send" component = {Send}/>
+						<Screen name = "Receive" component = {Receive}/>
+						<Screen name = "Profile" component = {Profile}/>
 					</Navigator>
 				</NavigationContainer>
 			</>
