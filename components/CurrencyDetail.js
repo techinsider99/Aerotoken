@@ -239,13 +239,17 @@ export default class CurrencyDetail extends Component {
 	}
 
 	handleSend = (currencyName, abr, avatar,currencyValue,price) => {
-		this.props.navigation.navigate('Send', {
-			currencyName: currencyName,
-			abr: abr,
-			avatar: avatar,
-			currencyValue : currencyValue,
-			price : price
-		});
+		if (abr === 'BTC') {
+			Alert.alert('Info', 'Coming soon')
+		} else {
+			this.props.navigation.navigate('Send', {
+				currencyName: currencyName,
+				abr: abr,
+				avatar: avatar,
+				currencyValue : currencyValue,
+				price : price,
+			});
+		}
 	}
 
 	handleReceive = (currencyName, abr) => {

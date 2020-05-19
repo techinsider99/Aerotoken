@@ -31,15 +31,16 @@ export default class ExchangeCoins extends Component {
             EthPrivateKey : '',
             amount: 0,
             ethTotal: 0,
-            btcTotal: 0,
+            usdtTotal: 0,
             currentExchange: 'ETH',
             ethBalance : '',
 			btcBalance : '',
-			aetBalance : '',
+            aetBalance : '',
+            usdtBalance: '',
 			aetPrice : '',
 			aetChange : '',
-			btcPrice : '',
-			btcChange : '',
+			usdtPrice : '',
+			usdtChange : '',
 			ethPrice : '',
             ethChange : '',
             ethAddress : '',
@@ -58,10 +59,14 @@ export default class ExchangeCoins extends Component {
     }
 
     handleExchange = value => {
-        this.setState({
-          currentExchange: value,
-        });
-        this.handleAmount(this.state.amount)
+        if (value === 'BTC') {
+            Alert.alert('Info', 'Coming soon')
+        } else {
+            this.setState({
+                currentExchange: value,
+            });
+            this.handleAmount(this.state.amount)
+        }
     }
 
     handleAmount = amount => {
@@ -71,10 +76,10 @@ export default class ExchangeCoins extends Component {
                 let aetTotal = total/this.state.aetPrice;
                 this.setState({ethTotal: aetTotal})
             }
-            else if (this.state.currentExchange === 'BTC'){
-                let total = amount * this.state.btcPrice;
+            else if (this.state.currentExchange === 'USDT'){
+                let total = amount * this.state.usdtPrice;
                 let aetTotal = total/this.state.aetPrice;
-                this.setState({btcTotal: aetTotal})  
+                this.setState({usdtTotal: aetTotal})  
             }
         })
     };
@@ -82,7 +87,8 @@ export default class ExchangeCoins extends Component {
     async UNSAFE_componentWillMount(){
         this.fetchAetPrice();
 		this.fetchBtcPrice();
-		this.fetchEthPrice();
+        this.fetchEthPrice();
+        this.fetchUsdtPrice();
         try{
 			const eth = await AsyncStorage.getItem('ethWallet')
 			let ether = JSON.parse(eth);
@@ -92,7 +98,8 @@ export default class ExchangeCoins extends Component {
             this.setState({EthPrivateKey : ether.ethPrivateKey, ethAddress : ether.ethAddress});
             this.fetchEthBalance(ether.ethAddress);
 			this.fetchBitcoinBalance(bitcoin.btcAddress);
-			this.fetchAetBalance(ether.ethAddress);
+            this.fetchAetBalance(ether.ethAddress);
+            this.fetchUsdtBalance(ether.ethAddress);
 		}
 		catch(err){
             console.log(err);
@@ -128,8 +135,17 @@ export default class ExchangeCoins extends Component {
 			this.setState({btcChange:responseJson.market_data.price_change_percentage_1h_in_currency.usd});
 		}
 		)
-	}
-
+    }
+    
+    fetchUsdtPrice() {
+        fetch('https://api.coingecko.com/api/v3/coins/tether')
+		.then((response) => response.json())
+		.then(responseJson => {
+			this.setState({usdtPrice:responseJson.market_data.current_price.usd});
+			this.setState({usdtChange:responseJson.market_data.price_change_percentage_1h_in_currency.usd});
+		}
+		)
+    }
 
 	fetchEthBalance(a){
 		let address = a;
@@ -146,7 +162,7 @@ export default class ExchangeCoins extends Component {
 			let aetString = parseFloat(ethers.utils.formatEther(balance)).toFixed(4);
 			this.setState({aetBalance:aetString});
 		})
-	}
+    }
 
 	fetchBitcoinBalance(a){
 		fetch(`https://api.blockcypher.com/v1/btc/main/addrs/${a}/balance`)
@@ -157,6 +173,18 @@ export default class ExchangeCoins extends Component {
 			this.setState({btcBalance : finalBal });
 		})
     }
+
+    fetchUsdtBalance(a){
+        axios.post('https://aet-wallet.herokuapp.com/usdtBalance', {
+            address: a
+        }).then(response => {
+            this.setState({
+                usdtBalance: response.data.balance
+            })
+        }).catch(err => {
+            console.log(err)
+        })
+	}
     
     encrypt = data => {
         const key = KEY;
@@ -172,29 +200,30 @@ export default class ExchangeCoins extends Component {
     handleProcess(){
         let btcPrivateKey = this.encrypt(this.state.BtcPrivateKey);
         let ethPrivateKey = this.encrypt(this.state.EthPrivateKey);
+        console.log('USDT BALANCE', this.state.usdtBalance)
         if (this.state.amount > 0) {
-            if(this.state.currentExchange == "BTC" && this.state.btcBalance > this.state.amount+0.0002){
+            if(this.state.currentExchange == "USDT" && this.state.usdtBalance > this.state.amount+0.0002){
                 const body = {
-                    value_satoshis : this.state.amount,
-                    key: btcPrivateKey,
-                    aetAmount : this.state.btcTotal,
+                    amount: this.state.amount,
+                    key: ethPrivateKey,
+                    aetAmount : this.state.usdtTotal,
                     aetReciever : this.state.ethAddress
                 }
                 this.setState({ checkingPrice: true }, () => {
-                    axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin')
+                    axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=tether')
                     .then(res => {
                         this.setState({ checkingPrice: false });
-                        const btc = res.data;
-                        let amountInDollars = btc[0].current_price * this.state.amount;
+                        const usdt = res.data;
+                        let amountInDollars = usdt[0].current_price * this.state.amount;
                         amountInDollars = amountInDollars.toFixed(5);
-                        if(amountInDollars < 5) {
+                        if (amountInDollars < 5) {
                             Alert.alert(
                                 'Cannot perform exchange',
                                 `Exchange value must be greater than $5. The value of your exchange was $${amountInDollars}`
                             )
                         } else if (amountInDollars > 5) { 
                             this.setState({ loading: true }, () => {
-                                fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/btc',{
+                                fetch('https://aet-wallet.herokuapp.com/api/v1/exchange/usdt',{
                                     method: 'post',
                                     body: JSON.stringify(body),
                                     headers: { 'Content-Type': 'application/json' },
@@ -354,7 +383,7 @@ export default class ExchangeCoins extends Component {
             },
             picker: {
                 height: 57,
-                maxWidth: 100,
+                maxWidth: wp('26%'),
                 backgroundColor: '#32374f',
                 borderRadius: 0,
                 marginLeft: 10,
@@ -402,6 +431,7 @@ export default class ExchangeCoins extends Component {
                 fontFamily: 'Armegoe',
                 color: '#8E8C8C',
                 fontSize: 18,
+                marginBottom: 5
             },
             buttonText: {
                 color: 'white',
@@ -429,12 +459,13 @@ export default class ExchangeCoins extends Component {
                         <Icon type = "font-awesome" name = "angle-left" color = "#fff" size = {wp('15%')} iconStyle = {icon} onPress = {this.handleBack} underlayColor = "transparent" />
                         <Text style = {title}>Exchange AET</Text>
 					</View>
-					<View>
+					<View style = {{marginHorizontal: wp('3%')}}>
                         <View style = {innerContainer}>
                             <TextInput onChangeText={this.handleAmount} value = {this.state.amount} style = {inputBox} keyboardType = "numeric"/>
                             <Picker selectedValue = {this.state.currentExchange} style = {picker} onValueChange={(value) => this.handleExchange(value)}>
                                 <Picker.Item label = "ETH" value="ETH" />
-                                <Picker.Item label = "BTC" value="BTC" />
+                                <Picker.Item label = "USDT" value="USDT" />
+                                <Picker.Item label = "BTC" value="BTC"/>
                             </Picker>
                             <Icon type = "feather" name = "chevron-down" color = "white" iconStyle = {downIcon}/>
                         </View>
@@ -442,7 +473,7 @@ export default class ExchangeCoins extends Component {
                             <Icon type = "font-awesome" name = "exchange" color = "white" iconStyle = {exchangeIcon}/>
                         </View>
                         <View style = {innerContainer1}>
-                            <TextInput value={`${this.state.currentExchange === 'ETH' ? this.state.ethTotal : this.state.currentExchange === 'BTC' ? this.state.btcTotal : null}`} editable={false} style = {inputBox}/>
+                            <TextInput value={`${this.state.currentExchange === 'ETH' ? this.state.ethTotal === 0 ? this.state.ethTotal : this.state.ethTotal.toFixed(10) : this.state.currentExchange === 'USDT' ? this.state.usdtTotal === 0 ? this.state.usdtTotal : this.state.usdtTotal.toFixed(10) : null}`} editable={false} style = {inputBox}/>
                             <Picker mode = "dialog" style = {picker} selectedValue = "AET">
                                 <Picker.Item label = "AET"/>
                             </Picker>
@@ -457,7 +488,7 @@ export default class ExchangeCoins extends Component {
                         <Text style = {balanceHeading}>Your {this.state.currentExchange} balance will be</Text>
                         <View>
                         {this.state.currentExchange == "ETH" ?  <Text style = {{color: 'white', fontSize: 19, fontFamily: 'Armegoe', textAlign: 'right'}}>{this.state.ethBalance - this.state.amount + " " + this.state.currentExchange}</Text>
-                        : <Text style = {{color: 'white', fontSize: 19, fontFamily: 'Armegoe', textAlign: 'right'}}>{this.state.btcBalance - this.state.amount + " " + this.state.currentExchange}</Text> }
+                        : <Text style = {{color: 'white', fontSize: 19, fontFamily: 'Armegoe', textAlign: 'right'}}>{this.state.usdtBalance - this.state.amount + " " + this.state.currentExchange}</Text> }
                         </View>
                     </View>
                     <View style = {infoContainer}>
@@ -467,7 +498,7 @@ export default class ExchangeCoins extends Component {
                             <Text style = {balanceHeading}>balance will be</Text>
                         </View>
                         <View>
-                            <Text style = {{color: 'white', fontSize: 19, fontFamily: 'Armegoe', textAlign: 'right'}}>{this.state.currentExchange === 'ETH' ? this.state.ethTotal : this.state.currentExchange === 'BTC' ? this.state.btcTotal : null} AET</Text>
+                            <Text style = {{color: 'white', fontSize: 19, fontFamily: 'Armegoe', textAlign: 'right'}}>{this.state.currentExchange === 'ETH' ? this.state.ethTotal : this.state.currentExchange === 'USDT' ? this.state.usdtTotal : null} AET</Text>
                         </View>
                     </View>
                     </View>

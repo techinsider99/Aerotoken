@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react';
 import axios from 'axios';
@@ -44,7 +45,7 @@ export default class Staking extends Component {
             this.getStaking();
 	    } catch (error) {
 		   Alert.alert(error);
-		}
+        }
     }
 
     getStaking = async () => {
@@ -83,10 +84,9 @@ export default class Staking extends Component {
 
     handleStake(){
         if (this.state.amount) {
-            if (parseFloat(this.state.aetBalance) < 1000){
+            if (parseFloat(this.state.aetBalance) < 100.0){
                 this.setState({ error: 'You must have minimum 1000 coins to stake' });
-            }
-            else if (parseFloat(this.state.amount) >= parseFloat(this.state.aetBalance)) {
+            } else if (parseFloat(this.state.amount) >= parseFloat(this.state.aetBalance)) {
                 this.setState({ error: 'Insufficient AET balance' });
             }
             else if (parseFloat(this.state.ethBalance) < 0.0001){
@@ -94,7 +94,7 @@ export default class Staking extends Component {
             } else {
                 let privateKey = this.state.privateKey;
                 privateKey = this.encrypt(privateKey);
-                let amount = this.state.amount.toString();
+                let amount = parseFloat(this.state.amount);
                 const data = {
                     key: privateKey,
                     amount: amount,
@@ -115,23 +115,24 @@ export default class Staking extends Component {
                                 this.setState({ amount: '' });
                                 this.getStaking();
                             } else {
-                                Alert.alert('Error', state.error);
+                                Alert.alert('Error', 'Cannot stake amount. Please try again');
                             }
                         }
                         catch (err){
                             this.setState({ loading: false });
-                            Alert.alert('Error', err);
+                            Alert.alert('Error', 'Cannot stake amount. Please try again');
                         }
                     }).catch(err => {
                         this.setState({ loading: false });
                         console.log(err);
-                        Alert.alert('Error', err);
+                        Alert.alert('Error', 'Cannot stake amount. Please try again');
                     });
                 });
             }
         } else {
             this.setState({ error: 'Enter the amount to stake' });
         }
+        // console.log('AET BALANCE:', parseFloat(this.state.aetBalance) > 1, 'TYPE:', typeof (this.state.aetBalance));
     }
 
     fetchEthBalance(a){
@@ -250,10 +251,10 @@ export default class Staking extends Component {
                     <Input inputStyle = {inputBox} inputContainerStyle = {{borderBottomWidth: 1, borderBottomColor: 'white'}} value = {this.state.amount} onChangeText = {this.handleAmount} placeholder = "Enter Amount to Stake" placeholderTextColor = "white" keyboardAppearance = "dark" keyboardType = "numeric" errorMessage = {error} errorStyle = {errorText}/>
                 	</View>
 					<TouchableOpacity style = {button} activeOpacity = {0.8} disabled = {isLoading} onPress = {this.handleStake}>
-                            <Text style = {buttonText}>{ isLoading ? 'Please wait' : 'Start Staking'}</Text>
+                        <Text style = {buttonText}>{ isLoading ? 'Please wait' : 'Start Staking'}</Text>
                     </TouchableOpacity>
                     <View style = {{display:'flex',alignItems:'center',justifyContent:'center',marginTop : 20}}>
-						<Text style = {staking}>Total Staked : {this.state.totalStaked ===  0 ? 0 : this.state.totalStaked}</Text>
+						<Text style = {staking}>Total Staked : {!this.state.totalStaked ? 0 : this.state.totalStaked}</Text>
                     </View>
                 </View>
             </>

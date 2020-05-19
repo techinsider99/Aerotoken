@@ -80,20 +80,20 @@ export default class ImportWallet extends Component {
 
 	handlePhraseSubmit = () => {
 		let phrase  = this.state.phrase;
+		phrase = this.encrypt(phrase);
 		let pin = this.state.pin;
 		const data = {
 			phrase: phrase,
 		};
-		if (phrase) {
+		if (this.state.phrase) {
 			if (pin) {
-				phrase = this.encrypt(phrase);
 				this.setState({
 					phraseError: '',
 					pinError: '',
 					loading: true,
 				}, () => {
 					axios.post('https://aet-wallet.herokuapp.com/api/v1/import', data)
-					.then(res => {
+					.then(async res => {
 						const walletData = res.data;
 						try {
 							const walletJson = {
@@ -102,8 +102,8 @@ export default class ImportWallet extends Component {
 								'ethMnemonic' : walletData.ethMnemonic,
 							};
 							const wallet = JSON.stringify(walletJson);
-							AsyncStorage.setItem('ethWallet', wallet);
-							AsyncStorage.setItem('@pin', pin);
+							await AsyncStorage.setItem('ethWallet', wallet);
+							await AsyncStorage.setItem('@pin', this.state.pin);
 							this.props.navigation.popToTop();
 							this.props.navigation.replace('Dashboard');
 						}
@@ -154,7 +154,6 @@ export default class ImportWallet extends Component {
 				flex: 1,
 				alignItems: 'center',
 				justifyContent: 'center',
-				
 			},
 			logo: {
                 alignSelf: 'center',
