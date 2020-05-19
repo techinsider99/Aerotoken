@@ -84,14 +84,14 @@ export default class Staking extends Component {
 
     handleStake(){
         if (this.state.amount) {
-            if (parseFloat(this.state.aetBalance) < 100.0){
+            if (parseFloat(this.state.aetBalance) < 1000.0){
                 this.setState({ error: 'You must have minimum 1000 coins to stake' });
             } else if (parseFloat(this.state.amount) >= parseFloat(this.state.aetBalance)) {
                 this.setState({ error: 'Insufficient AET balance' });
             }
             else if (parseFloat(this.state.ethBalance) < 0.0001){
                 this.setState({ error: 'Insufficient Gas. Fund Your Account to pay for Gas' });
-            } else {
+            } else if (parseFloat(this.state.amount) > 1000.0){
                 let privateKey = this.state.privateKey;
                 privateKey = this.encrypt(privateKey);
                 let amount = parseFloat(this.state.amount);
@@ -128,11 +128,12 @@ export default class Staking extends Component {
                         Alert.alert('Error', 'Cannot stake amount. Please try again');
                     });
                 });
+            } else {
+                this.setState({ error: 'Minimum staking is 1000' });
             }
         } else {
             this.setState({ error: 'Enter the amount to stake' });
         }
-        // console.log('AET BALANCE:', parseFloat(this.state.aetBalance) > 1, 'TYPE:', typeof (this.state.aetBalance));
     }
 
     fetchEthBalance(a){
