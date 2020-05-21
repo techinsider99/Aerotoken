@@ -79,7 +79,7 @@ export default class ImportWallet extends Component {
     }
 
 	handlePhraseSubmit = () => {
-		let phrase  = this.state.phrase;
+		let phrase  = this.state.phrase.trim();
 		phrase = this.encrypt(phrase);
 		let pin = this.state.pin;
 		const data = {
@@ -109,11 +109,12 @@ export default class ImportWallet extends Component {
 						}
 						catch (error){
 							this.setState({ loading: false });
-							Alert.alert('Error', error);
+							Alert.alert('Error', 'Cannot import wallet. Please try again');
 						}
 					}).catch(err => {
+						console.log(err);
 						this.setState({ loading: false });
-						Alert.alert('Error', err);
+						Alert.alert('Error', 'Invalid phrase. Please check your 12-word phrase and try again.');
 					});
 				});
 			} else {

@@ -94,7 +94,7 @@ export default class Dashboard extends Component {
 			this.fetchAetBalance(ether.ethAddress);
 			this.fetchUsdtBalance(ether.ethAddress);
 		 } catch (error) {
-		   Alert.alert('Error', error);
+		   Alert.alert('Error', 'Unable to load wallet. Please log out and try logging in again');
 		}
     }
 
@@ -111,7 +111,7 @@ export default class Dashboard extends Component {
             }
             ).catch(err => {
                 this.setState({ aetLoading: false })
-                Alert.alert('Error', err)
+                Alert.alert('Error', err.message)
             })
         })
 	}
@@ -129,7 +129,7 @@ export default class Dashboard extends Component {
             }
             ).catch(err => {
                 this.setState({ ethLoading: false });
-                Alert('Error', err);
+                Alert('Error', err.message);
             })
         })
 	}
@@ -147,7 +147,7 @@ export default class Dashboard extends Component {
             }
             ).catch(err => {
                 this.setState({ btcLoading: false })
-                Alert('Error', err);
+                Alert('Error', err.message);
             })
         })
 	}
@@ -165,7 +165,7 @@ export default class Dashboard extends Component {
             }
             ).catch(err => {
                 this.setState({ usdtLoading: false })
-                Alert.alert('Error', err);
+                Alert.alert('Error', err.message);
             })
         })
 	}
@@ -197,7 +197,7 @@ export default class Dashboard extends Component {
                 });
             }).catch(err => {
                 this.setState({ btcBalanceLoading: false })
-                Alert('Error', err)
+                Alert('Error', err.message)
             })
         })
     }
@@ -214,7 +214,7 @@ export default class Dashboard extends Component {
                 })
             }).catch(err => {
                 this.setState({ aetbalanceLoading: false })
-                console.log(err)
+                console.log(err.message)
             })
         })  
 	}
@@ -231,7 +231,7 @@ export default class Dashboard extends Component {
                 })
             }).catch(err => {
                 this.setState({ usdtBalanceLoading: false })
-                console.log(err)
+                console.log(err.message)
             })
         })
 	}

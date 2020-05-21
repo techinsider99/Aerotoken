@@ -18,55 +18,64 @@ const aetContract = new ethers.Contract(aet, aetAbi, provider);
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 40 : StatusBar.currentHeight;
 export default class Staking extends Component {
 
-     constructor(props){
-         super(props);
-         this.state={
-             amount : '',
-             error : '',
-             aetBalance : '',
-             ethBalance :'',
-             totalStaked : '',
-             privateKey:'',
-             loading: false,
-         };
-         this.handleAmount = this.handleAmount.bind(this);
-         this.fetchAetBalance = this.fetchAetBalance.bind(this);
-         this.handleStake = this.handleStake.bind(this);
-         this.fetchEthBalance = this.fetchEthBalance.bind(this);
-     }
+    constructor(props){
+        super(props);
+        this.state = {
+            amount : '',
+            error : '',
+            aetBalance : '',
+            ethBalance : '',
+            ethAddress: '',
+            totalStaked : '',
+            privateKey:'',
+            loading: false,
+            fetchingStake: false,
+        };
+        this.handleAmount = this.handleAmount.bind(this);
+        this.fetchAetBalance = this.fetchAetBalance.bind(this);
+        this.handleStake = this.handleStake.bind(this);
+        this.fetchEthBalance = this.fetchEthBalance.bind(this);
+    }
 
     async componentWillMount(){
 		try {
 			const eth = await AsyncStorage.getItem('ethWallet');
             let ether = JSON.parse(eth);
-            this.setState({privateKey : ether.ethPrivateKey});
+            this.setState({privateKey: ether.ethPrivateKey, ethAddress: ether.ethAddress});
             this.fetchAetBalance(ether.ethAddress);
             this.fetchEthBalance(ether.ethAddress);
-            this.getStaking();
 	    } catch (error) {
 		   Alert.alert(error);
         }
     }
 
-    getStaking = async () => {
-        try {
-            let staked = await AsyncStorage.getItem('@staked');
-            if (staked !== null) {
-                this.setState({totalStaked: staked});
-            } else {
-                Alert.alert('AET Staking', 'Welcome to AET Staking, Get 1% of your total staked tokens every month');
-            }
-        } catch (err) {
-            console.log(err);
-        }
+    async componentDidMount() {
+        const eth = await AsyncStorage.getItem('ethWallet');
+        let ether = JSON.parse(eth);
+        this.getStaking(ether.ethAddress);
     }
 
-    setStaking = async staking => {
-        try {
-            await AsyncStorage.setItem('@staked', staking);
-        } catch (err) {
-            console.log(err);
-        }
+    getStaking = address => {
+        console.log('ETH ADDRESS:', address);
+        const data = {
+            address: address,
+        };
+        this.setState({ fetchingStake: true }, () => {
+            axios.post('https://aet-wallet.herokuapp.com/stake/history', data)
+            .then(res => {
+                console.log('TOTAL STAKING:', res.data);
+                this.setState({ fetchingStake: false });
+                let totalStaked = res.data.total;
+                if (totalStaked > 0) {
+                    this.setState({ totalStaked: totalStaked });
+                } else if (totalStaked === 0){
+                    Alert.alert('AET Staking', 'Welcome to AET Staking, Get 1% of your total staked tokens every month');
+                }
+            }).catch(err => {
+                this.setState({ fetchingStake: false });
+                Alert.alert('Error', err.message);
+            });
+        });
     }
 
     handleAmount = amount => this.setState({ amount: amount })
@@ -84,52 +93,54 @@ export default class Staking extends Component {
 
     handleStake(){
         if (this.state.amount) {
-            if (parseFloat(this.state.aetBalance) < 1000.0){
-                this.setState({ error: 'You must have minimum 1000 coins to stake' });
-            } else if (parseFloat(this.state.amount) >= parseFloat(this.state.aetBalance)) {
-                this.setState({ error: 'Insufficient AET balance' });
-            }
-            else if (parseFloat(this.state.ethBalance) < 0.0001){
-                this.setState({ error: 'Insufficient Gas. Fund Your Account to pay for Gas' });
-            } else if (parseFloat(this.state.amount) > 1000.0){
-                let privateKey = this.state.privateKey;
-                privateKey = this.encrypt(privateKey);
-                let amount = parseFloat(this.state.amount);
-                const data = {
-                    key: privateKey,
-                    amount: amount,
-                };
-                console.log(data);
-                this.setState({ loading: true, error: ''}, () => {
-                    axios.post('https://aet-wallet.herokuapp.com/stake', data)
-                    .then(res => {
-                        let state = res.data;
-                        console.log('Staking response:', state);
-                        this.setState({ loading: false });
-                        try {
-                            if (state.success === 'Transaction Success') {
-                                Alert.alert('Info', 'Transaction success');
-                                let total = parseFloat(this.state.totalStaked) + parseFloat(this.state.amount);
-                                let totalString = total.toString();
-                                this.setStaking(totalString);
-                                this.setState({ amount: '' });
-                                this.getStaking();
-                            } else {
-                                Alert.alert('Error', 'Cannot stake amount. Please try again');
-                            }
+            if (parseFloat(this.state.aetBalance) > 1000.0){
+                if (parseFloat(this.state.amount) <= parseFloat(this.state.aetBalance)) {
+                    if (parseFloat(this.state.ethBalance) > 0.0001) {
+                        if (parseFloat(this.state.amount) >= 1000.0) {
+                            let privateKey = this.state.privateKey;
+                            privateKey = this.encrypt(privateKey);
+                            let amount = parseFloat(this.state.amount);
+                            const data = {
+                                key: privateKey,
+                                amount: amount,
+                            };
+                            console.log(data);
+                            this.setState({ loading: true, error: ''}, () => {
+                                axios.post('https://aet-wallet.herokuapp.com/stake', data)
+                                .then(res => {
+                                    let state = res.data;
+                                    console.log(state);
+                                    this.setState({ loading: false });
+                                    try {
+                                        if (state.success === 'Transaction Success') {
+                                            Alert.alert('Info', 'Transaction success');
+                                            this.setState({ amount: '' });
+                                            this.getStaking(this.state.ethAddress);
+                                        } else {
+                                            Alert.alert('Error', 'Cannot stake amount. Please try again');
+                                        }
+                                    }
+                                    catch (err){
+                                        this.setState({ loading: false });
+                                        Alert.alert('Error', 'Cannot stake amount. Please try again');
+                                    }
+                                }).catch(err => {
+                                    this.setState({ loading: false });
+                                    console.log(err);
+                                    Alert.alert('Error', 'Cannot stake amount. Please try again');
+                                });
+                            });
+                        } else {
+                            this.setState({ error: 'Minimum staking amount is 1000' });
                         }
-                        catch (err){
-                            this.setState({ loading: false });
-                            Alert.alert('Error', 'Cannot stake amount. Please try again');
-                        }
-                    }).catch(err => {
-                        this.setState({ loading: false });
-                        console.log(err);
-                        Alert.alert('Error', 'Cannot stake amount. Please try again');
-                    });
-                });
+                    } else {
+                        this.setState({ error: 'Insufficient Gas. Fund Your Account to pay for Gas' });
+                    }
+                } else {
+                    this.setState({ error: 'Insufficient AET balance' });
+                }
             } else {
-                this.setState({ error: 'Minimum staking is 1000' });
+                this.setState({ error: 'You must have minimum 1000 coins to stake' });
             }
         } else {
             this.setState({ error: 'Enter the amount to stake' });
@@ -236,7 +247,7 @@ export default class Staking extends Component {
 		});
 
         const { statusBar, section, header, icon, title, button, buttonText, inputBox, inputContainer, staking, errorText } = styles;
-        const { loading: isLoading, error } = this.state;
+        const { loading: isLoading, error, fetchingStake } = this.state;
         const { navigation } = this.props;
         return (
             <>
@@ -248,15 +259,27 @@ export default class Staking extends Component {
 						<Icon type = "feather" name = "bar-chart" color = "#fff" size = {wp('9.5%')} iconStyle = {icon} onPress = {() => navigation.openDrawer()} underlayColor = "transparent" />
 						<Text style = {title}>Stake AET</Text>
                     </View>
-                    <View style = {inputContainer}>
-                    <Input inputStyle = {inputBox} inputContainerStyle = {{borderBottomWidth: 1, borderBottomColor: 'white'}} value = {this.state.amount} onChangeText = {this.handleAmount} placeholder = "Enter Amount to Stake" placeholderTextColor = "white" keyboardAppearance = "dark" keyboardType = "numeric" errorMessage = {error} errorStyle = {errorText}/>
-                	</View>
-					<TouchableOpacity style = {button} activeOpacity = {0.8} disabled = {isLoading} onPress = {this.handleStake}>
-                        <Text style = {buttonText}>{ isLoading ? 'Please wait' : 'Start Staking'}</Text>
-                    </TouchableOpacity>
-                    <View style = {{display:'flex',alignItems:'center',justifyContent:'center',marginTop : 20}}>
-						<Text style = {staking}>Total Staked : {!this.state.totalStaked ? 0 : this.state.totalStaked}</Text>
-                    </View>
+                    {
+                        fetchingStake ?
+
+                        <View style = {{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                            <ActivityIndicator size = {50} color = "#FFBA00" />
+                        </View>
+
+                        :
+
+                        <>
+                            <View style = {inputContainer}>
+                                <Input inputStyle = {inputBox} inputContainerStyle = {{borderBottomWidth: 1, borderBottomColor: 'white'}} value = {this.state.amount} onChangeText = {this.handleAmount} placeholder = "Enter Amount to Stake" placeholderTextColor = "white" keyboardAppearance = "dark" keyboardType = "numeric" errorMessage = {error} errorStyle = {errorText}/>
+                            </View>
+                            <TouchableOpacity style = {button} activeOpacity = {0.8} disabled = {isLoading} onPress = {this.handleStake}>
+                                <Text style = {buttonText}>{ isLoading ? 'Please wait' : 'Start Staking'}</Text>
+                            </TouchableOpacity>
+                            <View style = {{display:'flex',alignItems:'center',justifyContent:'center',marginTop : 20}}>
+                                <Text style = {staking}>Total Staked : {!this.state.totalStaked ? 0 : this.state.totalStaked}</Text>
+                            </View>
+                        </>
+                    }
                 </View>
             </>
         );
