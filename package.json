@@ -1,6 +1,15 @@
 {
   "name": "aerotoken",
+  "keywords": [
+    "aerotoken",
+    "react",
+    "react native",
+    "mobile application",
+    "app"
+  ],
   "version": "0.0.1",
+  "description": "Front end for Aerotoken mobile application",
+  "author": "Saran RTS",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
