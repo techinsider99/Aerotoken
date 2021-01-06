@@ -30,7 +30,7 @@
     "@react-navigation/native": "^5.1.7",
     "@react-navigation/stack": "^5.2.14",
     "@tradle/react-native-http": "^2.0.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "browserify-zlib": "^0.1.4",
     "dns.js": "^1.0.1",
     "ethereum-tx-decoder": "^3.0.0",
